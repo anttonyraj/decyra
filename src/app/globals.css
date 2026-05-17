@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+:root {
+  --color-navy: #1e2761;
+  --color-navy-deep: #151b4a;
+  --color-coral: #f96167;
+  --color-coral-soft: #fde2e3;
+  --color-ice: #e8edf7;
+  --color-gray-light: #fafbfc;
+  --color-border: #e5e9f2;
+  --color-text-dark: #1a1f36;
+  --color-text-muted: #5a6478;
+  --font-inter: var(--font-inter), "Inter", system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-inter);
+  color: var(--color-text-dark);
+}
+
+/* Georgia serif utility */
+.font-serif {
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+/* Animated data dots along SVG paths */
+@keyframes flow-dot {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+.flow-dot {
+  animation: flow-dot 3s linear infinite;
+  offset-path: var(--path);
+}
+
+/* Question card hover */
+.question-card {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.question-card:hover {
+  box-shadow: 0 8px 24px rgba(30, 39, 97, 0.1);
+  border-color: #f96167;
+  transform: translateY(-2px);
+}
+
+/* Data source card hover */
+.source-card {
+  transition: background-color 0.15s ease;
+}
+.source-card:hover {
+  background-color: #e8edf7;
+}
+
+/* Pricing card hover */
+.pricing-card {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.pricing-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(30, 39, 97, 0.1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #fafbfc;
+}
+::-webkit-scrollbar-thumb {
+  background: #e5e9f2;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #5a6478;
+}
