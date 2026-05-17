@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { DEMO_SCHEMA } from '@/lib/schema'
-import { aiProvider } from '@/lib/ai/provider'
+import { createClient } from '../../../lib/supabase/server'
+import { DEMO_SCHEMA } from '../../../lib/schema'
+import { aiProvider } from '../../../lib/ai/provider'
 
 export async function POST(req: NextRequest) {
   try {
