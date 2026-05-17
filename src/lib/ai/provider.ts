@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+const apiKey = process.env.DECYRA_API_KEY || process.env.GEMINI_API_KEY || ''
+const genAI = new GoogleGenerativeAI(apiKey)
 
 export interface AIProvider {
   generateText(opts: { systemPrompt?: string; userPrompt: string; maxTokens?: number }): Promise<string>
