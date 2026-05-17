@@ -63,7 +63,7 @@ No markdown fences. No commentary outside the JSON. Just the JSON object.`
       )
     }
 
-    const sql = parsed.sql.trim()
+    const sql = parsed.sql.trim().replace(/;$/, '')
 
     // 5. Safety checks — defense in depth
     if (!/^\s*select\s/i.test(sql)) {
