@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Wordmark from "@/components/landing/Wordmark";
 import { ArrowRight, ArrowLeft, CheckCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 type Stage = "idle" | "loading" | "sent";
 
@@ -25,9 +26,21 @@ export default function LoginPage() {
     if (err) { setError(err); return; }
     setError("");
     setStage("loading");
-    // TODO: call your magic-link API endpoint here
-    await new Promise((r) => setTimeout(r, 900)); // simulated latency
-    setStage("sent");
+    
+    const supabase = createClient();
+    const { error: authError } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+
+    if (authError) {
+      setError(authError.message);
+      setStage("idle");
+    } else {
+      setStage("sent");
+    }
   }
 
   return (

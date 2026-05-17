@@ -27,27 +27,23 @@ body {
   font-family: Georgia, "Times New Roman", serif;
 }
 
-/* Animated data dots along SVG paths */
-@keyframes flow-dot {
-  0% {
-    offset-distance: 0%;
-    opacity: 0;
-  }
-  5% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    offset-distance: 100%;
-    opacity: 0;
-  }
+/* Animated data dots flowing left → right through connector columns */
+@keyframes flow-right {
+  0%   { transform: translateX(0px);  opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { transform: translateX(56px); opacity: 0; }
 }
 
 .flow-dot {
-  animation: flow-dot 3s linear infinite;
-  offset-path: var(--path);
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #F96167;
+  animation: flow-right 2.4s linear var(--flow-delay, 0s) infinite;
 }
 
 /* Question card hover */

@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { Database, Code2, Users, Zap, CheckCircle, XCircle } from "lucide-react";
 import NavBar from "@/components/landing/NavBar";
 import HeroDiagram from "@/components/landing/HeroDiagram";
 import SectionLabel from "@/components/landing/SectionLabel";
@@ -7,20 +8,20 @@ import QuestionCard from "@/components/landing/QuestionCard";
 import PricingCard from "@/components/landing/PricingCard";
 import Footer from "@/components/landing/Footer";
 
-// ─── DATA ───────────────────────────────────────────────────────────────────
+// ─── DATA ────────────────────────────────────────────────────────────────────
 
 const problemColumns = [
   {
-    heading: "Every question is a ticket.",
-    body: "You file a request, wait 3 days, get a number. By the time it arrives, the deal is closed or lost.",
+    heading: "Reporting takes too long.",
+    body: "You file a request, wait three days, get a number. By then the deal is closed or the quarter has moved. The bottleneck is never the data. It's always the process.",
   },
   {
-    heading: "BI dashboards aren't enough.",
-    body: "Your Salesforce reports cover the basics. Real questions — 'why did win rate drop in mid-market?' — need ad-hoc analysis.",
+    heading: "Dashboards don't answer real questions.",
+    body: "Static reports cover the basics. The questions that actually drive decisions ('why did win rate drop in mid-market?') live outside any dashboard, and always will.",
   },
   {
-    heading: "ChatGPT can't see your data.",
-    body: "General AI writes SQL well, but it can't run it against your live pipeline. Decyra can.",
+    heading: "You shouldn't need an analyst for this.",
+    body: "Ad-hoc queries, data pulls, custom reports. These are the bottleneck between your team and the operational visibility they need right now.",
   },
 ];
 
@@ -28,17 +29,76 @@ const howItWorksSteps = [
   {
     num: "01",
     heading: "Connect your data",
-    body: "Plug in PostgreSQL today. MySQL, CSV, Salesforce, and HubSpot rolling out over the next 8 weeks. Schema auto-detected in seconds.",
+    body: "Point Decyra at your PostgreSQL database. Schema auto-detected in seconds. No ETL pipeline, no data warehouse, no engineering ticket required.",
   },
   {
     num: "02",
     heading: "Ask in plain English",
-    body: "Type any business question. Decyra generates the SQL, shows it to you, lets you review before running.",
+    body: "Type any business question. Decyra writes the SQL, shows it to you for review, and runs it only when you're ready. You stay in control.",
   },
   {
     num: "03",
-    heading: "Get the answer + the why",
-    body: "Results as a table, plus a 2-sentence explanation of what the data is telling you. Built for executives, not just analysts.",
+    heading: "Get the answer instantly",
+    body: "A results table plus a plain-English explanation of what the data is telling you. Every answer is backed by real, auditable SQL.",
+  },
+];
+
+const whyDecyraPillars = [
+  {
+    icon: Database,
+    heading: "Schema-Aware Intelligence",
+    body: "Decyra reads your actual database schema before writing any SQL. Every answer maps to real tables and real columns. No hallucinated metrics.",
+  },
+  {
+    icon: Code2,
+    heading: "Transparent by Design",
+    body: "Every answer shows the SQL that generated it. Inspect it, audit it, copy it. No black-box results. No guessing what the number means.",
+  },
+  {
+    icon: Users,
+    heading: "Built for Operators, Not Analysts",
+    body: "Designed for RevOps directors, VPs of Sales, and CS leaders. Not a developer tool. Not a BI platform. An AI analyst built for business teams.",
+  },
+  {
+    icon: Zap,
+    heading: "Answers in Seconds, Not Days",
+    body: "Skip the ticket, skip the wait, skip the back-and-forth. Ask a business question and see the answer. Operational visibility on demand.",
+  },
+];
+
+const comparisonColumns = [
+  {
+    label: "Traditional BI Tools",
+    highlight: false,
+    items: [
+      { text: "Dashboards require setup and ongoing maintenance", positive: false },
+      { text: "Ad-hoc questions still route through analysts", positive: false },
+      { text: "Days to answer one-off business questions", positive: false },
+      { text: "Built for reporting, not real-time exploration", positive: false },
+      { text: "High configuration overhead", positive: false },
+    ],
+  },
+  {
+    label: "Generic AI Chatbots",
+    highlight: false,
+    items: [
+      { text: "No live database connection", positive: false },
+      { text: "May hallucinate schema, columns, and metrics", positive: false },
+      { text: "Cannot safely execute SQL against real data", positive: false },
+      { text: "No operational or business context", positive: false },
+      { text: "Results are not auditable", positive: false },
+    ],
+  },
+  {
+    label: "Decyra",
+    highlight: true,
+    items: [
+      { text: "Connects directly to your operational database", positive: true },
+      { text: "Schema-aware: maps to real tables and columns", positive: true },
+      { text: "Plain-English questions, real SQL answers in seconds", positive: true },
+      { text: "Built for RevOps, sales ops, and CS teams", positive: true },
+      { text: "Every answer is transparent and auditable", positive: true },
+    ],
   },
 ];
 
@@ -54,19 +114,19 @@ const questions = [
 const roles = [
   {
     title: "Directors of RevOps",
-    body: "Pipeline coverage, rep performance, quota attainment — without bothering your data team.",
+    body: "Pipeline coverage, rep performance, quota attainment. No waiting on your data team or rebuilding another dashboard.",
   },
   {
     title: "VPs of Sales",
-    body: "Real-time visibility into deal velocity, win rates, and forecast accuracy.",
+    body: "Real-time visibility into deal velocity, win rates, and forecast accuracy. The answers you need for the Monday morning call.",
   },
   {
     title: "Heads of Customer Success",
-    body: "Customer health signals, expansion opportunities, churn risk — in plain English.",
+    body: "Customer health signals, expansion opportunities, churn risk. In plain English, from your operational data.",
   },
   {
     title: "Founders and CEOs of growing SaaS companies",
-    body: "Real-time business answers without learning SQL or hiring an analyst.",
+    body: "Business answers without learning SQL, building dashboards, or hiring a data analyst. Ask, and know.",
   },
 ];
 
@@ -124,15 +184,15 @@ export default function HomePage() {
       <main>
         {/* ── HERO ── */}
         <section
+          id="product"
           className="bg-white pt-24 pb-16 max-[640px]:pt-16 max-[640px]:pb-12"
           aria-labelledby="hero-headline"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            {/* Centered text block */}
             <div className="text-center max-w-[900px] mx-auto">
-              {/* Small label */}
+              {/* Category label */}
               <p className="text-[12px] font-semibold uppercase tracking-[0.15em] text-[#1E2761] mb-6">
-                Built for RevOps at growing SaaS companies
+                AI Data Intelligence
               </p>
 
               {/* Headline */}
@@ -148,8 +208,7 @@ export default function HomePage() {
 
               {/* Subhead */}
               <p className="text-[20px] max-[640px]:text-[18px] text-[#5A6478] leading-relaxed max-w-[700px] mx-auto mb-10">
-                Decyra connects to your data, generates the SQL, runs it, and
-                explains what it found. No data team. No SQL. No waiting.
+                Decyra is the AI analyst for revenue and business operations teams. Connect your database, type a question, see the answer. No SQL, no data team, no waiting.
               </p>
 
               {/* Buttons */}
@@ -172,8 +231,7 @@ export default function HomePage() {
 
               {/* Trust line */}
               <p className="mt-6 text-[14px] italic text-[#5A6478]">
-                Built by a 20-year data architecture veteran. Read-only access.
-                Your data never trains our models.
+                Every answer is backed by real SQL you can inspect and audit.
               </p>
             </div>
 
@@ -184,8 +242,22 @@ export default function HomePage() {
 
             {/* Disclaimer */}
             <p className="mt-10 text-[13px] italic text-[#5A6478] text-center">
-              PostgreSQL connector and demo database available now. Other
-              connectors and outputs rolling out over the next 8 weeks.
+              PostgreSQL connector and demo database available now. Other connectors rolling out over the next 8 weeks.
+            </p>
+          </div>
+        </section>
+
+        {/* ── CATEGORY POSITIONING STRIP ── */}
+        <section className="border-y border-[#E5E9F2] py-12 max-[640px]:py-8 bg-white">
+          <div className="max-w-[860px] mx-auto px-8 max-[640px]:px-4 text-center">
+            <h2
+              className="text-[24px] max-[640px]:text-[20px] font-bold text-[#1E2761] mb-3 leading-snug"
+              style={{ fontFamily: "Georgia, serif" }}
+            >
+              The simplicity of AI chat. The reliability of business intelligence.
+            </h2>
+            <p className="text-[16px] text-[#5A6478] leading-relaxed max-w-[640px] mx-auto">
+              Decyra combines conversational AI with governed SQL execution, schema-aware querying, and operational business context. Not a chatbot. Not a dashboard. An AI analyst.
             </p>
           </div>
         </section>
@@ -203,7 +275,7 @@ export default function HomePage() {
                 className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight max-w-[640px] mx-auto"
                 style={{ fontFamily: "Georgia, serif" }}
               >
-                RevOps teams shouldn't wait for the data team.
+                Operational teams are still waiting days for answers.
               </h2>
             </div>
 
@@ -292,8 +364,7 @@ export default function HomePage() {
                 The questions your team asks every week.
               </h2>
               <p className="text-[18px] text-[#5A6478] leading-relaxed max-w-[600px] mx-auto">
-                These take minutes with Decyra. Without it, they take days — if
-                they happen at all.
+                These take seconds with Decyra. Without it, they're a three-day reporting cycle. If they happen at all.
               </p>
             </div>
 
@@ -305,8 +376,139 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ── WHY DECYRA ── */}
+        <section
+          id="why-decyra"
+          className="bg-[#FAFBFC] py-24 max-[640px]:py-16"
+          aria-labelledby="why-heading"
+        >
+          <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
+            <div className="text-center mb-14">
+              <SectionLabel>Why Decyra</SectionLabel>
+              <h2
+                id="why-heading"
+                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight max-w-[640px] mx-auto"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                Practical. Transparent. Built for operators.
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-2 max-[768px]:grid-cols-1 gap-6">
+              {whyDecyraPillars.map((pillar) => {
+                const Icon = pillar.icon;
+                return (
+                  <div
+                    key={pillar.heading}
+                    className="bg-white border border-[#E5E9F2] rounded-xl p-8 max-[640px]:p-6 flex gap-5"
+                    style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}
+                  >
+                    <div className="flex-shrink-0 mt-0.5">
+                      <div className="w-9 h-9 rounded-lg bg-[#E8EDF7] flex items-center justify-center">
+                        <Icon size={18} className="text-[#1E2761]" />
+                      </div>
+                    </div>
+                    <div>
+                      <h3
+                        className="text-lg font-bold text-[#1E2761] mb-2"
+                        style={{ fontFamily: "Georgia, serif" }}
+                      >
+                        {pillar.heading}
+                      </h3>
+                      <p className="text-[15px] text-[#5A6478] leading-relaxed">
+                        {pillar.body}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* ── COMPARISON ── */}
+        <section
+          className="bg-white py-24 max-[640px]:py-16"
+          aria-labelledby="comparison-heading"
+        >
+          <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
+            <div className="text-center mb-14">
+              <SectionLabel>Why teams choose Decyra</SectionLabel>
+              <h2
+                id="comparison-heading"
+                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                A different category entirely.
+              </h2>
+              <p className="text-[18px] text-[#5A6478] mt-4 max-w-[560px] mx-auto leading-relaxed">
+                Decyra isn't a better dashboard or a smarter chatbot. It's a new layer between your data and your decisions.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 max-[768px]:grid-cols-1 gap-6">
+              {comparisonColumns.map((col) => (
+                <div
+                  key={col.label}
+                  className={`rounded-xl p-8 max-[640px]:p-6 flex flex-col ${
+                    col.highlight
+                      ? "border-2 border-[#1E2761] bg-white"
+                      : "border border-[#E5E9F2] bg-[#FAFBFC]"
+                  }`}
+                  style={{ boxShadow: col.highlight ? "0 8px 24px rgba(30,39,97,0.08)" : "0 4px 12px rgba(0,0,0,0.03)" }}
+                >
+                  {/* Column header */}
+                  <div className="mb-6">
+                    {col.highlight ? (
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="inline-block w-2 h-2 rounded-full bg-[#F96167]" aria-hidden="true" />
+                        <span
+                          className="font-bold text-[#1E2761] tracking-[0.12em] text-sm"
+                          style={{ fontFamily: "Georgia, serif" }}
+                        >
+                          DECYRA
+                        </span>
+                      </div>
+                    ) : (
+                      <p className="text-sm font-semibold text-[#5A6478] mb-1">{col.label}</p>
+                    )}
+                    <div className={`h-0.5 w-8 rounded-full mt-2 ${col.highlight ? "bg-[#F96167]" : "bg-[#E5E9F2]"}`} />
+                  </div>
+
+                  {/* Feature list */}
+                  <ul className="flex flex-col gap-3 flex-1">
+                    {col.items.map((item) => (
+                      <li key={item.text} className="flex items-start gap-3">
+                        {item.positive ? (
+                          <CheckCircle
+                            size={16}
+                            className="text-[#1E2761] flex-shrink-0 mt-0.5"
+                          />
+                        ) : (
+                          <XCircle
+                            size={16}
+                            className="text-[#B0B8CC] flex-shrink-0 mt-0.5"
+                          />
+                        )}
+                        <span
+                          className={`text-[14px] leading-snug ${
+                            item.positive ? "text-[#1A1F36]" : "text-[#5A6478]"
+                          }`}
+                        >
+                          {item.text}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ── WHO IT'S FOR ── */}
         <section
+          id="built-for"
           className="bg-[#E8EDF7] py-24 max-[640px]:py-16"
           aria-labelledby="for-heading"
         >
@@ -318,7 +520,7 @@ export default function HomePage() {
                 className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight"
                 style={{ fontFamily: "Georgia, serif" }}
               >
-                For the people who need answers now.
+                For the teams that need answers now.
               </h2>
             </div>
 
@@ -346,6 +548,7 @@ export default function HomePage() {
 
         {/* ── PRICING ── */}
         <section
+          id="pricing"
           className="bg-white py-24 max-[640px]:py-16"
           aria-labelledby="pricing-heading"
         >
@@ -360,8 +563,7 @@ export default function HomePage() {
                 Flat company pricing. No per-seat tax.
               </h2>
               <p className="text-[18px] text-[#5A6478] leading-relaxed">
-                Unlimited team members on every plan. Pay for the company, not
-                the headcount.
+                Unlimited team members on every plan. Pay for the company, not the headcount.
               </p>
             </div>
 

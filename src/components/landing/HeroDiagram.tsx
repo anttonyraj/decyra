@@ -14,7 +14,6 @@ import {
   Calendar,
   Mail,
   ChevronDown,
-  ArrowRight,
 } from "lucide-react";
 import DataSourceCard from "./DataSourceCard";
 import BrowserMockup from "./BrowserMockup";
@@ -37,13 +36,49 @@ const outputCards = [
   { icon: Mail, label: "Email digests", comingSoon: true },
 ];
 
-/** Three vertically-distributed navy arrows used as connectors between columns */
-function ArrowConnector() {
+/**
+ * Six horizontal lanes of animated coral dots, one per card row.
+ * Pixel positions match card centers:
+ *   label ≈22px tall, each card ≈40px, gap 10px → centers at 42,92,142,192,242,292px
+ */
+function FlowConnector() {
+  const cardCenters = [42, 92, 142, 192, 242, 292];
+
+  const dotStyle = (delay: number): React.CSSProperties => ({
+    position: "absolute",
+    top: "-2px",
+    left: "0",
+    width: "5px",
+    height: "5px",
+    borderRadius: "50%",
+    background: "#F96167",
+    animation: `flow-right 2s linear ${delay}s infinite`,
+    opacity: 0,
+  });
+
   return (
-    <div className="flex flex-col justify-around items-center h-full py-8" aria-hidden="true">
-      <ArrowRight size={16} className="text-[#1E2761]" style={{ opacity: 0.3 }} />
-      <ArrowRight size={16} className="text-[#1E2761]" style={{ opacity: 0.3 }} />
-      <ArrowRight size={16} className="text-[#1E2761]" style={{ opacity: 0.3 }} />
+    <div
+      className="relative w-14 self-stretch overflow-visible"
+      aria-hidden="true"
+    >
+      <style>{`
+        @keyframes flow-right {
+          0%   { transform: translateX(0px);  opacity: 0; }
+          10%  { opacity: 1; }
+          90%  { opacity: 1; }
+          100% { transform: translateX(56px); opacity: 0; }
+        }
+      `}</style>
+      {cardCenters.map((top, i) => (
+        <div
+          key={top}
+          style={{ position: "absolute", left: 0, right: 0, top }}
+        >
+          <div style={{ height: "1px", background: "#E5E9F2", width: "100%" }} />
+          <div style={dotStyle(i * 0.28)} />
+          <div style={dotStyle(i * 0.28 + 1.1)} />
+        </div>
+      ))}
     </div>
   );
 }
@@ -72,9 +107,7 @@ export default function HeroDiagram() {
         </div>
 
         {/* CONNECTOR: left → center */}
-        <div className="w-10 self-stretch mt-6">
-          <ArrowConnector />
-        </div>
+        <FlowConnector />
 
         {/* CENTER: mockup */}
         <div className="flex flex-col">
@@ -85,9 +118,7 @@ export default function HeroDiagram() {
         </div>
 
         {/* CONNECTOR: center → right */}
-        <div className="w-10 self-stretch mt-6">
-          <ArrowConnector />
-        </div>
+        <FlowConnector />
 
         {/* RIGHT: outputs */}
         <div className="flex flex-col">

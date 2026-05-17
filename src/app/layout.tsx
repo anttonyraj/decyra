@@ -10,13 +10,13 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://decyra.systems"),
-  title: "Decyra — Ask Your Business Data Anything",
+  title: "Decyra: Ask Your Business Data Anything",
   description:
     "Decyra connects to your data, generates SQL, runs it, and explains what it found in plain English. Built for RevOps teams at growing B2B SaaS companies. No SQL skills required.",
   keywords:
     "RevOps analytics, business intelligence, SQL generator, pipeline coverage, quota attainment, deal velocity, B2B SaaS analytics",
   openGraph: {
-    title: "Decyra — Ask Your Business Data Anything",
+    title: "Decyra: Ask Your Business Data Anything",
     description:
       "AI data intelligence for RevOps and business operations teams. Connect your data, ask in plain English, get answers in seconds.",
     type: "website",
