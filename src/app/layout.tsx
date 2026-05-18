@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Geist } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -42,6 +43,7 @@ export default function RootLayout({
     <html lang="en" className={cn("h-full", "antialiased", inter.variable, "font-sans", geist.variable)}>
       <body className="min-h-full flex flex-col bg-white text-[#1A1F36]">
         {children}
+        <Analytics />
       </body>
     </html>
   );
