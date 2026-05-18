@@ -1,7 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import { Database, Code2, Users, Zap, CheckCircle, XCircle } from "lucide-react";
+import { Database, Code2, Users, Zap, CheckCircle, XCircle, ShieldCheck, Lock, Eye, ServerOff } from "lucide-react";
 import NavBar from "@/components/landing/NavBar";
+import FaqAccordion from "@/components/landing/FaqAccordion";
 import HeroDiagram from "@/components/landing/HeroDiagram";
 import SectionLabel from "@/components/landing/SectionLabel";
 import QuestionCard from "@/components/landing/QuestionCard";
@@ -171,6 +172,59 @@ const pricingTiers = [
     ctaHref: "mailto:founder@decyra.systems",
     highlighted: false,
     external: true,
+  },
+];
+
+const securityPillars = [
+  {
+    icon: Lock,
+    heading: "Requires read-only credentials.",
+    body: "Decyra only accepts read-only database connections. We physically cannot modify, delete, or drop your data—the database itself will reject it.",
+  },
+  {
+    icon: ServerOff,
+    heading: "No data storage. No PII retained.",
+    body: "Your data never leaves your control. We do not store query results or train our AI models on your proprietary business data.",
+  },
+  {
+    icon: Eye,
+    heading: "Full transparency, audit-ready.",
+    body: "See every SQL query before it runs. If a result looks interesting, you can instantly inspect the exact query that generated it.",
+  },
+];
+
+const faqItems = [
+  {
+    question: "Which databases do you support?",
+    answer: "PostgreSQL is fully supported today. MySQL and CSV uploads are currently in beta and rolling out soon.",
+  },
+  {
+    question: "Do I need to know SQL?",
+    answer: "No. Decyra writes the SQL for you based on your plain English questions. However, if you do know SQL, you can view and edit the generated query before executing it.",
+  },
+  {
+    question: "How is this different from ChatGPT?",
+    answer: "ChatGPT doesn't connect securely to your live database, hallucinates schemas, and isn't built for enterprise data privacy. Decyra reads your actual schema and executes safe, read-only queries against your operational data.",
+  },
+  {
+    question: "Do you store my data?",
+    answer: "No, we run queries against your database and return the results directly to your browser session. We don't store your query results or train our core models on them.",
+  },
+  {
+    question: "How accurate is the AI?",
+    answer: "Because Decyra is schema-aware, it maps questions to real tables and columns rather than guessing. Furthermore, Decyra shows you the SQL before running it, so you can always verify the logic.",
+  },
+  {
+    question: "What if the AI gets it wrong?",
+    answer: "Every result includes the exact query that generated it. You can review the SQL, tweak your question to be more specific, or edit the SQL directly to get exactly what you need.",
+  },
+  {
+    question: "Is there a free trial?",
+    answer: "Yes, you can start a 14-day trial that includes access to a demo database, allowing you to test the platform before connecting your own data. No credit card required.",
+  },
+  {
+    question: "Can I cancel anytime?",
+    answer: "Yes, all our monthly plans can be cancelled anytime directly from your billing settings.",
   },
 ];
 
@@ -376,6 +430,52 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ── SECURITY ── */}
+        <section
+          className="bg-[#1A1F36] py-24 max-[640px]:py-16 text-white"
+          aria-labelledby="security-heading"
+        >
+          <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#2A314D] mb-6">
+                <ShieldCheck size={24} className="text-[#F96167]" />
+              </div>
+              <h2
+                id="security-heading"
+                className="text-[40px] max-[640px]:text-[32px] font-bold leading-tight mb-4"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                How Decyra protects your data.
+              </h2>
+              <p className="text-[18px] text-[#A6B0C3] leading-relaxed max-w-[600px] mx-auto">
+                Built for the enterprise. We designed Decyra so your security and compliance teams can say yes without hesitation.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 max-[768px]:grid-cols-1 gap-8 max-[768px]:gap-6 max-w-[1000px] mx-auto">
+              {securityPillars.map((pillar) => {
+                const Icon = pillar.icon;
+                return (
+                  <div key={pillar.heading} className="flex flex-col items-center text-center">
+                    <div className="w-12 h-12 rounded-full bg-[#2A314D] flex items-center justify-center mb-5">
+                      <Icon size={20} className="text-white" />
+                    </div>
+                    <h3
+                      className="text-lg font-bold mb-3"
+                      style={{ fontFamily: "Georgia, serif" }}
+                    >
+                      {pillar.heading}
+                    </h3>
+                    <p className="text-[15px] text-[#A6B0C3] leading-relaxed">
+                      {pillar.body}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
         {/* ── WHY DECYRA ── */}
         <section
           id="why-decyra"
@@ -543,6 +643,28 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* ── FAQ ── */}
+        <section
+          id="faq"
+          className="bg-[#FAFBFC] py-24 max-[640px]:py-16 border-b border-[#E5E9F2]"
+          aria-labelledby="faq-heading"
+        >
+          <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
+            <div className="text-center mb-14">
+              <SectionLabel>FAQ</SectionLabel>
+              <h2
+                id="faq-heading"
+                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                Common questions
+              </h2>
+            </div>
+            
+            <FaqAccordion items={faqItems} />
           </div>
         </section>
 
