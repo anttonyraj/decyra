@@ -7,6 +7,7 @@ import HeroDiagram from "@/components/landing/HeroDiagram";
 import SectionLabel from "@/components/landing/SectionLabel";
 import QuestionCard from "@/components/landing/QuestionCard";
 import PricingCard from "@/components/landing/PricingCard";
+import ContactSection from "@/components/landing/ContactSection";
 import Footer from "@/components/landing/Footer";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -701,34 +702,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── CLOSING CTA ── */}
-        <section
-          className="bg-[#1E2761] py-24 max-[640px]:py-16"
-          aria-labelledby="cta-heading"
-        >
-          <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4 text-center">
-            <h2
-              id="cta-heading"
-              className="text-[48px] max-[640px]:text-[36px] font-bold text-white leading-tight mb-4"
-              style={{ fontFamily: "Georgia, serif" }}
-            >
-              See your data in plain English.
-            </h2>
-            <p className="text-[18px] text-[#E8EDF7] mb-10">
-              Start here. Two clicks, no credit card.
-            </p>
-            <Link
-              href="/login"
-              className="inline-block bg-[#F96167] text-white font-semibold rounded-lg px-8 py-4 text-base hover:bg-[#e8535a] transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#F96167] focus:ring-offset-2 focus:ring-offset-[#1E2761]"
-              id="closing-cta"
-            >
-              Start here →
-            </Link>
-            <p className="mt-6 text-[13px] italic text-[#E8EDF7] opacity-70">
-              Free 14-day trial. Demo database included. No setup required.
-            </p>
-          </div>
-        </section>
+        {/* ── CONTACT SECTION ── */}
+        <ContactSection />
       </main>
 
       <Footer />
