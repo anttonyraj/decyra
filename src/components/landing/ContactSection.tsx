@@ -7,14 +7,36 @@ export default function ContactSection() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Dummy submit delay
-    setTimeout(() => {
+    
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      company: formData.get("company"),
+      usecase: formData.get("usecase"),
+      message: formData.get("message"),
+    };
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+      } else {
+        console.error("Failed to submit form");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 1000);
+    }
   };
 
   return (
@@ -42,22 +64,22 @@ export default function ContactSection() {
                 <div className="grid grid-cols-2 gap-5 max-[500px]:grid-cols-1">
                   <div>
                     <label htmlFor="name" className="block text-sm font-semibold text-[#1E2761] mb-1.5">Full Name</label>
-                    <input required type="text" id="name" placeholder="John Doe" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all" />
+                    <input required type="text" id="name" name="name" placeholder="John Doe" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all" />
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-sm font-semibold text-[#1E2761] mb-1.5">Work Email</label>
-                    <input required type="email" id="email" placeholder="john@company.com" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all" />
+                    <input required type="email" id="email" name="email" placeholder="john@company.com" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all" />
                   </div>
                 </div>
 
                 <div>
                   <label htmlFor="company" className="block text-sm font-semibold text-[#1E2761] mb-1.5">Company Name</label>
-                  <input required type="text" id="company" placeholder="Acme Corp" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all" />
+                  <input required type="text" id="company" name="company" placeholder="Acme Corp" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all" />
                 </div>
 
                 <div>
                   <label htmlFor="usecase" className="block text-sm font-semibold text-[#1E2761] mb-1.5">Primary Use Case</label>
-                  <select required id="usecase" defaultValue="" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all appearance-none cursor-pointer">
+                  <select required id="usecase" name="usecase" defaultValue="" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all appearance-none cursor-pointer">
                     <option value="" disabled>Select an option...</option>
                     <option value="revops">Revenue Operations (RevOps)</option>
                     <option value="sales">Sales Leadership</option>
@@ -69,7 +91,7 @@ export default function ContactSection() {
 
                 <div>
                   <label htmlFor="message" className="block text-sm font-semibold text-[#1E2761] mb-1.5">How can we help?</label>
-                  <textarea id="message" rows={4} placeholder="Briefly describe what you're looking to solve..." className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all resize-none"></textarea>
+                  <textarea id="message" name="message" rows={4} placeholder="Briefly describe what you're looking to solve..." className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all resize-none"></textarea>
                 </div>
 
                 <button type="submit" disabled={isSubmitting} className="w-full bg-[#F96167] text-white font-semibold rounded-lg px-6 py-4 text-base hover:bg-[#e8535a] transition-colors flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#F96167] focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed">
