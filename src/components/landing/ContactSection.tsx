@@ -18,6 +18,8 @@ export default function ContactSection() {
       company: formData.get("company"),
       usecase: formData.get("usecase"),
       message: formData.get("message"),
+      b_check: formData.get("b_check"),
+      submission_token: "valid-client-" + Date.now(),
     };
 
     try {
@@ -61,6 +63,9 @@ export default function ContactSection() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Honeypot field (hidden) */}
+                <input type="text" name="b_check" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
+
                 <div className="grid grid-cols-2 gap-5 max-[500px]:grid-cols-1">
                   <div>
                     <label htmlFor="name" className="block text-sm font-semibold text-[#1E2761] mb-1.5">Full Name</label>
