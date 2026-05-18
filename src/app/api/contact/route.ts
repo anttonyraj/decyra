@@ -1,51 +1,46 @@
 import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
-
-// Initialize Resend with the API key from environment variables
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { name, email, company, usecase, message } = body;
 
+    // Validate required fields
     if (!name || !email || !company || !usecase || !message) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    if (!process.env.RESEND_API_KEY) {
-      console.error("Missing RESEND_API_KEY in environment variables");
-      // If no API key is provided, we simulate success so the UI doesn't break,
-      // but log an error. In production this should throw.
+    const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
+
+    if (!GOOGLE_SCRIPT_URL) {
+      console.error("Missing GOOGLE_SCRIPT_URL in environment variables");
+      // Simulate success if the URL isn't configured yet so the UI doesn't break
       return NextResponse.json({ 
         success: true, 
-        message: 'Simulated success (No Resend API Key found)' 
+        message: 'Simulated success (No GOOGLE_SCRIPT_URL found)' 
       }, { status: 200 });
     }
 
-    const { data, error } = await resend.emails.send({
-      from: 'Decyra Contact Form <onboarding@resend.dev>', // Resend test email. Replace with your verified domain.
-      to: 'founder@decyra.systems',
-      subject: `New Strategy Call Request from ${name} at ${company}`,
-      html: `
-        <h2>New Strategy Call Request</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Company:</strong> ${company}</p>
-        <p><strong>Primary Use Case:</strong> ${usecase}</p>
-        <br/>
-        <h3>Message:</h3>
-        <p>${message.replace(/\n/g, '<br/>')}</p>
-      `,
+    // Forward the payload to the Google Apps Script Web App
+    const response = await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Send the exact body received from the client
+      body: JSON.stringify(body),
     });
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+    if (!response.ok) {
+      throw new Error(`Google Script returned status ${response.status}`);
     }
 
-    return NextResponse.json({ success: true, data }, { status: 200 });
+    // Attempt to parse the response from Google Script (usually JSON if configured correctly)
+    const result = await response.json().catch(() => ({}));
+
+    return NextResponse.json({ success: true, ...result }, { status: 200 });
   } catch (error) {
-    console.error('Error processing contact form:', error);
+    console.error('Error forwarding contact form to Google Script:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
