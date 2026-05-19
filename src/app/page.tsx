@@ -297,7 +297,7 @@ export default function HomePage() {
 
             {/* Disclaimer */}
             <p className="mt-10 text-[13px] italic text-[#5A6478] text-center">
-              PostgreSQL connector and demo database available now. Other connectors rolling out over the next 8 weeks.
+              PostgreSQL connector available now. MySQL, Snowflake, BigQuery, and Redshift connectors rolling out over the next 12 weeks. Salesforce and HubSpot integrations coming soon.
             </p>
           </div>
         </section>
