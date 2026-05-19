@@ -240,20 +240,24 @@ export default function HomePage() {
         {/* ── HERO ── */}
         <section
           id="product"
-          className="bg-white pt-24 pb-16 max-[640px]:pt-16 max-[640px]:pb-12"
+          className="relative overflow-hidden bg-white bg-[linear-gradient(to_right,rgba(229,233,242,0.3)_1px,transparent_1px),linear-gradient(to_bottom,rgba(229,233,242,0.3)_1px,transparent_1px)] bg-[size:64px_64px] pt-32 pb-20 max-[640px]:pt-20 max-[640px]:pb-12 border-b border-[#E5E9F2]"
           aria-labelledby="hero-headline"
         >
-          <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
+          {/* Background Glows */}
+          <div className="absolute top-1/2 -translate-y-1/2 left-[-15%] w-[800px] h-[800px] rounded-full bg-[#F96167]/10 blur-[130px] pointer-events-none" />
+          <div className="absolute top-1/2 -translate-y-1/2 right-[-15%] w-[800px] h-[800px] rounded-full bg-[#1E2761]/10 blur-[130px] pointer-events-none" />
+
+          <div className="relative max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
             <div className="text-center max-w-[900px] mx-auto">
               {/* Category label */}
-              <p className="text-[12px] font-semibold uppercase tracking-[0.15em] text-[#1E2761] mb-6">
-                AI Data Intelligence
+              <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#1E2761] mb-6">
+                AI DATA INTELLIGENCE
               </p>
 
               {/* Headline */}
               <h1
                 id="hero-headline"
-                className="text-[64px] max-[1024px]:text-[52px] max-[640px]:text-[40px] font-bold text-[#1A1F36] leading-[1.08] mb-6"
+                className="text-[64px] max-[1024px]:text-[52px] max-[640px]:text-[40px] font-bold text-[#1E2761] leading-[1.08] mb-6"
                 style={{ fontFamily: "Georgia, serif" }}
               >
                 Ask your business data anything.
@@ -262,7 +266,7 @@ export default function HomePage() {
               </h1>
 
               {/* Subhead */}
-              <p className="text-[20px] max-[640px]:text-[18px] text-[#5A6478] leading-relaxed max-w-[700px] mx-auto mb-10">
+              <p className="text-[18px] max-[640px]:text-[16px] text-[#5A6478] leading-relaxed max-w-[680px] mx-auto mb-10">
                 Decyra is the AI analyst for revenue and business operations teams. Connect your database, type a question, see the answer. No SQL, no data team, no waiting.
               </p>
 
@@ -270,14 +274,14 @@ export default function HomePage() {
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <Link
                   href="/login"
-                  className="bg-[#F96167] text-white font-semibold rounded-lg px-7 py-3.5 text-base hover:bg-[#e8535a] transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#F96167] focus:ring-offset-2"
+                  className="bg-[#F96167] text-white font-semibold rounded-lg px-7 py-3.5 text-base hover:bg-[#e8535a] transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#F96167] focus:ring-offset-2 shadow-sm"
                   id="hero-cta-primary"
                 >
                   Start here →
                 </Link>
                 <a
                   href="#how-it-works"
-                  className="border border-[#1E2761] text-[#1E2761] font-semibold rounded-lg px-7 py-3.5 text-base hover:bg-[#E8EDF7] transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:ring-offset-2"
+                  className="border border-[#1E2761] text-[#1E2761] font-semibold rounded-lg px-7 py-3.5 text-base bg-[#E8EDF7]/20 hover:bg-[#E8EDF7]/50 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:ring-offset-2"
                   id="hero-cta-secondary"
                 >
                   See how it works
