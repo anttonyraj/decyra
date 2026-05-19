@@ -9,6 +9,7 @@ import QuestionCard from "@/components/landing/QuestionCard";
 import PricingCard from "@/components/landing/PricingCard";
 import ContactSection from "@/components/landing/ContactSection";
 import Footer from "@/components/landing/Footer";
+import { HowItWorksGraphic, WhyDecyraGraphic, BuiltForGraphic, PricingGraphic, FaqGraphic } from "@/components/landing/SectionGraphics";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -367,42 +368,47 @@ export default function HomePage() {
           aria-labelledby="how-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-14">
-              <SectionLabel>How It Works</SectionLabel>
-              <h2
-                id="how-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                Three steps. Zero SQL.
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-3 max-[768px]:grid-cols-1 gap-8 max-[768px]:gap-6">
-              {howItWorksSteps.map((step) => (
-                <div
-                  key={step.num}
-                  className="border border-[#E5E9F2] rounded-xl p-8 max-[640px]:p-6"
-                  style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}
+            <div className="grid grid-cols-12 gap-12 max-[1024px]:gap-8 items-center">
+              {/* Left Column: Info & Steps */}
+              <div className="col-span-7 max-[1024px]:col-span-12">
+                <SectionLabel>How It Works</SectionLabel>
+                <h2
+                  id="how-heading"
+                  className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-10"
+                  style={{ fontFamily: "Georgia, serif" }}
                 >
-                  <span
-                    className="text-[56px] font-bold text-[#F96167] leading-none block mb-4 opacity-80"
-                    style={{ fontFamily: "Georgia, serif" }}
-                    aria-hidden="true"
-                  >
-                    {step.num}
-                  </span>
-                  <h3
-                    className="text-xl font-bold text-[#1E2761] mb-3"
-                    style={{ fontFamily: "Georgia, serif" }}
-                  >
-                    {step.heading}
-                  </h3>
-                  <p className="text-[16px] text-[#5A6478] leading-relaxed">
-                    {step.body}
-                  </p>
+                  Three steps. Zero SQL.
+                </h2>
+                <div className="space-y-8">
+                  {howItWorksSteps.map((step) => (
+                    <div key={step.num} className="flex gap-6 items-start">
+                      <span
+                        className="text-[32px] font-bold text-[#F96167] leading-none block opacity-85 w-12"
+                        style={{ fontFamily: "Georgia, serif" }}
+                        aria-hidden="true"
+                      >
+                        {step.num}
+                      </span>
+                      <div>
+                        <h3
+                          className="text-lg font-bold text-[#1E2761] mb-2"
+                          style={{ fontFamily: "Georgia, serif" }}
+                        >
+                          {step.heading}
+                        </h3>
+                        <p className="text-[15px] text-[#5A6478] leading-relaxed">
+                          {step.body}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {/* Right Column: Graphic */}
+              <div className="col-span-5 max-[1024px]:col-span-12">
+                <HowItWorksGraphic />
+              </div>
             </div>
           </div>
         </section>
@@ -488,45 +494,50 @@ export default function HomePage() {
           aria-labelledby="why-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-14">
-              <SectionLabel>Why Decyra</SectionLabel>
-              <h2
-                id="why-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight max-w-[640px] mx-auto"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                Practical. Transparent. Built for operators.
-              </h2>
-            </div>
+            <div className="grid grid-cols-12 gap-12 max-[1024px]:gap-8 items-center">
+              {/* Left Column: Graphic */}
+              <div className="col-span-5 max-[1024px]:col-span-12 max-[1024px]:order-2">
+                <WhyDecyraGraphic />
+              </div>
 
-            <div className="grid grid-cols-2 max-[768px]:grid-cols-1 gap-6">
-              {whyDecyraPillars.map((pillar) => {
-                const Icon = pillar.icon;
-                return (
-                  <div
-                    key={pillar.heading}
-                    className="bg-white border border-[#E5E9F2] rounded-xl p-8 max-[640px]:p-6 flex gap-5"
-                    style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}
-                  >
-                    <div className="flex-shrink-0 mt-0.5">
-                      <div className="w-9 h-9 rounded-lg bg-[#E8EDF7] flex items-center justify-center">
-                        <Icon size={18} className="text-[#1E2761]" />
-                      </div>
-                    </div>
-                    <div>
-                      <h3
-                        className="text-lg font-bold text-[#1E2761] mb-2"
-                        style={{ fontFamily: "Georgia, serif" }}
+              {/* Right Column: Title & Pillars */}
+              <div className="col-span-7 max-[1024px]:col-span-12 max-[1024px]:order-1">
+                <SectionLabel>Why Decyra</SectionLabel>
+                <h2
+                  id="why-heading"
+                  className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-10"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  Practical. Transparent. Built for operators.
+                </h2>
+                <div className="grid grid-cols-2 max-[640px]:grid-cols-1 gap-4">
+                  {whyDecyraPillars.map((pillar) => {
+                    const Icon = pillar.icon;
+                    return (
+                      <div
+                        key={pillar.heading}
+                        className="bg-white border border-[#E5E9F2] rounded-xl p-6 flex flex-col gap-3"
+                        style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.02)" }}
                       >
-                        {pillar.heading}
-                      </h3>
-                      <p className="text-[15px] text-[#5A6478] leading-relaxed">
-                        {pillar.body}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
+                        <div className="w-8 h-8 rounded-lg bg-[#E8EDF7] flex items-center justify-center">
+                          <Icon size={16} className="text-[#1E2761]" />
+                        </div>
+                        <div>
+                          <h3
+                            className="text-base font-bold text-[#1E2761] mb-1"
+                            style={{ fontFamily: "Georgia, serif" }}
+                          >
+                            {pillar.heading}
+                          </h3>
+                          <p className="text-[13px] text-[#5A6478] leading-relaxed">
+                            {pillar.body}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -618,35 +629,42 @@ export default function HomePage() {
           aria-labelledby="for-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-14">
-              <SectionLabel>Built For</SectionLabel>
-              <h2
-                id="for-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                For the teams that need answers now.
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-2 max-[640px]:grid-cols-1 gap-6">
-              {roles.map((role) => (
-                <div
-                  key={role.title}
-                  className="bg-white border border-[#E5E9F2] rounded-xl p-8 max-[640px]:p-6"
-                  style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}
+            <div className="grid grid-cols-12 gap-12 max-[1024px]:gap-8 items-center">
+              {/* Left Column: Heading and Roles Cards */}
+              <div className="col-span-7 max-[1024px]:col-span-12">
+                <SectionLabel>Built For</SectionLabel>
+                <h2
+                  id="for-heading"
+                  className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-10"
+                  style={{ fontFamily: "Georgia, serif" }}
                 >
-                  <h3
-                    className="text-xl font-bold text-[#1E2761] mb-3"
-                    style={{ fontFamily: "Georgia, serif" }}
-                  >
-                    {role.title}
-                  </h3>
-                  <p className="text-[16px] text-[#5A6478] leading-relaxed">
-                    {role.body}
-                  </p>
+                  For the teams that need answers now.
+                </h2>
+
+                <div className="grid grid-cols-2 max-[640px]:grid-cols-1 gap-5">
+                  {roles.map((role) => (
+                    <div
+                      key={role.title}
+                      className="bg-white border border-[#E5E9F2] rounded-xl p-6 hover:border-[#1E2761]/30 hover:shadow-[0_8px_24px_rgba(30,39,97,0.04)] transition-all duration-300"
+                    >
+                      <h3
+                        className="text-lg font-bold text-[#1E2761] mb-2"
+                        style={{ fontFamily: "Georgia, serif" }}
+                      >
+                        {role.title}
+                      </h3>
+                      <p className="text-[14px] text-[#5A6478] leading-relaxed">
+                        {role.body}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {/* Right Column: Graphic */}
+              <div className="col-span-5 max-[1024px]:col-span-12">
+                <BuiltForGraphic />
+              </div>
             </div>
           </div>
         </section>
@@ -658,18 +676,25 @@ export default function HomePage() {
           aria-labelledby="faq-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-14">
-              <SectionLabel>FAQ</SectionLabel>
-              <h2
-                id="faq-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                Common questions
-              </h2>
+            <div className="grid grid-cols-12 gap-12 max-[1024px]:gap-8 items-center">
+              {/* Left Column: Graphic */}
+              <div className="col-span-5 max-[1024px]:col-span-12 max-[1024px]:order-2">
+                <FaqGraphic />
+              </div>
+
+              {/* Right Column: Title and Accordion */}
+              <div className="col-span-7 max-[1024px]:col-span-12 max-[1024px]:order-1">
+                <SectionLabel>FAQ</SectionLabel>
+                <h2
+                  id="faq-heading"
+                  className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-8"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  Common questions
+                </h2>
+                <FaqAccordion items={faqItems} />
+              </div>
             </div>
-            
-            <FaqAccordion items={faqItems} />
           </div>
         </section>
 
@@ -680,7 +705,7 @@ export default function HomePage() {
           aria-labelledby="pricing-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-5">
+            <div className="text-center mb-12">
               <SectionLabel>Pricing</SectionLabel>
               <h2
                 id="pricing-heading"
@@ -694,14 +719,22 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="mt-12 grid grid-cols-3 max-[1024px]:grid-cols-1 gap-6 max-w-[960px] mx-auto">
-              {pricingTiers.map((tier) => (
-                <PricingCard
-                  key={tier.tier}
-                  {...tier}
-                  external={tier.external ?? false}
-                />
-              ))}
+            <div className="grid grid-cols-12 gap-8 items-start">
+              {/* Left Column: Pricing Cards */}
+              <div className="col-span-8 max-[1200px]:col-span-12 grid grid-cols-3 max-[768px]:grid-cols-1 gap-5">
+                {pricingTiers.map((tier) => (
+                  <PricingCard
+                    key={tier.tier}
+                    {...tier}
+                    external={tier.external ?? false}
+                  />
+                ))}
+              </div>
+
+              {/* Right Column: Pricing Comparison Calculator */}
+              <div className="col-span-4 max-[1200px]:col-span-12">
+                <PricingGraphic />
+              </div>
             </div>
           </div>
         </section>

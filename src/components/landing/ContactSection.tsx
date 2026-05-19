@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { CheckCircle, ArrowRight, ShieldCheck, Database, Code2 } from "lucide-react";
+import { ContactGraphic } from "@/components/landing/SectionGraphics";
 
 export default function ContactSection() {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -88,9 +89,13 @@ export default function ContactSection() {
             <h3 className="text-[40px] max-[640px]:text-[32px] font-bold leading-tight mb-6 text-white" style={{ fontFamily: "Georgia, serif" }}>
               Enterprise-grade AI, <br />ready for your data.
             </h3>
-            <p className="text-[#A6B0C3] text-lg leading-relaxed mb-10 max-w-[500px]">
+            <p className="text-[#A6B0C3] text-lg leading-relaxed mb-8 max-w-[500px]">
               Deploy Decyra securely in your environment. Our team will help you map your schema and configure your first operational workflows.
             </p>
+
+            <div className="mb-8">
+              <ContactGraphic />
+            </div>
 
             <ul className="space-y-6">
               <li className="flex gap-4">
