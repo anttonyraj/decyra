@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Database, Code2, Users, Zap, CheckCircle, XCircle, ShieldCheck, Lock, Eye, ServerOff } from "lucide-react";
+import { Database, Code2, Users, Zap, CheckCircle, XCircle, ShieldCheck, Lock, Eye, ServerOff, Hourglass, Sparkles, GitCompare, HelpCircle, Tag, MessageSquare } from "lucide-react";
 import NavBar from "@/components/landing/NavBar";
 import FaqAccordion from "@/components/landing/FaqAccordion";
 import HeroDiagram from "@/components/landing/HeroDiagram";
@@ -319,39 +319,56 @@ export default function HomePage() {
 
         {/* ── PROBLEM ── */}
         <section
-          className="bg-[#FAFBFC] py-24 max-[640px]:py-16"
+          className="bg-[#FAFBFC] py-24 max-[640px]:py-16 border-t border-[#E5E9F2]"
           aria-labelledby="problem-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-14">
-              <SectionLabel>The Problem</SectionLabel>
-              <h2
-                id="problem-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight max-w-[640px] mx-auto"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                Operational teams are still waiting days for answers.
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-3 max-[768px]:grid-cols-1 gap-8 max-[768px]:gap-6">
-              {problemColumns.map((col) => (
-                <div
-                  key={col.heading}
-                  className="bg-white border border-[#E5E9F2] rounded-xl p-8 max-[640px]:p-6"
-                  style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}
+            <div className="grid grid-cols-12 gap-12 max-[1024px]:gap-8 items-center">
+              {/* Left: Text & stacked cards */}
+              <div className="col-span-7 max-[1024px]:col-span-12">
+                <SectionLabel>The Problem</SectionLabel>
+                <h2
+                  id="problem-heading"
+                  className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-10 flex flex-wrap items-center gap-3.5"
+                  style={{ fontFamily: "Georgia, serif" }}
                 >
-                  <h3
-                    className="text-xl font-bold text-[#1E2761] mb-3 leading-snug"
-                    style={{ fontFamily: "Georgia, serif" }}
-                  >
-                    {col.heading}
-                  </h3>
-                  <p className="text-[16px] text-[#5A6478] leading-relaxed">
-                    {col.body}
-                  </p>
+                  <span className="p-2 bg-[#E8EDF7] rounded-lg inline-flex text-[#F96167] shadow-sm">
+                    <Hourglass size={26} className="animate-spin-slow" />
+                  </span>
+                  <span>Operational teams are still waiting days for answers.</span>
+                </h2>
+
+                <div className="space-y-5">
+                  {problemColumns.map((col) => (
+                    <div
+                      key={col.heading}
+                      className="bg-white border border-[#E5E9F2] rounded-xl p-6 hover:border-[#F96167]/30 hover:shadow-[0_8px_24px_rgba(0,0,0,0.02)] transition-all duration-300 group"
+                    >
+                      <h3
+                        className="text-lg font-bold text-[#1E2761] mb-2 leading-snug group-hover:text-[#F96167] transition-colors duration-200"
+                        style={{ fontFamily: "Georgia, serif" }}
+                      >
+                        {col.heading}
+                      </h3>
+                      <p className="text-[15px] text-[#5A6478] leading-relaxed">
+                        {col.body}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {/* Right: Graphic */}
+              <div className="col-span-5 max-[1024px]:col-span-12 flex justify-center">
+                <div className="relative w-full max-w-[420px] aspect-square rounded-2xl overflow-hidden border border-[#E5E9F2] bg-white p-3 shadow-[0_16px_48px_-16px_rgba(30,39,97,0.15)] group hover:scale-[1.02] transition-transform duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[#E8EDF7]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <img
+                    src="/images/data_bottleneck.png"
+                    alt="Illustration showing slow data reporting bottleneck with clocks and locked pipelines"
+                    className="w-full h-full object-cover rounded-xl"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -367,10 +384,13 @@ export default function HomePage() {
               <SectionLabel>How It Works</SectionLabel>
               <h2
                 id="how-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight"
+                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight flex items-center justify-center gap-3.5"
                 style={{ fontFamily: "Georgia, serif" }}
               >
-                Three steps. Zero SQL.
+                <span className="p-2 bg-[#E8EDF7] rounded-lg inline-flex text-[#1E2761] shadow-sm">
+                  <Zap size={26} />
+                </span>
+                <span>Three steps. Zero SQL.</span>
               </h2>
             </div>
 
@@ -413,10 +433,13 @@ export default function HomePage() {
               <SectionLabel>Real questions Decyra answers</SectionLabel>
               <h2
                 id="questions-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-4"
+                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-4 flex items-center justify-center gap-3.5"
                 style={{ fontFamily: "Georgia, serif" }}
               >
-                The questions your team asks every week.
+                <span className="p-2 bg-[#E8EDF7] rounded-lg inline-flex text-[#1E2761] shadow-sm">
+                  <MessageSquare size={26} />
+                </span>
+                <span>The questions your team asks every week.</span>
               </h2>
               <p className="text-[18px] text-[#5A6478] leading-relaxed max-w-[600px] mx-auto">
                 These take seconds with Decyra. Without it, they're a three-day reporting cycle. If they happen at all.
@@ -437,42 +460,64 @@ export default function HomePage() {
           aria-labelledby="security-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#2A314D] mb-6">
-                <ShieldCheck size={24} className="text-[#F96167]" />
+            <div className="grid grid-cols-12 gap-12 max-[1024px]:gap-8 items-center">
+              {/* Left: Graphic */}
+              <div className="col-span-5 max-[1024px]:col-span-12 flex justify-center max-[1024px]:order-2">
+                <div className="relative w-full max-w-[380px] aspect-square rounded-2xl overflow-hidden border border-[#2A314D] bg-[#1E2540] p-3 shadow-[0_16px_48px_rgba(0,0,0,0.3)] group hover:scale-[1.02] transition-transform duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[#2A314D]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <img
+                    src="/images/secure_data.png"
+                    alt="Illustration of a secure database lock and data shield"
+                    className="w-full h-full object-cover rounded-xl"
+                  />
+                </div>
               </div>
-              <h2
-                id="security-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold leading-tight mb-4"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                How Decyra protects your data.
-              </h2>
-              <p className="text-[18px] text-[#A6B0C3] leading-relaxed max-w-[600px] mx-auto">
-                Built for the enterprise. We designed Decyra so your security and compliance teams can say yes without hesitation.
-              </p>
-            </div>
 
-            <div className="grid grid-cols-3 max-[768px]:grid-cols-1 gap-8 max-[768px]:gap-6 max-w-[1000px] mx-auto">
-              {securityPillars.map((pillar) => {
-                const Icon = pillar.icon;
-                return (
-                  <div key={pillar.heading} className="flex flex-col items-center text-center">
-                    <div className="w-12 h-12 rounded-full bg-[#2A314D] flex items-center justify-center mb-5">
-                      <Icon size={20} className="text-white" />
-                    </div>
-                    <h3
-                      className="text-lg font-bold mb-3"
-                      style={{ fontFamily: "Georgia, serif" }}
-                    >
-                      {pillar.heading}
-                    </h3>
-                    <p className="text-[15px] text-[#A6B0C3] leading-relaxed">
-                      {pillar.body}
-                    </p>
-                  </div>
-                );
-              })}
+              {/* Right: Security text and pillars */}
+              <div className="col-span-7 max-[1024px]:col-span-12 max-[1024px]:order-1">
+                <div className="flex items-center gap-3.5 mb-4">
+                  <span className="p-2 bg-[#2A314D] rounded-lg inline-flex text-[#F96167] shadow-sm">
+                    <ShieldCheck size={26} />
+                  </span>
+                  <span className="text-[12px] font-semibold uppercase tracking-[0.15em] text-[#A6B0C3]">
+                    Enterprise Security
+                  </span>
+                </div>
+                <h2
+                  id="security-heading"
+                  className="text-[40px] max-[640px]:text-[32px] font-bold leading-tight mb-6"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  How Decyra protects your data.
+                </h2>
+                <p className="text-[18px] text-[#A6B0C3] leading-relaxed mb-10">
+                  Built for the enterprise. We designed Decyra so your security and compliance teams can say yes without hesitation.
+                </p>
+
+                <div className="space-y-6">
+                  {securityPillars.map((pillar) => {
+                    const Icon = pillar.icon;
+                    return (
+                      <div key={pillar.heading} className="flex gap-5 items-start">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#2A314D] flex items-center justify-center">
+                          <Icon size={18} className="text-[#F96167]" />
+                        </div>
+                        <div>
+                          <h3
+                            className="text-lg font-bold mb-1 text-white"
+                            style={{ fontFamily: "Georgia, serif" }}
+                          >
+                            {pillar.heading}
+                          </h3>
+                          <p className="text-[15px] text-[#A6B0C3] leading-relaxed">
+                            {pillar.body}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -488,10 +533,13 @@ export default function HomePage() {
               <SectionLabel>Why Decyra</SectionLabel>
               <h2
                 id="why-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight max-w-[640px] mx-auto"
+                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight max-w-[700px] mx-auto flex items-center justify-center gap-3.5"
                 style={{ fontFamily: "Georgia, serif" }}
               >
-                Practical. Transparent. Built for operators.
+                <span className="p-2 bg-[#E8EDF7] rounded-lg inline-flex text-[#1E2761] shadow-sm">
+                  <Sparkles size={26} />
+                </span>
+                <span>Practical. Transparent. Built for operators.</span>
               </h2>
             </div>
 
@@ -537,10 +585,13 @@ export default function HomePage() {
               <SectionLabel>Why teams choose Decyra</SectionLabel>
               <h2
                 id="comparison-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight"
+                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight flex items-center justify-center gap-3.5"
                 style={{ fontFamily: "Georgia, serif" }}
               >
-                A different category entirely.
+                <span className="p-2 bg-[#E8EDF7] rounded-lg inline-flex text-[#1E2761] shadow-sm">
+                  <GitCompare size={26} />
+                </span>
+                <span>A different category entirely.</span>
               </h2>
               <p className="text-[18px] text-[#5A6478] mt-4 max-w-[560px] mx-auto leading-relaxed">
                 Decyra isn't a better dashboard or a smarter chatbot. It's a new layer between your data and your decisions.
@@ -614,35 +665,52 @@ export default function HomePage() {
           aria-labelledby="for-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-14">
-              <SectionLabel>Built For</SectionLabel>
-              <h2
-                id="for-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                For the teams that need answers now.
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-2 max-[640px]:grid-cols-1 gap-6">
-              {roles.map((role) => (
-                <div
-                  key={role.title}
-                  className="bg-white border border-[#E5E9F2] rounded-xl p-8 max-[640px]:p-6"
-                  style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}
+            <div className="grid grid-cols-12 gap-12 max-[1024px]:gap-8 items-center">
+              {/* Left Column: Heading and Roles Cards */}
+              <div className="col-span-7 max-[1024px]:col-span-12">
+                <SectionLabel>Built For</SectionLabel>
+                <h2
+                  id="for-heading"
+                  className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-10 flex flex-wrap items-center gap-3.5"
+                  style={{ fontFamily: "Georgia, serif" }}
                 >
-                  <h3
-                    className="text-xl font-bold text-[#1E2761] mb-3"
-                    style={{ fontFamily: "Georgia, serif" }}
-                  >
-                    {role.title}
-                  </h3>
-                  <p className="text-[16px] text-[#5A6478] leading-relaxed">
-                    {role.body}
-                  </p>
+                  <span className="p-2 bg-white rounded-lg inline-flex text-[#1E2761] shadow-sm">
+                    <Users size={26} />
+                  </span>
+                  <span>For the teams that need answers now.</span>
+                </h2>
+
+                <div className="grid grid-cols-2 max-[640px]:grid-cols-1 gap-5">
+                  {roles.map((role) => (
+                    <div
+                      key={role.title}
+                      className="bg-white border border-[#E5E9F2] rounded-xl p-6 hover:border-[#1E2761]/30 hover:shadow-[0_8px_24px_rgba(30,39,97,0.04)] transition-all duration-300"
+                    >
+                      <h3
+                        className="text-lg font-bold text-[#1E2761] mb-2"
+                        style={{ fontFamily: "Georgia, serif" }}
+                      >
+                        {role.title}
+                      </h3>
+                      <p className="text-[14px] text-[#5A6478] leading-relaxed">
+                        {role.body}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {/* Right Column: Graphic */}
+              <div className="col-span-5 max-[1024px]:col-span-12 flex justify-center">
+                <div className="relative w-full max-w-[420px] aspect-square rounded-2xl overflow-hidden border border-[#E5E9F2] bg-white p-3 shadow-[0_16px_48px_-16px_rgba(30,39,97,0.15)] group hover:scale-[1.02] transition-transform duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[#E8EDF7]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <img
+                    src="/images/team_collaboration.png"
+                    alt="Illustration of operations teams collaborating with unified metrics"
+                    className="w-full h-full object-cover rounded-xl"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -654,18 +722,38 @@ export default function HomePage() {
           aria-labelledby="faq-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-14">
-              <SectionLabel>FAQ</SectionLabel>
-              <h2
-                id="faq-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                Common questions
-              </h2>
+            <div className="grid grid-cols-12 gap-12 max-[1024px]:gap-8">
+              {/* Left Column: Heading and Graphic */}
+              <div className="col-span-5 max-[1024px]:col-span-12">
+                <SectionLabel>FAQ</SectionLabel>
+                <h2
+                  id="faq-heading"
+                  className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-4 flex flex-wrap items-center gap-3.5"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  <span className="p-2 bg-[#E8EDF7] rounded-lg inline-flex text-[#1E2761] shadow-sm">
+                    <HelpCircle size={26} />
+                  </span>
+                  <span>Common questions</span>
+                </h2>
+                <p className="text-[16px] text-[#5A6478] leading-relaxed mb-8">
+                  Have questions about connecting your database, security policies, or billing? Find answers here, or reach out to our team at any time.
+                </p>
+
+                <div className="relative w-full max-w-[280px] aspect-square rounded-2xl overflow-hidden border border-[#E5E9F2] bg-white p-3 shadow-[0_12px_36px_rgba(0,0,0,0.03)] group hover:scale-[1.02] transition-transform duration-300 max-[1024px]:hidden">
+                  <img
+                    src="/images/faq_illustration.png"
+                    alt="Illustration of search query chat bubble for FAQ"
+                    className="w-full h-full object-cover rounded-xl"
+                  />
+                </div>
+              </div>
+
+              {/* Right Column: FAQ Accordion */}
+              <div className="col-span-7 max-[1024px]:col-span-12">
+                <FaqAccordion items={faqItems} />
+              </div>
             </div>
-            
-            <FaqAccordion items={faqItems} />
           </div>
         </section>
 
@@ -680,10 +768,13 @@ export default function HomePage() {
               <SectionLabel>Pricing</SectionLabel>
               <h2
                 id="pricing-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-4"
+                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-4 flex items-center justify-center gap-3.5"
                 style={{ fontFamily: "Georgia, serif" }}
               >
-                Flat company pricing. No per-seat tax.
+                <span className="p-2 bg-[#E8EDF7] rounded-lg inline-flex text-[#1E2761] shadow-sm">
+                  <Tag size={26} />
+                </span>
+                <span>Flat company pricing. No per-seat tax.</span>
               </h2>
               <p className="text-[18px] text-[#5A6478] leading-relaxed">
                 Unlimited team members on every plan. Pay for the company, not the headcount.
