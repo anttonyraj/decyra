@@ -10,6 +10,7 @@ import PricingCard from "@/components/landing/PricingCard";
 import ContactSection from "@/components/landing/ContactSection";
 import Footer from "@/components/landing/Footer";
 import { HowItWorksGraphic, WhyDecyraGraphic, BuiltForGraphic, PricingGraphic, FaqGraphic, SecurityGraphic, HeroBackgroundGraphic } from "@/components/landing/SectionGraphics";
+import VisitorTracker from "@/components/landing/VisitorTracker";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -240,6 +241,7 @@ export default function HomePage() {
   return (
     <>
       <NavBar />
+      <VisitorTracker />
 
       <main>
         {/* ── HERO ── */}

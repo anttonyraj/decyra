@@ -8,14 +8,48 @@ export default function ContactSection() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Dummy submit delay
-    setTimeout(() => {
+
+    const formEl = e.currentTarget as HTMLFormElement;
+    const name = (formEl.querySelector("#name") as HTMLInputElement).value;
+    const email = (formEl.querySelector("#email") as HTMLInputElement).value;
+    const company = (formEl.querySelector("#company") as HTMLInputElement).value;
+    const usecase = (formEl.querySelector("#usecase") as HTMLSelectElement).value;
+    const message = (formEl.querySelector("#message") as HTMLTextAreaElement).value;
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "contact",
+          name,
+          email,
+          company,
+          usecase,
+          message,
+          referrer: document.referrer || "Direct",
+          platform: navigator.userAgent,
+          screen: `${window.screen.width}x${window.screen.height}`,
+          language: navigator.language,
+        }),
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+      } else {
+        alert("Failed to submit. Please try again.");
+      }
+    } catch (err) {
+      console.error("Submission error:", err);
+      alert("An error occurred. Please try again.");
+    } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 1000);
+    }
   };
 
   return (
