@@ -25,11 +25,11 @@ export default function ContactSection() {
           
           {/* Left: Form */}
           <div className="bg-white rounded-2xl p-8 max-[640px]:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-            <h2 className="text-[32px] font-bold text-[#1E2761] leading-tight mb-2" style={{ fontFamily: "Georgia, serif" }}>
-              Book a Strategy Call
+            <h2 className="text-[28px] font-bold text-[#1E2761] leading-tight mb-2" style={{ fontFamily: "Georgia, serif" }}>
+              Connect Your Database Securely
             </h2>
             <p className="text-[#5A6478] mb-8">
-              See how Decyra can give your team operational visibility in seconds.
+              Establish a secure connection and start getting operational insights in minutes.
             </p>
 
             {isSubmitted ? (
@@ -86,11 +86,11 @@ export default function ContactSection() {
 
           {/* Right: Trust / Visual */}
           <div className="flex flex-col justify-center">
-            <h3 className="text-[40px] max-[640px]:text-[32px] font-bold leading-tight mb-6 text-white" style={{ fontFamily: "Georgia, serif" }}>
-              Enterprise-grade AI, <br />ready for your data.
+            <h3 className="text-[40px] max-[640px]:text-[32px] font-bold leading-tight mb-4 text-white" style={{ fontFamily: "Georgia, serif" }}>
+              Secure Integration Flow
             </h3>
             <p className="text-[#A6B0C3] text-lg leading-relaxed mb-8 max-w-[500px]">
-              Deploy Decyra securely in your environment. Our team will help you map your schema and configure your first operational workflows.
+              SSL Encrypted, Read-Only database pipeline
             </p>
 
             <div className="mb-8">

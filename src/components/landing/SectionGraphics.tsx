@@ -433,17 +433,8 @@ export function FaqGraphic() {
 
 export function ContactGraphic() {
   return (
-    <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl min-h-[300px] flex flex-col justify-between overflow-hidden relative">
+    <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl min-h-[220px] flex flex-col justify-center overflow-hidden relative">
       <style>{animationStyles}</style>
-
-      <div>
-        <div className="text-xs font-bold text-white uppercase tracking-wider mb-1">
-          Secure Integration Flow
-        </div>
-        <div className="text-[10px] text-[#A6B0C3]">
-          SSL Encrypted, Read-Only database pipeline
-        </div>
-      </div>
 
       {/* Animated Connector tunnel */}
       <div className="flex justify-between items-center my-8 relative">
