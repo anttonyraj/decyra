@@ -251,79 +251,135 @@ export function BuiltForGraphic() {
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveNode((prev) => (prev + 1) % 4);
-    }, 2000);
+    }, 2500);
     return () => clearInterval(timer);
   }, []);
 
   const roles = [
-    { label: "RevOps", alert: "Pipe Gap: $120K resolved", color: "#3B82F6" },
-    { label: "Sales VP", alert: "Win Rate: +4.2% change", color: "#10B981" },
-    { label: "Data Team", alert: "Ad-hoc SQL Load: -85%", color: "#EC4899" },
-    { label: "CEO / Founder", alert: "ARR: $2.4M live target", color: "#8B5CF6" },
+    { label: "RevOps", alert: "Pipe Gap: $120K resolved", x: 60, y: 70, side: "left" },
+    { label: "Sales VP", alert: "Win Rate: +4.2% change", x: 60, y: 310, side: "left" },
+    { label: "Data Team", alert: "Ad-hoc SQL Load: -85%", x: 260, y: 70, side: "right" },
+    { label: "CEO / Founder", alert: "ARR: $2.4M target", x: 260, y: 310, side: "right" },
   ];
 
   return (
-    <div className="w-full min-h-[220px] flex flex-col justify-between overflow-hidden relative">
+    <div className="w-full h-full flex flex-col justify-between py-4 relative min-h-[440px]">
       <style>{animationStyles}</style>
 
-      {/* Central Flow Node Graphic */}
-      <div className="flex-1 flex flex-col justify-center items-center relative py-4">
-        {/* Central Hub */}
-        <div className="w-16 h-16 rounded-full bg-[#1E2761] text-white flex items-center justify-center shadow-lg relative z-10">
-          <Database size={24} className="animate-pulse" />
-          {/* Animated pulsing outer rings */}
-          <div className="absolute inset-0 rounded-full border-2 border-[#1E2761] scale-125 animate-ping opacity-25" />
+      {/* Header Info */}
+      <div className="text-center">
+        <div className="text-xs font-bold text-[#1E2761] uppercase tracking-wide mb-1">
+          Operational Data Hub
         </div>
-
-        {/* Surrounding Nodes */}
-        <div className="absolute inset-0 flex justify-between items-center px-4">
-          {/* Left Side Roles */}
-          <div className="flex flex-col gap-12 w-[35%]">
-            {roles.slice(0, 2).map((role, idx) => {
-              const active = activeNode === idx;
-              return (
-                <div
-                  key={role.label}
-                  className={`bg-white border rounded-xl p-2.5 shadow-sm transition-all duration-300 ${
-                    active ? "border-[#F96167] scale-105" : "border-[#E5E9F2]"
-                  }`}
-                >
-                  <div className="text-[10px] font-bold text-[#1E2761]">{role.label}</div>
-                  <div className="text-[9px] text-[#5A6478] truncate mt-0.5">{role.alert}</div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Right Side Roles */}
-          <div className="flex flex-col gap-12 w-[35%]">
-            {roles.slice(2, 4).map((role, idx) => {
-              const active = activeNode === idx + 2;
-              return (
-                <div
-                  key={role.label}
-                  className={`bg-white border rounded-xl p-2.5 shadow-sm transition-all duration-300 ${
-                    active ? "border-[#F96167] scale-105" : "border-[#E5E9F2]"
-                  }`}
-                >
-                  <div className="text-[10px] font-bold text-[#1E2761]">{role.label}</div>
-                  <div className="text-[9px] text-[#5A6478] truncate mt-0.5">{role.alert}</div>
-                </div>
-              );
-            })}
-          </div>
+        <div className="text-[10px] text-[#5A6478]">
+          Real-time schema mapping and query distribution
         </div>
+      </div>
 
-        {/* Connective background SVG lines */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 200 200">
-          {/* Top Left */}
-          <path d="M40,50 L100,100" stroke="#1E2761" strokeWidth="1.5" strokeDasharray="3,3" opacity="0.3" />
-          {/* Bottom Left */}
-          <path d="M40,150 L100,100" stroke="#1E2761" strokeWidth="1.5" strokeDasharray="3,3" opacity="0.3" />
-          {/* Top Right */}
-          <path d="M160,50 L100,100" stroke="#1E2761" strokeWidth="1.5" strokeDasharray="3,3" opacity="0.3" />
-          {/* Bottom Right */}
-          <path d="M160,150 L100,100" stroke="#1E2761" strokeWidth="1.5" strokeDasharray="3,3" opacity="0.3" />
+      <div className="flex-grow w-full relative flex items-center justify-center my-6">
+        <svg className="w-full h-full max-h-[360px]" viewBox="0 0 320 380" xmlns="http://www.w3.org/2000/svg">
+          {/* Central Hub at (160, 190) */}
+          {/* Connection Lines with glowing dash effects */}
+          {roles.map((role, idx) => {
+            const active = activeNode === idx;
+            const isLeft = role.side === "left";
+            
+            // Connect coordinates
+            const connX = isLeft ? role.x + 50 : role.x - 50;
+            const connY = role.y;
+            
+            return (
+              <path
+                key={`line-${role.label}`}
+                d={`M ${connX} ${connY} L 160 190`}
+                stroke={active ? "#F96167" : "#E5E9F2"}
+                strokeWidth={active ? 2.5 : 1.5}
+                strokeDasharray={active ? "5, 5" : "none"}
+                className={active ? "flow-line" : ""}
+                opacity={active ? 1 : 0.4}
+                style={{ transition: "stroke 0.3s, stroke-width 0.3s" }}
+              />
+            );
+          })}
+
+          {/* Central Hub Circle & Icon */}
+          <g>
+            <circle cx="160" cy="190" r="28" fill="#1E2761" className="shadow-lg" />
+            <circle cx="160" cy="190" r="36" fill="none" stroke="#1E2761" strokeWidth="1.5" opacity="0.25" className="animate-ping" style={{ animationDuration: "3s" }} />
+            <circle cx="160" cy="190" r="44" fill="none" stroke="#1E2761" strokeWidth="1" opacity="0.15" className="animate-ping" style={{ animationDuration: "4s" }} />
+            
+            {/* Database Icon inside Central Hub */}
+            <foreignObject x="144" y="174" width="32" height="32">
+              <div className="text-white flex items-center justify-center w-full h-full">
+                <Database size={20} className="animate-pulse" />
+              </div>
+            </foreignObject>
+          </g>
+
+          {/* Role Node Cards */}
+          {roles.map((role, idx) => {
+            const active = activeNode === idx;
+            const isLeft = role.side === "left";
+            const cardWidth = 100;
+            const cardHeight = 52;
+            const cardX = isLeft ? role.x - 50 : role.x - 50;
+            const cardY = role.y - 26;
+
+            return (
+              <g key={`card-${role.label}`} className="transition-all duration-300">
+                {/* Glow filter backdrop */}
+                {active && (
+                  <rect
+                    x={cardX - 4}
+                    y={cardY - 4}
+                    width={cardWidth + 8}
+                    height={cardHeight + 8}
+                    rx={10}
+                    ry={10}
+                    fill="#F96167"
+                    opacity="0.1"
+                  />
+                )}
+                
+                {/* Card Container */}
+                <rect
+                  x={cardX}
+                  y={cardY}
+                  width={cardWidth}
+                  height={cardHeight}
+                  rx={8}
+                  ry={8}
+                  fill="white"
+                  stroke={active ? "#F96167" : "#E5E9F2"}
+                  strokeWidth={active ? 2 : 1}
+                  style={{ transition: "stroke 0.3s, stroke-width 0.3s" }}
+                />
+
+                {/* Role Title */}
+                <text
+                  x={cardX + 10}
+                  y={cardY + 20}
+                  fill="#1E2761"
+                  fontSize="10"
+                  fontWeight="bold"
+                  fontFamily="Inter, sans-serif"
+                >
+                  {role.label}
+                </text>
+
+                {/* Role Status/Alert */}
+                <text
+                  x={cardX + 10}
+                  y={cardY + 36}
+                  fill="#5A6478"
+                  fontSize="8"
+                  fontFamily="Inter, sans-serif"
+                >
+                  {role.alert}
+                </text>
+              </g>
+            );
+          })}
         </svg>
       </div>
     </div>
@@ -484,16 +540,17 @@ export function SecurityGraphic() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveQuery((prev) => (prev + 1) % 2);
+      setActiveQuery((prev) => (prev === 0 ? 1 : 0));
     }, 3000);
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <div className="w-full min-h-[340px] flex flex-col justify-between overflow-hidden relative">
+    <div className="w-full h-full flex flex-col justify-between py-4 relative min-h-[440px]">
       <style>{animationStyles}</style>
 
-      <div>
+      {/* Header Info */}
+      <div className="text-center">
         <div className="text-xs font-bold text-[#1E2761] uppercase tracking-wide mb-1">
           Query Security Gateway
         </div>
@@ -502,39 +559,140 @@ export function SecurityGraphic() {
         </div>
       </div>
 
-      {/* Interactive Simulation */}
-      <div className="flex-1 flex flex-col justify-center items-center relative my-4">
-        {/* Shield Gateway */}
-        <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg relative z-10 transition-all duration-300 ${
-          activeQuery === 0 ? "bg-green-500 text-white" : "bg-red-500 text-white"
-        }`}>
-          <Shield size={24} className="animate-pulse" />
-          <div className={`absolute inset-0 rounded-full scale-125 animate-ping opacity-25 ${
-            activeQuery === 0 ? "border-2 border-green-500" : "border-2 border-red-500"
-          }`} />
-        </div>
+      <div className="flex-grow w-full relative flex items-center justify-center my-6">
+        <svg className="w-full h-full max-h-[360px]" viewBox="0 0 320 360" xmlns="http://www.w3.org/2000/svg">
+          {/* Upper Pipeline (From Query box to Shield) */}
+          <line
+            x1="160"
+            y1="86"
+            x2="160"
+            y2="131"
+            stroke={activeQuery === 0 ? "#10B981" : "#EF4444"}
+            strokeWidth="2"
+            strokeDasharray="4 4"
+            className="flow-line"
+            style={{ transition: "stroke 0.3s" }}
+          />
 
-        {/* Incoming query label */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white border border-[#E5E9F2] rounded-xl px-3 py-1.5 shadow-sm text-xs font-mono text-center transition-all duration-300">
-          {activeQuery === 0 ? (
-            <span className="text-green-600 font-semibold">SELECT * FROM revenue;</span>
-          ) : (
-            <span className="text-red-500 font-semibold">DELETE FROM users;</span>
-          )}
-        </div>
+          {/* Lower Pipeline (From Shield to Database) */}
+          <line
+            x1="160"
+            y1="191"
+            x2="160"
+            y2="250"
+            stroke={activeQuery === 0 ? "#10B981" : "#EF4444"}
+            strokeWidth={activeQuery === 0 ? "2" : "1.5"}
+            strokeDasharray={activeQuery === 0 ? "4 4" : "4, 4"}
+            className={activeQuery === 0 ? "flow-line" : ""}
+            opacity={activeQuery === 0 ? 1 : 0.35}
+            style={{ transition: "stroke 0.3s, opacity 0.3s" }}
+          />
 
-        {/* Status text */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center">
-          {activeQuery === 0 ? (
-            <span className="bg-green-50 text-green-700 border border-green-200 text-[10px] font-bold px-2 py-0.5 rounded-full">
-              READ ONLY - ALLOWED
-            </span>
-          ) : (
-            <span className="bg-red-50 text-red-700 border border-red-200 text-[10px] font-bold px-2 py-0.5 rounded-full">
-              WRITE BLOCKED - REJECTED
-            </span>
+          {/* Block Indicator Cross (Only on Blocked state) */}
+          {activeQuery === 1 && (
+            <g transform="translate(152, 212)" stroke="#EF4444" strokeWidth="2" strokeLinecap="round">
+              <line x1="0" y1="0" x2="16" y2="16" />
+              <line x1="16" y1="0" x2="0" y2="16" />
+            </g>
           )}
-        </div>
+
+          {/* Top: Incoming Query Card */}
+          <g>
+            <rect
+              x="60"
+              y="30"
+              width="200"
+              height="56"
+              rx="10"
+              ry="10"
+              fill="white"
+              stroke={activeQuery === 0 ? "#10B981" : "#EF4444"}
+              strokeWidth="1.5"
+              style={{ transition: "stroke 0.3s" }}
+            />
+            {/* Title */}
+            <text x="160" y="48" textAnchor="middle" fill="#5A6478" fontSize="8" fontWeight="bold" fontFamily="Inter, sans-serif" letterSpacing="0.05em">
+              INCOMING SQL
+            </text>
+            {/* SQL Content */}
+            <text x="160" y="68" textAnchor="middle" fill={activeQuery === 0 ? "#10B981" : "#EF4444"} fontSize="10" fontWeight="bold" fontFamily="monospace" style={{ transition: "fill 0.3s" }}>
+              {activeQuery === 0 ? "SELECT * FROM revenue;" : "DELETE FROM users;"}
+            </text>
+          </g>
+
+          {/* Center: Shield Gate */}
+          <g>
+            {/* Pulsing ring */}
+            <circle
+              cx="160"
+              cy="161"
+              r="34"
+              fill="none"
+              stroke={activeQuery === 0 ? "#10B981" : "#EF4444"}
+              strokeWidth="1.5"
+              opacity="0.2"
+              className="animate-ping"
+              style={{ animationDuration: "3s", transition: "stroke 0.3s" }}
+            />
+            <circle
+              cx="160"
+              cy="161"
+              r="26"
+              fill={activeQuery === 0 ? "#10B981" : "#EF4444"}
+              style={{ transition: "fill 0.3s" }}
+            />
+            {/* Shield Icon */}
+            <foreignObject x="146" y="147" width="28" height="28">
+              <div className="text-white flex items-center justify-center w-full h-full">
+                <Shield size={18} className="animate-pulse" />
+              </div>
+            </foreignObject>
+          </g>
+
+          {/* Bottom: Destination DB */}
+          <g opacity={activeQuery === 0 ? 1 : 0.6} style={{ transition: "opacity 0.3s" }}>
+            <rect
+              x="60"
+              y="250"
+              width="200"
+              height="56"
+              rx="10"
+              ry="10"
+              fill="white"
+              stroke={activeQuery === 0 ? "#E5E9F2" : "#EF4444"}
+              strokeWidth="1.5"
+              style={{ transition: "stroke 0.3s" }}
+            />
+            {/* Database Icon */}
+            <foreignObject x="74" y="262" width="32" height="32">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                activeQuery === 0 ? "bg-green-50 text-green-600" : "bg-red-50 text-red-500"
+              }`}>
+                <Database size={16} />
+              </div>
+            </foreignObject>
+            {/* Labels */}
+            <text x="116" y="274" fill="#1E2761" fontSize="10" fontWeight="bold" fontFamily="Inter, sans-serif">
+              PostgreSQL DB
+            </text>
+            <text x="116" y="290" fill="#5A6478" fontSize="8" fontFamily="Inter, sans-serif">
+              {activeQuery === 0 ? "Read-Only Connection" : "Transaction Blocked"}
+            </text>
+          </g>
+        </svg>
+      </div>
+
+      {/* Status banner */}
+      <div className="w-full text-center">
+        {activeQuery === 0 ? (
+          <span className="bg-green-50 text-green-700 border border-green-200 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider font-semibold">
+            READ ONLY - ALLOWED
+          </span>
+        ) : (
+          <span className="bg-red-50 text-red-700 border border-red-200 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider font-semibold">
+            WRITE BLOCKED - REJECTED
+          </span>
+        )}
       </div>
     </div>
   );
