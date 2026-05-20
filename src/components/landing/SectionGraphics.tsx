@@ -71,7 +71,7 @@ export function HowItWorksGraphic() {
   }, [step]);
 
   return (
-    <div className="w-full bg-[#1E2761]/5 border border-[#E5E9F2] rounded-2xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.03)] overflow-hidden relative min-h-[360px] flex flex-col justify-between">
+    <div className="w-full overflow-hidden relative min-h-[360px] flex flex-col justify-between">
       <style>{animationStyles}</style>
 
       {/* Top Banner: Status */}
@@ -499,7 +499,7 @@ export function SecurityGraphic() {
   }, []);
 
   return (
-    <div className="w-full bg-[#1E2761]/5 border border-[#E5E9F2] rounded-2xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.03)] min-h-[340px] flex flex-col justify-between overflow-hidden relative">
+    <div className="w-full min-h-[340px] flex flex-col justify-between overflow-hidden relative">
       <style>{animationStyles}</style>
 
       <div>

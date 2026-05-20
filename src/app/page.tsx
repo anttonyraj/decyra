@@ -368,17 +368,21 @@ export default function HomePage() {
           aria-labelledby="how-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="grid grid-cols-12 gap-12 max-[1024px]:gap-8 items-center">
-              {/* Left Column: Info & Steps */}
-              <div className="col-span-7 max-[1024px]:col-span-12">
-                <SectionLabel>How It Works</SectionLabel>
-                <h2
-                  id="how-heading"
-                  className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-10"
-                  style={{ fontFamily: "Georgia, serif" }}
-                >
-                  Three steps. Zero SQL.
-                </h2>
+            <div className="text-center mb-16">
+              <SectionLabel>How It Works</SectionLabel>
+              <h2
+                id="how-heading"
+                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-4"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                Three steps. Zero SQL.
+              </h2>
+            </div>
+
+            {/* Unified Box Container */}
+            <div className="bg-white border border-[#E5E9F2] rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.03)] overflow-hidden grid grid-cols-12 max-[1024px]:grid-cols-1">
+              {/* Left Side: Info & Steps */}
+              <div className="col-span-7 p-12 max-[640px]:p-6 flex flex-col justify-center">
                 <div className="space-y-8">
                   {howItWorksSteps.map((step) => (
                     <div key={step.num} className="flex gap-6 items-start">
@@ -405,8 +409,8 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Right Column: Graphic */}
-              <div className="col-span-5 max-[1024px]:col-span-12">
+              {/* Right Side: Graphic (Highlighted Differently) */}
+              <div className="col-span-5 bg-[#FAFBFC] border-l border-[#E5E9F2] max-[1024px]:border-l-0 max-[1024px]:border-t p-12 max-[640px]:p-6 flex flex-col justify-between">
                 <HowItWorksGraphic />
               </div>
             </div>
@@ -448,9 +452,10 @@ export default function HomePage() {
           aria-labelledby="security-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="grid grid-cols-12 gap-12 max-[1024px]:gap-8 items-center">
-              {/* Left Column: Content */}
-              <div className="col-span-7 max-[1024px]:col-span-12">
+            {/* Unified Box Container */}
+            <div className="bg-white border border-[#E5E9F2] rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.03)] overflow-hidden grid grid-cols-12 max-[1024px]:grid-cols-1">
+              {/* Left Side: Content */}
+              <div className="col-span-7 p-12 max-[640px]:p-6 flex flex-col justify-center">
                 <SectionLabel>Security</SectionLabel>
                 <h2
                   id="security-heading"
@@ -488,8 +493,8 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Right Column: Graphic */}
-              <div className="col-span-5 max-[1024px]:col-span-12">
+              {/* Right Side: Graphic (Highlighted Differently) */}
+              <div className="col-span-5 bg-[#FAFBFC] border-l border-[#E5E9F2] max-[1024px]:border-l-0 max-[1024px]:border-t p-12 max-[640px]:p-6 flex flex-col justify-between">
                 <SecurityGraphic />
               </div>
             </div>
