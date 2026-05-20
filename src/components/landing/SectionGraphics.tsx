@@ -182,7 +182,7 @@ export function WhyDecyraGraphic() {
   }, []);
 
   return (
-    <div className="w-full bg-[#1E2761]/5 border border-[#E5E9F2] rounded-2xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.03)] min-h-[350px] flex flex-col justify-between overflow-hidden relative">
+    <div className="w-full min-h-[280px] flex flex-col justify-between overflow-hidden relative">
       <style>{animationStyles}</style>
 
       {/* Visual Diagram */}
@@ -263,7 +263,7 @@ export function BuiltForGraphic() {
   ];
 
   return (
-    <div className="w-full bg-[#1E2761]/5 border border-[#E5E9F2] rounded-2xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.03)] min-h-[350px] flex flex-col justify-between overflow-hidden relative">
+    <div className="w-full min-h-[220px] flex flex-col justify-between overflow-hidden relative">
       <style>{animationStyles}</style>
 
       {/* Central Flow Node Graphic */}
@@ -408,7 +408,7 @@ export function PricingGraphic() {
 
 export function FaqGraphic() {
   return (
-    <div className="w-full bg-[#1E2761]/5 border border-[#E5E9F2] rounded-2xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.03)] min-h-[300px] flex flex-col justify-center items-center overflow-hidden relative">
+    <div className="w-full min-h-[160px] flex flex-col justify-center items-center overflow-hidden relative">
       <style>{animationStyles}</style>
       
       {/* Visual representation of Q&A resolving */}
