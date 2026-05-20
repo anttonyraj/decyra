@@ -32,6 +32,8 @@ export default function ContactSection() {
           company,
           usecase,
           message,
+          b_check: "", // Honeypot (must be empty)
+          submission_token: `valid-client-${Date.now()}`, // JS token check
           referrer: document.referrer || "Direct",
           platform: navigator.userAgent,
           screen: `${window.screen.width}x${window.screen.height}`,
