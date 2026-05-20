@@ -410,8 +410,14 @@ export default function HomePage() {
               </div>
 
               {/* Right Side: Graphic (Highlighted Differently) */}
-              <div className="col-span-5 bg-[#FAFBFC] border-l border-[#E5E9F2] max-[1024px]:border-l-0 max-[1024px]:border-t p-12 max-[640px]:p-6 flex flex-col justify-between">
-                <HowItWorksGraphic />
+              <div className="col-span-5 relative bg-gradient-to-br from-[#FAFBFC] via-[#F4F7FC] to-[#E8EDF7] p-12 max-[640px]:p-6 flex flex-col justify-between overflow-hidden">
+                {/* Futuristic Glowing Orbs */}
+                <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-[#F96167]/10 blur-[50px] pointer-events-none" />
+                <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full bg-[#1E2761]/10 blur-[50px] pointer-events-none" />
+                
+                <div className="relative z-10 w-full flex flex-col justify-between flex-1">
+                  <HowItWorksGraphic />
+                </div>
               </div>
             </div>
           </div>
@@ -494,8 +500,14 @@ export default function HomePage() {
               </div>
 
               {/* Right Side: Graphic (Highlighted Differently) */}
-              <div className="col-span-5 bg-[#FAFBFC] border-l border-[#E5E9F2] max-[1024px]:border-l-0 max-[1024px]:border-t p-12 max-[640px]:p-6 flex flex-col justify-between">
-                <SecurityGraphic />
+              <div className="col-span-5 relative bg-gradient-to-br from-[#FAFBFC] via-[#F4F7FC] to-[#E8EDF7] p-12 max-[640px]:p-6 flex flex-col justify-between overflow-hidden">
+                {/* Futuristic Glowing Orbs */}
+                <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-[#F96167]/10 blur-[50px] pointer-events-none" />
+                <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full bg-[#1E2761]/10 blur-[50px] pointer-events-none" />
+                
+                <div className="relative z-10 w-full flex flex-col justify-between flex-1">
+                  <SecurityGraphic />
+                </div>
               </div>
             </div>
           </div>
