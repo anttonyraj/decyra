@@ -249,8 +249,8 @@ export default function HomePage() {
           aria-labelledby="hero-headline"
         >
           {/* Background Glows */}
-          <div className="absolute top-1/2 -translate-y-1/2 left-[-15%] w-[800px] h-[800px] rounded-full bg-[#F96167]/10 blur-[130px] pointer-events-none" />
-          <div className="absolute top-1/2 -translate-y-1/2 right-[-15%] w-[800px] h-[800px] rounded-full bg-[#1E2761]/10 blur-[130px] pointer-events-none" />
+          <div className="absolute top-1/2 -translate-y-1/2 left-[-10%] w-[800px] h-[800px] rounded-full bg-[#F96167]/18 blur-[120px] pointer-events-none" />
+          <div className="absolute top-1/2 -translate-y-1/2 right-[-10%] w-[800px] h-[800px] rounded-full bg-[#1E2761]/14 blur-[120px] pointer-events-none" />
 
           {/* Flowing Data Graphics Behind Hero Text */}
           <HeroBackgroundGraphic />

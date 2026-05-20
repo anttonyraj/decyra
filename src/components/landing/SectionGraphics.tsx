@@ -541,17 +541,65 @@ export function SecurityGraphic() {
 }
 
 export function HeroBackgroundGraphic() {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const hero = document.getElementById("product");
+      if (!hero) return;
+      const rect = hero.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      setMousePos({ x, y });
+    };
+
+    const handleMouseEnter = () => setIsHovered(true);
+    const handleMouseLeave = () => setIsHovered(false);
+
+    const hero = document.getElementById("product");
+    if (hero) {
+      hero.addEventListener("mousemove", handleMouseMove);
+      hero.addEventListener("mouseenter", handleMouseEnter);
+      hero.addEventListener("mouseleave", handleMouseLeave);
+      
+      // Initial position at center
+      const rect = hero.getBoundingClientRect();
+      setMousePos({ x: rect.width / 2, y: rect.height / 2 });
+    }
+
+    return () => {
+      if (hero) {
+        hero.removeEventListener("mousemove", handleMouseMove);
+        hero.removeEventListener("mouseenter", handleMouseEnter);
+        hero.removeEventListener("mouseleave", handleMouseLeave);
+      }
+    };
+  }, []);
+
   return (
     <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
       {/* Background radial gradient mask for grid/animations */}
       <div className="absolute inset-0 bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black_80%)] opacity-75 z-10" />
 
-      {/* Futuristic soft glowing orbs */}
-      <div className="absolute top-[10%] left-[20%] w-[350px] h-[350px] rounded-full bg-[#F96167]/8 blur-[90px] animate-pulse" style={{ animationDuration: "8s" }} />
-      <div className="absolute bottom-[20%] right-[25%] w-[400px] h-[400px] rounded-full bg-[#1E2761]/8 blur-[100px] animate-pulse" style={{ animationDuration: "10s" }} />
-      <div className="absolute top-[40%] right-[10%] w-[300px] h-[300px] rounded-full bg-[#E8EDF7]/40 blur-[85px]" />
+      {/* Interactive mouse-following spotlight glow */}
+      <div
+        className="absolute rounded-full pointer-events-none mix-blend-screen bg-gradient-to-r from-[#F96167]/15 to-[#1E2761]/15 blur-[80px] transition-opacity duration-500 z-10"
+        style={{
+          left: `${mousePos.x - 250}px`,
+          top: `${mousePos.y - 250}px`,
+          width: "500px",
+          height: "500px",
+          opacity: isHovered ? 1 : 0.4,
+          willChange: "left, top",
+        }}
+      />
 
-      <svg className="absolute inset-0 w-full h-full opacity-[0.22] z-0" xmlns="http://www.w3.org/2000/svg">
+      {/* Futuristic soft glowing orbs (Brighter static ones like the image) */}
+      <div className="absolute top-[10%] left-[10%] w-[450px] h-[450px] rounded-full bg-[#F96167]/15 blur-[100px] animate-pulse pointer-events-none" style={{ animationDuration: "8s" }} />
+      <div className="absolute bottom-[10%] right-[10%] w-[450px] h-[450px] rounded-full bg-[#1E2761]/12 blur-[100px] animate-pulse pointer-events-none" style={{ animationDuration: "10s" }} />
+
+      <svg className="absolute inset-0 w-full h-full opacity-[0.25] z-0" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="hero-flow-grad-coral" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#F96167" stopOpacity="0" />
