@@ -9,7 +9,7 @@ import QuestionCard from "@/components/landing/QuestionCard";
 import PricingCard from "@/components/landing/PricingCard";
 import ContactSection from "@/components/landing/ContactSection";
 import Footer from "@/components/landing/Footer";
-import { HowItWorksGraphic, WhyDecyraGraphic, BuiltForGraphic, PricingGraphic, FaqGraphic, SecurityGraphic } from "@/components/landing/SectionGraphics";
+import { HowItWorksGraphic, WhyDecyraGraphic, BuiltForGraphic, PricingGraphic, FaqGraphic, SecurityGraphic, HeroBackgroundGraphic } from "@/components/landing/SectionGraphics";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -252,7 +252,10 @@ export default function HomePage() {
           <div className="absolute top-1/2 -translate-y-1/2 left-[-15%] w-[800px] h-[800px] rounded-full bg-[#F96167]/10 blur-[130px] pointer-events-none" />
           <div className="absolute top-1/2 -translate-y-1/2 right-[-15%] w-[800px] h-[800px] rounded-full bg-[#1E2761]/10 blur-[130px] pointer-events-none" />
 
-          <div className="relative max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
+          {/* Flowing Data Graphics Behind Hero Text */}
+          <HeroBackgroundGraphic />
+
+          <div className="relative max-w-[1280px] mx-auto px-8 max-[640px]:px-4 z-10">
             <div className="text-center max-w-[900px] mx-auto">
               {/* Category label */}
               <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#1E2761] mb-6">

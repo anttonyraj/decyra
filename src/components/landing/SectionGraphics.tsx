@@ -539,3 +539,56 @@ export function SecurityGraphic() {
     </div>
   );
 }
+
+export function HeroBackgroundGraphic() {
+  return (
+    <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+      {/* Background radial gradient mask for grid/animations */}
+      <div className="absolute inset-0 bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black_80%)] opacity-75 z-10" />
+
+      {/* Futuristic soft glowing orbs */}
+      <div className="absolute top-[10%] left-[20%] w-[350px] h-[350px] rounded-full bg-[#F96167]/8 blur-[90px] animate-pulse" style={{ animationDuration: "8s" }} />
+      <div className="absolute bottom-[20%] right-[25%] w-[400px] h-[400px] rounded-full bg-[#1E2761]/8 blur-[100px] animate-pulse" style={{ animationDuration: "10s" }} />
+      <div className="absolute top-[40%] right-[10%] w-[300px] h-[300px] rounded-full bg-[#E8EDF7]/40 blur-[85px]" />
+
+      <svg className="absolute inset-0 w-full h-full opacity-[0.22] z-0" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="hero-flow-grad-coral" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#F96167" stopOpacity="0" />
+            <stop offset="40%" stopColor="#F96167" stopOpacity="0.8" />
+            <stop offset="60%" stopColor="#F96167" stopOpacity="0.8" />
+            <stop offset="100%" stopColor="#F96167" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="hero-flow-grad-navy" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#1E2761" stopOpacity="0" />
+            <stop offset="40%" stopColor="#1E2761" stopOpacity="0.6" />
+            <stop offset="60%" stopColor="#1E2761" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="#1E2761" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+
+        {/* Data highway lines */}
+        <path d="M-100,100 C300,50 600,250 1400,150" fill="none" stroke="url(#hero-flow-grad-coral)" strokeWidth="2" className="flow-line" />
+        <path d="M-100,250 C400,380 700,150 1400,320" fill="none" stroke="url(#hero-flow-grad-navy)" strokeWidth="1.5" className="flow-line" />
+        <path d="M-100,450 C200,300 700,480 1400,400" fill="none" stroke="url(#hero-flow-grad-coral)" strokeWidth="1.5" className="flow-line" />
+
+        {/* Streaming Data packet particles using animateMotion */}
+        <circle r="4.5" fill="#F96167" className="opacity-90">
+          <animateMotion dur="12s" repeatCount="indefinite" path="M-100,100 C300,50 600,250 1400,150" />
+        </circle>
+        <circle r="3.5" fill="#1E2761" className="opacity-80">
+          <animateMotion dur="16s" begin="3s" repeatCount="indefinite" path="M-100,250 C400,380 700,150 1400,320" />
+        </circle>
+        <circle r="5" fill="#F96167" className="opacity-90">
+          <animateMotion dur="10s" begin="1.5s" repeatCount="indefinite" path="M-100,450 C200,300 700,480 1400,400" />
+        </circle>
+        <circle r="4" fill="#1E2761" className="opacity-85">
+          <animateMotion dur="14s" begin="5s" repeatCount="indefinite" path="M-100,100 C300,50 600,250 1400,150" />
+        </circle>
+        <circle r="3" fill="#F96167" className="opacity-75">
+          <animateMotion dur="18s" begin="7s" repeatCount="indefinite" path="M-100,250 C400,380 700,150 1400,320" />
+        </circle>
+      </svg>
+    </div>
+  );
+}
