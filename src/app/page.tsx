@@ -9,7 +9,7 @@ import QuestionCard from "@/components/landing/QuestionCard";
 import PricingCard from "@/components/landing/PricingCard";
 import ContactSection from "@/components/landing/ContactSection";
 import Footer from "@/components/landing/Footer";
-import { HowItWorksGraphic, WhyDecyraGraphic, BuiltForGraphic, PricingGraphic, FaqGraphic } from "@/components/landing/SectionGraphics";
+import { HowItWorksGraphic, WhyDecyraGraphic, BuiltForGraphic, PricingGraphic, FaqGraphic, SecurityGraphic } from "@/components/landing/SectionGraphics";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -443,46 +443,55 @@ export default function HomePage() {
 
         {/* ── SECURITY ── */}
         <section
-          className="bg-[#1A1F36] py-24 max-[640px]:py-16 text-white"
+          id="security"
+          className="bg-white py-24 max-[640px]:py-16 border-t border-[#E5E9F2]"
           aria-labelledby="security-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#2A314D] mb-6">
-                <ShieldCheck size={24} className="text-[#F96167]" />
-              </div>
-              <h2
-                id="security-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold leading-tight mb-4"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                How Decyra protects your data.
-              </h2>
-              <p className="text-[18px] text-[#A6B0C3] leading-relaxed max-w-[600px] mx-auto">
-                Built for the enterprise. We designed Decyra so your security and compliance teams can say yes without hesitation.
-              </p>
-            </div>
+            <div className="grid grid-cols-12 gap-12 max-[1024px]:gap-8 items-center">
+              {/* Left Column: Content */}
+              <div className="col-span-7 max-[1024px]:col-span-12">
+                <SectionLabel>Security</SectionLabel>
+                <h2
+                  id="security-heading"
+                  className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-4"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  How Decyra protects your data.
+                </h2>
+                <p className="text-[18px] text-[#5A6478] leading-relaxed mb-10">
+                  Built for the enterprise. We designed Decyra so your security and compliance teams can say yes without hesitation.
+                </p>
 
-            <div className="grid grid-cols-3 max-[768px]:grid-cols-1 gap-8 max-[768px]:gap-6 max-w-[1000px] mx-auto">
-              {securityPillars.map((pillar) => {
-                const Icon = pillar.icon;
-                return (
-                  <div key={pillar.heading} className="flex flex-col items-center text-center">
-                    <div className="w-12 h-12 rounded-full bg-[#2A314D] flex items-center justify-center mb-5">
-                      <Icon size={20} className="text-white" />
-                    </div>
-                    <h3
-                      className="text-lg font-bold mb-3"
-                      style={{ fontFamily: "Georgia, serif" }}
-                    >
-                      {pillar.heading}
-                    </h3>
-                    <p className="text-[15px] text-[#A6B0C3] leading-relaxed">
-                      {pillar.body}
-                    </p>
-                  </div>
-                );
-              })}
+                <div className="space-y-6">
+                  {securityPillars.map((pillar) => {
+                    const Icon = pillar.icon;
+                    return (
+                      <div key={pillar.heading} className="flex gap-4 items-start">
+                        <div className="w-10 h-10 rounded-lg bg-[#E8EDF7] flex items-center justify-center flex-shrink-0">
+                          <Icon size={18} className="text-[#1E2761]" />
+                        </div>
+                        <div>
+                          <h3
+                            className="text-base font-bold text-[#1E2761] mb-1"
+                            style={{ fontFamily: "Georgia, serif" }}
+                          >
+                            {pillar.heading}
+                          </h3>
+                          <p className="text-[14px] text-[#5A6478] leading-relaxed">
+                            {pillar.body}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Right Column: Graphic */}
+              <div className="col-span-5 max-[1024px]:col-span-12">
+                <SecurityGraphic />
+              </div>
             </div>
           </div>
         </section>

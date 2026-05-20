@@ -487,3 +487,64 @@ export function ContactGraphic() {
     </div>
   );
 }
+
+export function SecurityGraphic() {
+  const [activeQuery, setActiveQuery] = useState(0); // 0: SELECT (Allowed), 1: DELETE (Blocked)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveQuery((prev) => (prev + 1) % 2);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="w-full bg-[#1E2761]/5 border border-[#E5E9F2] rounded-2xl p-6 shadow-[0_8px_30px_rgba(0,0,0,0.03)] min-h-[340px] flex flex-col justify-between overflow-hidden relative">
+      <style>{animationStyles}</style>
+
+      <div>
+        <div className="text-xs font-bold text-[#1E2761] uppercase tracking-wide mb-1">
+          Query Security Gateway
+        </div>
+        <div className="text-[10px] text-[#5A6478]">
+          Automatic restriction of write/delete commands
+        </div>
+      </div>
+
+      {/* Interactive Simulation */}
+      <div className="flex-1 flex flex-col justify-center items-center relative my-4">
+        {/* Shield Gateway */}
+        <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg relative z-10 transition-all duration-300 ${
+          activeQuery === 0 ? "bg-green-500 text-white" : "bg-red-500 text-white"
+        }`}>
+          <Shield size={24} className="animate-pulse" />
+          <div className={`absolute inset-0 rounded-full scale-125 animate-ping opacity-25 ${
+            activeQuery === 0 ? "border-2 border-green-500" : "border-2 border-red-500"
+          }`} />
+        </div>
+
+        {/* Incoming query label */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white border border-[#E5E9F2] rounded-xl px-3 py-1.5 shadow-sm text-xs font-mono text-center transition-all duration-300">
+          {activeQuery === 0 ? (
+            <span className="text-green-600 font-semibold">SELECT * FROM revenue;</span>
+          ) : (
+            <span className="text-red-500 font-semibold">DELETE FROM users;</span>
+          )}
+        </div>
+
+        {/* Status text */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center">
+          {activeQuery === 0 ? (
+            <span className="bg-green-50 text-green-700 border border-green-200 text-[10px] font-bold px-2 py-0.5 rounded-full">
+              READ ONLY - ALLOWED
+            </span>
+          ) : (
+            <span className="bg-red-50 text-red-700 border border-red-200 text-[10px] font-bold px-2 py-0.5 rounded-full">
+              WRITE BLOCKED - REJECTED
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
