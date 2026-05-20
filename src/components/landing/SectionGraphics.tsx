@@ -721,7 +721,6 @@ export function HeroBackgroundGraphic() {
       hero.addEventListener("mouseenter", handleMouseEnter);
       hero.addEventListener("mouseleave", handleMouseLeave);
       
-      // Initial position at center
       const rect = hero.getBoundingClientRect();
       setMousePos({ x: rect.width / 2, y: rect.height / 2 });
     }
@@ -737,63 +736,165 @@ export function HeroBackgroundGraphic() {
 
   return (
     <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
-      {/* Background radial gradient mask for grid/animations */}
-      <div className="absolute inset-0 bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black_80%)] opacity-75 z-10" />
+      {/* Background radial gradient mask for grid/animations (lighter center mask to show graphics clearly) */}
+      <div className="absolute inset-0 bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_8%,black_92%)] opacity-40 z-10" />
 
       {/* Interactive mouse-following spotlight glow */}
       <div
-        className="absolute rounded-full pointer-events-none mix-blend-screen bg-gradient-to-r from-[#F96167]/15 to-[#1E2761]/15 blur-[80px] transition-opacity duration-500 z-10"
+        className="absolute rounded-full pointer-events-none mix-blend-screen bg-gradient-to-r from-[#F96167]/20 to-[#1E2761]/20 blur-[80px] transition-opacity duration-300 z-10"
         style={{
-          left: `${mousePos.x - 250}px`,
-          top: `${mousePos.y - 250}px`,
-          width: "500px",
-          height: "500px",
-          opacity: isHovered ? 1 : 0.4,
+          left: `${mousePos.x - 200}px`,
+          top: `${mousePos.y - 200}px`,
+          width: "400px",
+          height: "400px",
+          opacity: isHovered ? 1 : 0.3,
           willChange: "left, top",
         }}
       />
 
       {/* Futuristic soft glowing orbs (Brighter static ones like the image) */}
-      <div className="absolute top-[10%] left-[10%] w-[450px] h-[450px] rounded-full bg-[#F96167]/15 blur-[100px] animate-pulse pointer-events-none" style={{ animationDuration: "8s" }} />
-      <div className="absolute bottom-[10%] right-[10%] w-[450px] h-[450px] rounded-full bg-[#1E2761]/12 blur-[100px] animate-pulse pointer-events-none" style={{ animationDuration: "10s" }} />
+      <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] rounded-full bg-[#F96167]/18 blur-[110px] animate-pulse pointer-events-none" style={{ animationDuration: "8s" }} />
+      <div className="absolute bottom-[10%] right-[5%] w-[500px] h-[500px] rounded-full bg-[#1E2761]/15 blur-[110px] animate-pulse pointer-events-none" style={{ animationDuration: "10s" }} />
 
-      <svg className="absolute inset-0 w-full h-full opacity-[0.25] z-0" xmlns="http://www.w3.org/2000/svg">
+      <svg className="absolute inset-0 w-full h-full opacity-[0.38] z-0" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="hero-flow-grad-coral" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#F96167" stopOpacity="0" />
-            <stop offset="40%" stopColor="#F96167" stopOpacity="0.8" />
-            <stop offset="60%" stopColor="#F96167" stopOpacity="0.8" />
+            <stop offset="40%" stopColor="#F96167" stopOpacity="0.85" />
+            <stop offset="60%" stopColor="#F96167" stopOpacity="0.85" />
             <stop offset="100%" stopColor="#F96167" stopOpacity="0" />
           </linearGradient>
           <linearGradient id="hero-flow-grad-navy" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#1E2761" stopOpacity="0" />
-            <stop offset="40%" stopColor="#1E2761" stopOpacity="0.6" />
-            <stop offset="60%" stopColor="#1E2761" stopOpacity="0.6" />
+            <stop offset="40%" stopColor="#1E2761" stopOpacity="0.65" />
+            <stop offset="60%" stopColor="#1E2761" stopOpacity="0.65" />
             <stop offset="100%" stopColor="#1E2761" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="hero-flow-grad-lavender" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0" />
+            <stop offset="40%" stopColor="#8B5CF6" stopOpacity="0.7" />
+            <stop offset="60%" stopColor="#8B5CF6" stopOpacity="0.7" />
+            <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0" />
           </linearGradient>
         </defs>
 
-        {/* Data highway lines */}
-        <path d="M-100,100 C300,50 600,250 1400,150" fill="none" stroke="url(#hero-flow-grad-coral)" strokeWidth="2" className="flow-line" />
-        <path d="M-100,250 C400,380 700,150 1400,320" fill="none" stroke="url(#hero-flow-grad-navy)" strokeWidth="1.5" className="flow-line" />
-        <path d="M-100,450 C200,300 700,480 1400,400" fill="none" stroke="url(#hero-flow-grad-coral)" strokeWidth="1.5" className="flow-line" />
+        {/* Data highway lines (horizontal pipelines) */}
+        <path d="M-100,120 C300,50 600,280 1500,160" fill="none" stroke="url(#hero-flow-grad-coral)" strokeWidth="2.5" className="flow-line" />
+        <path d="M-100,280 C400,420 700,120 1500,340" fill="none" stroke="url(#hero-flow-grad-navy)" strokeWidth="1.5" className="flow-line" />
+        <path d="M-100,420 C200,320 800,480 1500,380" fill="none" stroke="url(#hero-flow-grad-lavender)" strokeWidth="2" className="flow-line" />
+        <path d="M-100,70 C200,210 800,40 1500,190" fill="none" stroke="url(#hero-flow-grad-navy)" strokeWidth="1.5" className="flow-line" />
+        <path d="M-100,340 C500,180 900,420 1500,300" fill="none" stroke="url(#hero-flow-grad-coral)" strokeWidth="2" className="flow-line" />
+
+        {/* Vertical/Diagonal pipelines */}
+        <path d="M150,-100 C300,200 100,400 250,700" fill="none" stroke="url(#hero-flow-grad-lavender)" strokeWidth="1.5" strokeDasharray="5,5" className="flow-line" opacity="0.6" />
+        <path d="M1100,-100 C950,200 1150,400 1000,700" fill="none" stroke="url(#hero-flow-grad-coral)" strokeWidth="1.5" strokeDasharray="5,5" className="flow-line" opacity="0.6" />
 
         {/* Streaming Data packet particles using animateMotion */}
-        <circle r="4.5" fill="#F96167" className="opacity-90">
-          <animateMotion dur="12s" repeatCount="indefinite" path="M-100,100 C300,50 600,250 1400,150" />
+        <circle r="5" fill="#F96167" className="opacity-90">
+          <animateMotion dur="10s" repeatCount="indefinite" path="M-100,120 C300,50 600,280 1500,160" />
         </circle>
         <circle r="3.5" fill="#1E2761" className="opacity-80">
-          <animateMotion dur="16s" begin="3s" repeatCount="indefinite" path="M-100,250 C400,380 700,150 1400,320" />
+          <animateMotion dur="14s" begin="2s" repeatCount="indefinite" path="M-100,280 C400,420 700,120 1500,340" />
         </circle>
-        <circle r="5" fill="#F96167" className="opacity-90">
-          <animateMotion dur="10s" begin="1.5s" repeatCount="indefinite" path="M-100,450 C200,300 700,480 1400,400" />
+        <circle r="4.5" fill="#8B5CF6" className="opacity-90">
+          <animateMotion dur="11s" begin="4s" repeatCount="indefinite" path="M-100,420 C200,320 800,480 1500,380" />
         </circle>
         <circle r="4" fill="#1E2761" className="opacity-85">
-          <animateMotion dur="14s" begin="5s" repeatCount="indefinite" path="M-100,100 C300,50 600,250 1400,150" />
+          <animateMotion dur="15s" begin="1s" repeatCount="indefinite" path="M-100,70 C200,210 800,40 1500,190" />
         </circle>
-        <circle r="3" fill="#F96167" className="opacity-75">
-          <animateMotion dur="18s" begin="7s" repeatCount="indefinite" path="M-100,250 C400,380 700,150 1400,320" />
+        <circle r="4.5" fill="#F96167" className="opacity-90">
+          <animateMotion dur="12s" begin="6s" repeatCount="indefinite" path="M-100,340 C500,180 900,420 1500,300" />
         </circle>
+        <circle r="3.5" fill="#8B5CF6" className="opacity-85">
+          <animateMotion dur="9s" begin="3s" repeatCount="indefinite" path="M150,-100 C300,200 100,400 250,700" />
+        </circle>
+        <circle r="4" fill="#F96167" className="opacity-90">
+          <animateMotion dur="13s" begin="5s" repeatCount="indefinite" path="M1100,-100 C950,200 1150,400 1000,700" />
+        </circle>
+
+        {/* Extra offset particles to make data flows denser */}
+        <circle r="4" fill="#F96167" className="opacity-80">
+          <animateMotion dur="16s" begin="5s" repeatCount="indefinite" path="M-100,120 C300,50 600,280 1500,160" />
+        </circle>
+        <circle r="3" fill="#1E2761" className="opacity-70">
+          <animateMotion dur="18s" begin="7s" repeatCount="indefinite" path="M-100,280 C400,420 700,120 1500,340" />
+        </circle>
+        <circle r="3.5" fill="#8B5CF6" className="opacity-80">
+          <animateMotion dur="13s" begin="8s" repeatCount="indefinite" path="M-100,420 C200,320 800,480 1500,380" />
+        </circle>
+
+        {/* Interactive Mouse pointer data grid lock & target crosshair */}
+        {isHovered && (
+          <g>
+            {/* Horizontal tracking line */}
+            <line
+              x1="0"
+              y1={mousePos.y}
+              x2="100%"
+              y2={mousePos.y}
+              stroke="#F96167"
+              strokeWidth="0.5"
+              opacity="0.3"
+              strokeDasharray="4,4"
+            />
+            {/* Vertical tracking line */}
+            <line
+              x1={mousePos.x}
+              y1="0"
+              x2={mousePos.x}
+              y2="100%"
+              stroke="#1E2761"
+              strokeWidth="0.5"
+              opacity="0.3"
+              strokeDasharray="4,4"
+            />
+            {/* Coordinates label */}
+            <rect
+              x={mousePos.x + 12}
+              y={mousePos.y + 12}
+              width="82"
+              height="18"
+              rx="4"
+              fill="#1E2761"
+              opacity="0.8"
+            />
+            <text
+              x={mousePos.x + 18}
+              y={mousePos.y + 24}
+              fill="white"
+              fontSize="8"
+              fontFamily="monospace"
+              fontWeight="bold"
+            >
+              {`DATA_SYS: ${Math.round(mousePos.x)},${Math.round(mousePos.y)}`}
+            </text>
+
+            {/* Glowing target cursor rings */}
+            <circle
+              cx={mousePos.x}
+              cy={mousePos.y}
+              r="8"
+              fill="none"
+              stroke="#F96167"
+              strokeWidth="1.5"
+              className="animate-pulse"
+            />
+            <circle
+              cx={mousePos.x}
+              cy={mousePos.y}
+              r="4"
+              fill="#1E2761"
+              stroke="white"
+              strokeWidth="1"
+            />
+            
+            {/* Interactive connecting rays to closest main lanes */}
+            <line x1={mousePos.x} y1={mousePos.y} x2={mousePos.x + 40} y2={mousePos.y - 30} stroke="#F96167" strokeWidth="1" opacity="0.4" strokeDasharray="2,2" />
+            <line x1={mousePos.x} y1={mousePos.y} x2={mousePos.x - 50} y2={mousePos.y + 20} stroke="#1E2761" strokeWidth="1" opacity="0.4" strokeDasharray="2,2" />
+            <circle cx={mousePos.x + 40} cy={mousePos.y - 30} r="2.5" fill="#F96167" opacity="0.7" />
+            <circle cx={mousePos.x - 50} cy={mousePos.y + 20} r="2.5" fill="#1E2761" opacity="0.7" />
+          </g>
+        )}
       </svg>
     </div>
   );
