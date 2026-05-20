@@ -258,7 +258,7 @@ export function BuiltForGraphic() {
   const roles = [
     { label: "RevOps", alert: "Pipe Gap: $120K resolved", color: "#3B82F6" },
     { label: "Sales VP", alert: "Win Rate: +4.2% change", color: "#10B981" },
-    { label: "CS Lead", alert: "Churn Risk: 2 accounts", color: "#F59E0B" },
+    { label: "Data Team", alert: "Ad-hoc SQL Load: -85%", color: "#EC4899" },
     { label: "CEO / Founder", alert: "ARR: $2.4M live target", color: "#8B5CF6" },
   ];
 

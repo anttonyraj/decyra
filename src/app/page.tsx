@@ -124,6 +124,10 @@ const roles = [
     body: "Real-time visibility into deal velocity, win rates, and forecast accuracy. The answers you need for the Monday morning call.",
   },
   {
+    title: "Data & Analytics Teams",
+    body: "Free yourself from writing the same basic ad-hoc SQL queries over and over. Give business partners self-serve access with complete read-only query safety.",
+  },
+  {
     title: "Heads of Customer Success",
     body: "Customer health signals, expansion opportunities, churn risk. In plain English, from your operational data.",
   },
@@ -520,7 +524,7 @@ export default function HomePage() {
           aria-labelledby="why-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-10">
+            <div className="text-center mb-16">
               <SectionLabel>Why Decyra</SectionLabel>
               <h2
                 id="why-heading"
@@ -531,36 +535,48 @@ export default function HomePage() {
               </h2>
             </div>
 
-            <div className="max-w-[600px] mx-auto mb-10">
-              <WhyDecyraGraphic />
-            </div>
-
-            <div className="grid grid-cols-2 max-[768px]:grid-cols-1 gap-6">
-              {whyDecyraPillars.map((pillar) => {
-                const Icon = pillar.icon;
-                return (
-                  <div
-                    key={pillar.heading}
-                    className="bg-white border border-[#E5E9F2] rounded-xl p-6 flex flex-col gap-3"
-                    style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.02)" }}
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-[#E8EDF7] flex items-center justify-center">
-                      <Icon size={16} className="text-[#1E2761]" />
-                    </div>
-                    <div>
-                      <h3
-                        className="text-base font-bold text-[#1E2761] mb-1"
-                        style={{ fontFamily: "Georgia, serif" }}
+            {/* Unified Box Container */}
+            <div className="bg-white border border-[#E5E9F2] rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.03)] overflow-hidden grid grid-cols-12 max-[1024px]:grid-cols-1">
+              {/* Left Side: Pillars */}
+              <div className="col-span-7 p-12 max-[640px]:p-6 flex flex-col justify-center">
+                <div className="grid grid-cols-2 max-[640px]:grid-cols-1 gap-6">
+                  {whyDecyraPillars.map((pillar) => {
+                    const Icon = pillar.icon;
+                    return (
+                      <div
+                        key={pillar.heading}
+                        className="flex flex-col gap-3"
                       >
-                        {pillar.heading}
-                      </h3>
-                      <p className="text-[13px] text-[#5A6478] leading-relaxed">
-                        {pillar.body}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
+                        <div className="w-8 h-8 rounded-lg bg-[#E8EDF7] flex items-center justify-center w-fit">
+                          <Icon size={16} className="text-[#1E2761]" />
+                        </div>
+                        <div>
+                          <h3
+                            className="text-base font-bold text-[#1E2761] mb-1"
+                            style={{ fontFamily: "Georgia, serif" }}
+                          >
+                            {pillar.heading}
+                          </h3>
+                          <p className="text-[13px] text-[#5A6478] leading-relaxed">
+                            {pillar.body}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Right Side: Graphic (Highlighted Differently) */}
+              <div className="col-span-5 relative bg-gradient-to-br from-[#FAFBFC] via-[#F4F7FC] to-[#E8EDF7] p-12 max-[640px]:p-6 flex flex-col justify-center overflow-hidden">
+                {/* Futuristic Glowing Orbs */}
+                <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-[#F96167]/10 blur-[50px] pointer-events-none" />
+                <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full bg-[#1E2761]/10 blur-[50px] pointer-events-none" />
+                
+                <div className="relative z-10 w-full flex flex-col justify-between flex-1">
+                  <WhyDecyraGraphic />
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -652,7 +668,7 @@ export default function HomePage() {
           aria-labelledby="for-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-10">
+            <div className="text-center mb-16">
               <SectionLabel>Built For</SectionLabel>
               <h2
                 id="for-heading"
@@ -663,27 +679,40 @@ export default function HomePage() {
               </h2>
             </div>
 
-            <div className="max-w-[500px] mx-auto mb-10">
-              <BuiltForGraphic />
-            </div>
-
-            <div className="grid grid-cols-2 max-[640px]:grid-cols-1 gap-6">
-              {roles.map((role) => (
-                <div
-                  key={role.title}
-                  className="bg-white border border-[#E5E9F2] rounded-xl p-8 max-[640px]:p-6 hover:border-[#1E2761]/30 hover:shadow-[0_8px_24px_rgba(30,39,97,0.04)] transition-all duration-300"
-                >
-                  <h3
-                    className="text-xl font-bold text-[#1E2761] mb-3"
-                    style={{ fontFamily: "Georgia, serif" }}
-                  >
-                    {role.title}
-                  </h3>
-                  <p className="text-[16px] text-[#5A6478] leading-relaxed">
-                    {role.body}
-                  </p>
+            {/* Unified Box Container */}
+            <div className="bg-white border border-[#E5E9F2] rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.03)] overflow-hidden grid grid-cols-12 max-[1024px]:grid-cols-1">
+              {/* Left Side: Roles */}
+              <div className="col-span-7 p-12 max-[640px]:p-6 flex flex-col justify-center">
+                <div className="space-y-6">
+                  {roles.map((role) => (
+                    <div
+                      key={role.title}
+                      className="border-b border-[#E5E9F2] last:border-b-0 pb-4 last:pb-0"
+                    >
+                      <h3
+                        className="text-base font-bold text-[#1E2761] mb-1"
+                        style={{ fontFamily: "Georgia, serif" }}
+                      >
+                        {role.title}
+                      </h3>
+                      <p className="text-[13px] text-[#5A6478] leading-relaxed">
+                        {role.body}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {/* Right Side: Graphic (Highlighted Differently) */}
+              <div className="col-span-5 relative bg-gradient-to-br from-[#FAFBFC] via-[#F4F7FC] to-[#E8EDF7] p-12 max-[640px]:p-6 flex flex-col justify-center overflow-hidden">
+                {/* Futuristic Glowing Orbs */}
+                <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-[#F96167]/10 blur-[50px] pointer-events-none" />
+                <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full bg-[#1E2761]/10 blur-[50px] pointer-events-none" />
+                
+                <div className="relative z-10 w-full flex flex-col justify-between flex-1">
+                  <BuiltForGraphic />
+                </div>
+              </div>
             </div>
           </div>
         </section>
