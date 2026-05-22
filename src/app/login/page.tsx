@@ -201,10 +201,10 @@ export default function LoginPage() {
           Back to decyra.systems
         </Link>
         <span className="text-[#E5E9F2]">|</span>
-        <Link href="#" className="text-[12px] text-[#5A6478] hover:text-[#1E2761] transition-colors">
+        <Link href="/privacy" className="text-[12px] text-[#5A6478] hover:text-[#1E2761] transition-colors">
           Privacy
         </Link>
-        <Link href="#" className="text-[12px] text-[#5A6478] hover:text-[#1E2761] transition-colors">
+        <Link href="/terms" className="text-[12px] text-[#5A6478] hover:text-[#1E2761] transition-colors">
           Terms
         </Link>
       </footer>

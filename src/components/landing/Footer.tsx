@@ -18,9 +18,9 @@ export default function Footer() {
         <nav aria-label="Footer navigation">
           <div className="flex items-center gap-4">
             {[
-              { label: "Privacy", href: "#" },
-              { label: "Terms", href: "#" },
-              { label: "Contact", href: "#" },
+              { label: "Privacy", href: "/privacy" },
+              { label: "Terms", href: "/terms" },
+              { label: "Contact", href: "/#contact" },
             ].map((link) => (
               <Link
                 key={link.label}
