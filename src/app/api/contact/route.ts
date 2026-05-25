@@ -1,46 +1,56 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
-    const { name, email, company, usecase, message } = body;
+    const body = await req.json();
+    const { action } = body;
 
-    // Validate required fields
-    if (!name || !email || !company || !usecase || !message) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    if (!action || (action !== "contact" && action !== "visitor")) {
+      return NextResponse.json({ error: "Invalid action type" }, { status: 400 });
     }
 
-    const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
+    // Extract visitor geolocation parameters from Vercel headers
+    const ip = req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for") || "127.0.0.1";
+    const city = req.headers.get("x-vercel-ip-city") || "Unknown City";
+    const country = req.headers.get("x-vercel-ip-country") || "Unknown Country";
 
-    if (!GOOGLE_SCRIPT_URL) {
-      console.error("Missing GOOGLE_SCRIPT_URL in environment variables");
-      // Simulate success if the URL isn't configured yet so the UI doesn't break
+    // Build payload to send to Google Apps Script
+    const payload = {
+      ...body,
+      ip,
+      city,
+      country,
+    };
+
+    const scriptUrl = process.env.CONTACT_SHEET_SCRIPT_URL;
+
+    if (!scriptUrl) {
+      console.warn("⚠️ CONTACT_SHEET_SCRIPT_URL is not set. Google Apps Script submission skipped. Payload was:", payload);
       return NextResponse.json({ 
-        success: true, 
-        message: 'Simulated success (No GOOGLE_SCRIPT_URL found)' 
-      }, { status: 200 });
+        status: "success", 
+        mock: true, 
+        message: "Request logged locally (Environment variable not set)." 
+      });
     }
 
-    // Forward the payload to the Google Apps Script Web App
-    const response = await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // Send the exact body received from the client
-      body: JSON.stringify(body),
+    // Forward the POST request to the Google Apps Script URL
+    const response = await fetch(scriptUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
-      throw new Error(`Google Script returned status ${response.status}`);
+      const errorText = await response.text();
+      console.error("❌ Google Apps Script Web App returned an error status:", response.status, errorText);
+      return NextResponse.json({ error: "Google Apps Script connection failed" }, { status: 502 });
     }
 
-    // Attempt to parse the response from Google Script (usually JSON if configured correctly)
-    const result = await response.json().catch(() => ({}));
+    const result = await response.json();
+    return NextResponse.json(result);
 
-    return NextResponse.json({ success: true, ...result }, { status: 200 });
-  } catch (error) {
-    console.error('Error forwarding contact form to Google Script:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (error: any) {
+    console.error("❌ Contact API handler error:", error);
+    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
   }
 }

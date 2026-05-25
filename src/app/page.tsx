@@ -9,6 +9,8 @@ import QuestionCard from "@/components/landing/QuestionCard";
 import PricingCard from "@/components/landing/PricingCard";
 import ContactSection from "@/components/landing/ContactSection";
 import Footer from "@/components/landing/Footer";
+import { HowItWorksGraphic, WhyDecyraGraphic, BuiltForGraphic, PricingGraphic, FaqGraphic, SecurityGraphic, HeroBackgroundGraphic } from "@/components/landing/SectionGraphics";
+import VisitorTracker from "@/components/landing/VisitorTracker";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -123,6 +125,10 @@ const roles = [
     body: "Real-time visibility into deal velocity, win rates, and forecast accuracy. The answers you need for the Monday morning call.",
   },
   {
+    title: "Data & Analytics Teams",
+    body: "Free yourself from writing the same basic ad-hoc SQL queries over and over. Give business partners self-serve access with complete read-only query safety.",
+  },
+  {
     title: "Heads of Customer Success",
     body: "Customer health signals, expansion opportunities, churn risk. In plain English, from your operational data.",
   },
@@ -235,25 +241,33 @@ export default function HomePage() {
   return (
     <>
       <NavBar />
+      <VisitorTracker />
 
       <main>
         {/* ── HERO ── */}
         <section
           id="product"
-          className="bg-white pt-24 pb-16 max-[640px]:pt-16 max-[640px]:pb-12"
+          className="relative overflow-hidden bg-white bg-[linear-gradient(to_right,rgba(229,233,242,0.3)_1px,transparent_1px),linear-gradient(to_bottom,rgba(229,233,242,0.3)_1px,transparent_1px)] bg-[size:64px_64px] pt-32 pb-20 max-[640px]:pt-20 max-[640px]:pb-12 border-b border-[#E5E9F2]"
           aria-labelledby="hero-headline"
         >
-          <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
+          {/* Background Glows */}
+          <div className="absolute top-1/2 -translate-y-1/2 left-[-10%] w-[800px] h-[800px] rounded-full bg-[#F96167]/18 blur-[120px] pointer-events-none" />
+          <div className="absolute top-1/2 -translate-y-1/2 right-[-10%] w-[800px] h-[800px] rounded-full bg-[#1E2761]/14 blur-[120px] pointer-events-none" />
+
+          {/* Flowing Data Graphics Behind Hero Text */}
+          <HeroBackgroundGraphic />
+
+          <div className="relative max-w-[1280px] mx-auto px-8 max-[640px]:px-4 z-10">
             <div className="text-center max-w-[900px] mx-auto">
               {/* Category label */}
-              <p className="text-[12px] font-semibold uppercase tracking-[0.15em] text-[#1E2761] mb-6">
-                AI Data Intelligence
+              <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#1E2761] mb-6">
+                AI DATA INTELLIGENCE
               </p>
 
               {/* Headline */}
               <h1
                 id="hero-headline"
-                className="text-[64px] max-[1024px]:text-[52px] max-[640px]:text-[40px] font-bold text-[#1A1F36] leading-[1.08] mb-6"
+                className="text-[64px] max-[1024px]:text-[52px] max-[640px]:text-[40px] font-bold text-[#1E2761] leading-[1.08] mb-6"
                 style={{ fontFamily: "Georgia, serif" }}
               >
                 Ask your business data anything.
@@ -262,7 +276,7 @@ export default function HomePage() {
               </h1>
 
               {/* Subhead */}
-              <p className="text-[20px] max-[640px]:text-[18px] text-[#5A6478] leading-relaxed max-w-[700px] mx-auto mb-10">
+              <p className="text-[18px] max-[640px]:text-[16px] text-[#5A6478] leading-relaxed max-w-[680px] mx-auto mb-10">
                 Decyra is the AI analyst for revenue and business operations teams. Connect your database, type a question, see the answer. No SQL, no data team, no waiting.
               </p>
 
@@ -270,14 +284,14 @@ export default function HomePage() {
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <Link
                   href="/login"
-                  className="bg-[#F96167] text-white font-semibold rounded-lg px-7 py-3.5 text-base hover:bg-[#e8535a] transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#F96167] focus:ring-offset-2"
+                  className="bg-[#F96167] text-white font-semibold rounded-lg px-7 py-3.5 text-base hover:bg-[#e8535a] transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#F96167] focus:ring-offset-2 shadow-sm"
                   id="hero-cta-primary"
                 >
                   Start here →
                 </Link>
                 <a
                   href="#how-it-works"
-                  className="border border-[#1E2761] text-[#1E2761] font-semibold rounded-lg px-7 py-3.5 text-base hover:bg-[#E8EDF7] transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:ring-offset-2"
+                  className="border border-[#1E2761] text-[#1E2761] font-semibold rounded-lg px-7 py-3.5 text-base bg-[#E8EDF7]/20 hover:bg-[#E8EDF7]/50 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:ring-offset-2"
                   id="hero-cta-secondary"
                 >
                   See how it works
@@ -297,7 +311,7 @@ export default function HomePage() {
 
             {/* Disclaimer */}
             <p className="mt-10 text-[13px] italic text-[#5A6478] text-center">
-              PostgreSQL connector and demo database available now. Other connectors rolling out over the next 8 weeks.
+              PostgreSQL connector available now. MySQL, Snowflake, BigQuery, and Redshift connectors rolling out over the next 12 weeks. Salesforce and HubSpot integrations coming soon.
             </p>
           </div>
         </section>
@@ -363,42 +377,57 @@ export default function HomePage() {
           aria-labelledby="how-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-14">
+            <div className="text-center mb-16">
               <SectionLabel>How It Works</SectionLabel>
               <h2
                 id="how-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight"
+                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-4"
                 style={{ fontFamily: "Georgia, serif" }}
               >
                 Three steps. Zero SQL.
               </h2>
             </div>
 
-            <div className="grid grid-cols-3 max-[768px]:grid-cols-1 gap-8 max-[768px]:gap-6">
-              {howItWorksSteps.map((step) => (
-                <div
-                  key={step.num}
-                  className="border border-[#E5E9F2] rounded-xl p-8 max-[640px]:p-6"
-                  style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}
-                >
-                  <span
-                    className="text-[56px] font-bold text-[#F96167] leading-none block mb-4 opacity-80"
-                    style={{ fontFamily: "Georgia, serif" }}
-                    aria-hidden="true"
-                  >
-                    {step.num}
-                  </span>
-                  <h3
-                    className="text-xl font-bold text-[#1E2761] mb-3"
-                    style={{ fontFamily: "Georgia, serif" }}
-                  >
-                    {step.heading}
-                  </h3>
-                  <p className="text-[16px] text-[#5A6478] leading-relaxed">
-                    {step.body}
-                  </p>
+            {/* Unified Box Container */}
+            <div className="bg-white border border-[#E5E9F2] rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.03)] overflow-hidden grid grid-cols-12 max-[1024px]:grid-cols-1">
+              {/* Left Side: Info & Steps */}
+              <div className="col-span-7 p-12 max-[640px]:p-6 flex flex-col justify-center">
+                <div className="space-y-8">
+                  {howItWorksSteps.map((step) => (
+                    <div key={step.num} className="flex gap-6 items-start">
+                      <span
+                        className="text-[32px] font-bold text-[#F96167] leading-none block opacity-85 w-12"
+                        style={{ fontFamily: "Georgia, serif" }}
+                        aria-hidden="true"
+                      >
+                        {step.num}
+                      </span>
+                      <div>
+                        <h3
+                          className="text-lg font-bold text-[#1E2761] mb-2"
+                          style={{ fontFamily: "Georgia, serif" }}
+                        >
+                          {step.heading}
+                        </h3>
+                        <p className="text-[15px] text-[#5A6478] leading-relaxed">
+                          {step.body}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {/* Right Side: Graphic (Highlighted Differently) */}
+              <div className="col-span-5 relative bg-gradient-to-br from-[#FAFBFC] via-[#F4F7FC] to-[#E8EDF7] p-12 max-[640px]:p-6 flex flex-col justify-between overflow-hidden">
+                {/* Futuristic Glowing Orbs */}
+                <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-[#F96167]/10 blur-[50px] pointer-events-none" />
+                <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full bg-[#1E2761]/10 blur-[50px] pointer-events-none" />
+                
+                <div className="relative z-10 w-full flex flex-col justify-between flex-1">
+                  <HowItWorksGraphic />
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -433,46 +462,62 @@ export default function HomePage() {
 
         {/* ── SECURITY ── */}
         <section
-          className="bg-[#1A1F36] py-24 max-[640px]:py-16 text-white"
+          id="security"
+          className="bg-white py-24 max-[640px]:py-16 border-t border-[#E5E9F2]"
           aria-labelledby="security-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#2A314D] mb-6">
-                <ShieldCheck size={24} className="text-[#F96167]" />
-              </div>
-              <h2
-                id="security-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold leading-tight mb-4"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                How Decyra protects your data.
-              </h2>
-              <p className="text-[18px] text-[#A6B0C3] leading-relaxed max-w-[600px] mx-auto">
-                Built for the enterprise. We designed Decyra so your security and compliance teams can say yes without hesitation.
-              </p>
-            </div>
+            {/* Unified Box Container */}
+            <div className="bg-white border border-[#E5E9F2] rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.03)] overflow-hidden grid grid-cols-12 max-[1024px]:grid-cols-1">
+              {/* Left Side: Content */}
+              <div className="col-span-7 p-12 max-[640px]:p-6 flex flex-col justify-center">
+                <SectionLabel>Security</SectionLabel>
+                <h2
+                  id="security-heading"
+                  className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-4"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  How Decyra protects your data.
+                </h2>
+                <p className="text-[18px] text-[#5A6478] leading-relaxed mb-10">
+                  Built for the enterprise. We designed Decyra so your security and compliance teams can say yes without hesitation.
+                </p>
 
-            <div className="grid grid-cols-3 max-[768px]:grid-cols-1 gap-8 max-[768px]:gap-6 max-w-[1000px] mx-auto">
-              {securityPillars.map((pillar) => {
-                const Icon = pillar.icon;
-                return (
-                  <div key={pillar.heading} className="flex flex-col items-center text-center">
-                    <div className="w-12 h-12 rounded-full bg-[#2A314D] flex items-center justify-center mb-5">
-                      <Icon size={20} className="text-white" />
-                    </div>
-                    <h3
-                      className="text-lg font-bold mb-3"
-                      style={{ fontFamily: "Georgia, serif" }}
-                    >
-                      {pillar.heading}
-                    </h3>
-                    <p className="text-[15px] text-[#A6B0C3] leading-relaxed">
-                      {pillar.body}
-                    </p>
-                  </div>
-                );
-              })}
+                <div className="space-y-6">
+                  {securityPillars.map((pillar) => {
+                    const Icon = pillar.icon;
+                    return (
+                      <div key={pillar.heading} className="flex gap-4 items-start">
+                        <div className="w-10 h-10 rounded-lg bg-[#E8EDF7] flex items-center justify-center flex-shrink-0">
+                          <Icon size={18} className="text-[#1E2761]" />
+                        </div>
+                        <div>
+                          <h3
+                            className="text-base font-bold text-[#1E2761] mb-1"
+                            style={{ fontFamily: "Georgia, serif" }}
+                          >
+                            {pillar.heading}
+                          </h3>
+                          <p className="text-[14px] text-[#5A6478] leading-relaxed">
+                            {pillar.body}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Right Side: Graphic (Highlighted Differently) */}
+              <div className="col-span-5 relative bg-gradient-to-br from-[#FAFBFC] via-[#F4F7FC] to-[#E8EDF7] p-12 max-[640px]:p-6 flex flex-col justify-between overflow-hidden">
+                {/* Futuristic Glowing Orbs */}
+                <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-[#F96167]/10 blur-[50px] pointer-events-none" />
+                <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full bg-[#1E2761]/10 blur-[50px] pointer-events-none" />
+                
+                <div className="relative z-10 w-full flex flex-col justify-between flex-1">
+                  <SecurityGraphic />
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -484,45 +529,59 @@ export default function HomePage() {
           aria-labelledby="why-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-14">
+            <div className="text-center mb-16">
               <SectionLabel>Why Decyra</SectionLabel>
               <h2
                 id="why-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight max-w-[640px] mx-auto"
+                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-4"
                 style={{ fontFamily: "Georgia, serif" }}
               >
                 Practical. Transparent. Built for operators.
               </h2>
             </div>
 
-            <div className="grid grid-cols-2 max-[768px]:grid-cols-1 gap-6">
-              {whyDecyraPillars.map((pillar) => {
-                const Icon = pillar.icon;
-                return (
-                  <div
-                    key={pillar.heading}
-                    className="bg-white border border-[#E5E9F2] rounded-xl p-8 max-[640px]:p-6 flex gap-5"
-                    style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}
-                  >
-                    <div className="flex-shrink-0 mt-0.5">
-                      <div className="w-9 h-9 rounded-lg bg-[#E8EDF7] flex items-center justify-center">
-                        <Icon size={18} className="text-[#1E2761]" />
-                      </div>
-                    </div>
-                    <div>
-                      <h3
-                        className="text-lg font-bold text-[#1E2761] mb-2"
-                        style={{ fontFamily: "Georgia, serif" }}
+            {/* Unified Box Container */}
+            <div className="bg-white border border-[#E5E9F2] rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.03)] overflow-hidden grid grid-cols-12 max-[1024px]:grid-cols-1">
+              {/* Left Side: Pillars */}
+              <div className="col-span-7 p-12 max-[640px]:p-6 flex flex-col justify-center">
+                <div className="grid grid-cols-2 max-[640px]:grid-cols-1 gap-6">
+                  {whyDecyraPillars.map((pillar) => {
+                    const Icon = pillar.icon;
+                    return (
+                      <div
+                        key={pillar.heading}
+                        className="flex flex-col gap-3"
                       >
-                        {pillar.heading}
-                      </h3>
-                      <p className="text-[15px] text-[#5A6478] leading-relaxed">
-                        {pillar.body}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
+                        <div className="w-8 h-8 rounded-lg bg-[#E8EDF7] flex items-center justify-center w-fit">
+                          <Icon size={16} className="text-[#1E2761]" />
+                        </div>
+                        <div>
+                          <h3
+                            className="text-base font-bold text-[#1E2761] mb-1"
+                            style={{ fontFamily: "Georgia, serif" }}
+                          >
+                            {pillar.heading}
+                          </h3>
+                          <p className="text-[13px] text-[#5A6478] leading-relaxed">
+                            {pillar.body}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Right Side: Graphic (Highlighted Differently) */}
+              <div className="col-span-5 relative bg-gradient-to-br from-[#FAFBFC] via-[#F4F7FC] to-[#E8EDF7] p-12 max-[640px]:p-6 flex flex-col justify-center overflow-hidden">
+                {/* Futuristic Glowing Orbs */}
+                <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-[#F96167]/10 blur-[50px] pointer-events-none" />
+                <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full bg-[#1E2761]/10 blur-[50px] pointer-events-none" />
+                
+                <div className="relative z-10 w-full flex flex-col justify-between flex-1">
+                  <WhyDecyraGraphic />
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -614,35 +673,51 @@ export default function HomePage() {
           aria-labelledby="for-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-14">
+            <div className="text-center mb-16">
               <SectionLabel>Built For</SectionLabel>
               <h2
                 id="for-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight"
+                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-4"
                 style={{ fontFamily: "Georgia, serif" }}
               >
                 For the teams that need answers now.
               </h2>
             </div>
 
-            <div className="grid grid-cols-2 max-[640px]:grid-cols-1 gap-6">
-              {roles.map((role) => (
-                <div
-                  key={role.title}
-                  className="bg-white border border-[#E5E9F2] rounded-xl p-8 max-[640px]:p-6"
-                  style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}
-                >
-                  <h3
-                    className="text-xl font-bold text-[#1E2761] mb-3"
-                    style={{ fontFamily: "Georgia, serif" }}
-                  >
-                    {role.title}
-                  </h3>
-                  <p className="text-[16px] text-[#5A6478] leading-relaxed">
-                    {role.body}
-                  </p>
+            {/* Unified Box Container */}
+            <div className="bg-white border border-[#E5E9F2] rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.03)] overflow-hidden grid grid-cols-12 max-[1024px]:grid-cols-1">
+              {/* Left Side: Roles */}
+              <div className="col-span-7 p-12 max-[640px]:p-6 flex flex-col justify-center">
+                <div className="space-y-6">
+                  {roles.map((role) => (
+                    <div
+                      key={role.title}
+                      className="border-b border-[#E5E9F2] last:border-b-0 pb-4 last:pb-0"
+                    >
+                      <h3
+                        className="text-base font-bold text-[#1E2761] mb-1"
+                        style={{ fontFamily: "Georgia, serif" }}
+                      >
+                        {role.title}
+                      </h3>
+                      <p className="text-[13px] text-[#5A6478] leading-relaxed">
+                        {role.body}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {/* Right Side: Graphic (Highlighted Differently) */}
+              <div className="col-span-5 relative bg-gradient-to-br from-[#FAFBFC] via-[#F4F7FC] to-[#E8EDF7] p-12 max-[640px]:p-6 flex flex-col justify-center overflow-hidden">
+                {/* Futuristic Glowing Orbs */}
+                <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-[#F96167]/10 blur-[50px] pointer-events-none" />
+                <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full bg-[#1E2761]/10 blur-[50px] pointer-events-none" />
+                
+                <div className="relative z-10 w-full flex flex-col justify-between flex-1">
+                  <BuiltForGraphic />
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -653,16 +728,19 @@ export default function HomePage() {
           className="bg-[#FAFBFC] py-24 max-[640px]:py-16 border-b border-[#E5E9F2]"
           aria-labelledby="faq-heading"
         >
-          <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-14">
+          <div className="max-w-[800px] mx-auto px-8 max-[640px]:px-4">
+            <div className="text-center mb-8 flex flex-col items-center">
               <SectionLabel>FAQ</SectionLabel>
               <h2
                 id="faq-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight"
+                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-4"
                 style={{ fontFamily: "Georgia, serif" }}
               >
                 Common questions
               </h2>
+              <div className="mb-6">
+                <FaqGraphic />
+              </div>
             </div>
             
             <FaqAccordion items={faqItems} />
@@ -676,7 +754,7 @@ export default function HomePage() {
           aria-labelledby="pricing-heading"
         >
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-5">
+            <div className="text-center mb-12">
               <SectionLabel>Pricing</SectionLabel>
               <h2
                 id="pricing-heading"
@@ -690,14 +768,22 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="mt-12 grid grid-cols-3 max-[1024px]:grid-cols-1 gap-6 max-w-[960px] mx-auto">
-              {pricingTiers.map((tier) => (
-                <PricingCard
-                  key={tier.tier}
-                  {...tier}
-                  external={tier.external ?? false}
-                />
-              ))}
+            <div className="grid grid-cols-12 gap-8 items-start">
+              {/* Left Column: Pricing Cards */}
+              <div className="col-span-8 max-[1200px]:col-span-12 grid grid-cols-3 max-[768px]:grid-cols-1 gap-5">
+                {pricingTiers.map((tier) => (
+                  <PricingCard
+                    key={tier.tier}
+                    {...tier}
+                    external={tier.external ?? false}
+                  />
+                ))}
+              </div>
+
+              {/* Right Column: Pricing Comparison Calculator */}
+              <div className="col-span-4 max-[1200px]:col-span-12">
+                <PricingGraphic />
+              </div>
             </div>
           </div>
         </section>

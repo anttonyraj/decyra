@@ -3,8 +3,6 @@
 import React from "react";
 import {
   Database,
-  FileSpreadsheet,
-  FileText,
   Cloud,
   Plus,
   TrendingUp,
@@ -19,12 +17,13 @@ import DataSourceCard from "./DataSourceCard";
 import BrowserMockup from "./BrowserMockup";
 
 const sourceCards = [
-  { icon: Database, label: "PostgreSQL / MySQL", comingSoon: false },
-  { icon: FileSpreadsheet, label: "Excel & Google Sheets", comingSoon: true },
-  { icon: FileText, label: "CSV uploads", comingSoon: true },
+  { icon: Database, label: "PostgreSQL / MySQL", comingSoon: false, checkmark: true },
+  { icon: Database, label: "Snowflake", comingSoon: true },
+  { icon: Database, label: "BigQuery", comingSoon: true },
+  { icon: Database, label: "Redshift", comingSoon: true },
   { icon: Cloud, label: "Salesforce", comingSoon: true },
   { icon: Cloud, label: "HubSpot", comingSoon: true },
-  { icon: Plus, label: "More connectors", comingSoon: false, italic: true },
+  { icon: Plus, label: "More connectors", comingSoon: false, italic: true, href: "mailto:founder@decyra.systems?subject=Requesting%20more%20connectors" },
 ];
 
 const outputCards = [
@@ -37,13 +36,10 @@ const outputCards = [
 ];
 
 /**
- * Six horizontal lanes of animated coral dots, one per card row.
- * Pixel positions match card centers:
- *   label ≈22px tall, each card ≈40px, gap 10px → centers at 42,92,142,192,242,292px
+ * Animated coral dots per card row.
+ * Pixel positions match card centers.
  */
-function FlowConnector() {
-  const cardCenters = [42, 92, 142, 192, 242, 292];
-
+function FlowConnector({ cardCenters }: { cardCenters: number[] }) {
   const dotStyle = (delay: number): React.CSSProperties => ({
     position: "absolute",
     top: "-2px",
@@ -84,6 +80,9 @@ function FlowConnector() {
 }
 
 export default function HeroDiagram() {
+  const leftCenters = [42, 92, 142, 192, 242, 292, 342];
+  const rightCenters = [42, 92, 142, 192, 242, 292];
+
   return (
     <div className="w-full">
       {/* Desktop layout */}
@@ -100,14 +99,16 @@ export default function HeroDiagram() {
                 icon={card.icon}
                 label={card.label}
                 comingSoon={card.comingSoon}
+                checkmark={(card as { checkmark?: boolean }).checkmark}
                 italic={(card as { italic?: boolean }).italic}
+                href={(card as { href?: string }).href}
               />
             ))}
           </div>
         </div>
 
         {/* CONNECTOR: left → center */}
-        <FlowConnector />
+        <FlowConnector cardCenters={leftCenters} />
 
         {/* CENTER: mockup */}
         <div className="flex flex-col">
@@ -118,7 +119,7 @@ export default function HeroDiagram() {
         </div>
 
         {/* CONNECTOR: center → right */}
-        <FlowConnector />
+        <FlowConnector cardCenters={rightCenters} />
 
         {/* RIGHT: outputs */}
         <div className="flex flex-col">
@@ -152,7 +153,9 @@ export default function HeroDiagram() {
                 icon={card.icon}
                 label={card.label}
                 comingSoon={card.comingSoon}
+                checkmark={(card as { checkmark?: boolean }).checkmark}
                 italic={(card as { italic?: boolean }).italic}
+                href={(card as { href?: string }).href}
               />
             ))}
           </div>
@@ -192,3 +195,4 @@ export default function HeroDiagram() {
     </div>
   );
 }
+

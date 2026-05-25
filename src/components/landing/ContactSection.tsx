@@ -2,40 +2,53 @@
 
 import React, { useState } from "react";
 import { CheckCircle, ArrowRight, ShieldCheck, Database, Code2 } from "lucide-react";
+import { ContactGraphic } from "@/components/landing/SectionGraphics";
 
 export default function ContactSection() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      company: formData.get("company"),
-      usecase: formData.get("usecase"),
-      message: formData.get("message"),
-      b_check: formData.get("b_check"),
-      submission_token: "valid-client-" + Date.now(),
-    };
+
+    const formEl = e.currentTarget as HTMLFormElement;
+    const name = (formEl.querySelector("#name") as HTMLInputElement).value;
+    const email = (formEl.querySelector("#email") as HTMLInputElement).value;
+    const company = (formEl.querySelector("#company") as HTMLInputElement).value;
+    const usecase = (formEl.querySelector("#usecase") as HTMLSelectElement).value;
+    const message = (formEl.querySelector("#message") as HTMLTextAreaElement).value;
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "contact",
+          name,
+          email,
+          company,
+          usecase,
+          message,
+          b_check: "", // Honeypot (must be empty)
+          submission_token: `valid-client-${Date.now()}`, // JS token check
+          referrer: document.referrer || "Direct",
+          platform: navigator.userAgent,
+          screen: `${window.screen.width}x${window.screen.height}`,
+          language: navigator.language,
+        }),
       });
 
       if (response.ok) {
         setIsSubmitted(true);
       } else {
-        console.error("Failed to submit form");
+        alert("Failed to submit. Please try again.");
       }
-    } catch (error) {
-      console.error("Error submitting form:", error);
+    } catch (err) {
+      console.error("Submission error:", err);
+      alert("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -48,11 +61,11 @@ export default function ContactSection() {
           
           {/* Left: Form */}
           <div className="bg-white rounded-2xl p-8 max-[640px]:p-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-            <h2 className="text-[32px] font-bold text-[#1E2761] leading-tight mb-2" style={{ fontFamily: "Georgia, serif" }}>
-              Book a Strategy Call
+            <h2 className="text-[28px] font-bold text-[#1E2761] leading-tight mb-2" style={{ fontFamily: "Georgia, serif" }}>
+              Connect Your Database Securely
             </h2>
             <p className="text-[#5A6478] mb-8">
-              See how Decyra can give your team operational visibility in seconds.
+              Establish a secure connection and start getting operational insights in minutes.
             </p>
 
             {isSubmitted ? (
@@ -63,28 +76,25 @@ export default function ContactSection() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Honeypot field (hidden) */}
-                <input type="text" name="b_check" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
-
                 <div className="grid grid-cols-2 gap-5 max-[500px]:grid-cols-1">
                   <div>
                     <label htmlFor="name" className="block text-sm font-semibold text-[#1E2761] mb-1.5">Full Name</label>
-                    <input required type="text" id="name" name="name" placeholder="John Doe" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all" />
+                    <input required type="text" id="name" placeholder="John Doe" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all" />
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-sm font-semibold text-[#1E2761] mb-1.5">Work Email</label>
-                    <input required type="email" id="email" name="email" placeholder="john@company.com" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all" />
+                    <input required type="email" id="email" placeholder="john@company.com" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all" />
                   </div>
                 </div>
 
                 <div>
                   <label htmlFor="company" className="block text-sm font-semibold text-[#1E2761] mb-1.5">Company Name</label>
-                  <input required type="text" id="company" name="company" placeholder="Acme Corp" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all" />
+                  <input required type="text" id="company" placeholder="Acme Corp" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all" />
                 </div>
 
                 <div>
                   <label htmlFor="usecase" className="block text-sm font-semibold text-[#1E2761] mb-1.5">Primary Use Case</label>
-                  <select required id="usecase" name="usecase" defaultValue="" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all appearance-none cursor-pointer">
+                  <select required id="usecase" defaultValue="" className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all appearance-none cursor-pointer">
                     <option value="" disabled>Select an option...</option>
                     <option value="revops">Revenue Operations (RevOps)</option>
                     <option value="sales">Sales Leadership</option>
@@ -96,7 +106,7 @@ export default function ContactSection() {
 
                 <div>
                   <label htmlFor="message" className="block text-sm font-semibold text-[#1E2761] mb-1.5">How can we help?</label>
-                  <textarea id="message" name="message" rows={4} placeholder="Briefly describe what you're looking to solve..." className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all resize-none"></textarea>
+                  <textarea id="message" rows={4} placeholder="Briefly describe what you're looking to solve..." className="w-full bg-[#FAFBFC] border border-[#E5E9F2] rounded-lg px-4 py-3 text-[#1A1F36] placeholder-[#A6B0C3] focus:outline-none focus:ring-2 focus:ring-[#1E2761] focus:border-transparent transition-all resize-none"></textarea>
                 </div>
 
                 <button type="submit" disabled={isSubmitting} className="w-full bg-[#F96167] text-white font-semibold rounded-lg px-6 py-4 text-base hover:bg-[#e8535a] transition-colors flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#F96167] focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed">
@@ -112,12 +122,16 @@ export default function ContactSection() {
 
           {/* Right: Trust / Visual */}
           <div className="flex flex-col justify-center">
-            <h3 className="text-[40px] max-[640px]:text-[32px] font-bold leading-tight mb-6 text-white" style={{ fontFamily: "Georgia, serif" }}>
-              Enterprise-grade AI, <br />ready for your data.
+            <h3 className="text-[40px] max-[640px]:text-[32px] font-bold leading-tight mb-4 text-white" style={{ fontFamily: "Georgia, serif" }}>
+              Secure Integration Flow
             </h3>
-            <p className="text-[#A6B0C3] text-lg leading-relaxed mb-10 max-w-[500px]">
-              Deploy Decyra securely in your environment. Our team will help you map your schema and configure your first operational workflows.
+            <p className="text-[#A6B0C3] text-lg leading-relaxed mb-8 max-w-[500px]">
+              SSL Encrypted, Read-Only database pipeline
             </p>
+
+            <div className="mb-8">
+              <ContactGraphic />
+            </div>
 
             <ul className="space-y-6">
               <li className="flex gap-4">

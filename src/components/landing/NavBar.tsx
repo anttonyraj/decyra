@@ -10,6 +10,9 @@ const navLinks = [
   { label: "How it works", href: "#how-it-works" },
   { label: "Why Decyra", href: "#why-decyra" },
   { label: "Built for", href: "#built-for" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "FAQ", href: "#faq" },
+  { label: "Contact", href: "#contact" },
 ];
 
 export default function NavBar() {
