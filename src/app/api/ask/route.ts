@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '../../../lib/supabase/server'
 import { DEMO_SCHEMA } from '../../../lib/schema'
 import { aiProvider } from '../../../lib/ai/provider'
+import { Client } from 'pg'
 
 export async function POST(req: NextRequest) {
   try {
     // 1. Parse body
     const body = await req.json().catch(() => null)
     const question = body?.question?.trim()
+    const connectionId = body?.connectionId
+
     if (!question) {
       return NextResponse.json({ error: 'Question is required' }, { status: 400 })
     }
@@ -19,7 +22,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // 3. SQL generation
+    // 3. Look up connection if provided (and not 'demo')
+    let isUserConnection = false
+    let connection: any = null
+    let schemaPromptText = DEMO_SCHEMA
+
+    if (connectionId && connectionId !== 'demo') {
+      const { data: conn, error: connError } = await supabase
+        .from('connections')
+        .select('*')
+        .eq('id', connectionId)
+        .single()
+
+      if (connError || !conn) {
+        console.error('Failed to retrieve user database connection:', connError)
+        return NextResponse.json({ error: 'Connection not found or unauthorized' }, { status: 404 })
+      }
+
+      connection = conn
+      isUserConnection = true
+      schemaPromptText = connection.schema_info || ''
+    }
+
+    // 4. SQL generation
     const sqlSystemPrompt = `You are an expert PostgreSQL SQL generator.
 
 Generate exactly one SELECT query to answer the user's question.
@@ -31,10 +56,10 @@ RULES:
 - Use ONLY tables and columns from the schema below. Do not invent column names.
 - For date math use date_trunc and current_date.
 - For percentages cast to numeric to avoid integer division.
-- Always prefix tables with 'demo.' (e.g. demo.customers, demo.orders).
+- Always prefix tables with their schema name (e.g. ${isUserConnection ? 'public.tablename' : 'demo.customers, demo.orders'}).
 
 SCHEMA:
-${DEMO_SCHEMA}
+${schemaPromptText}
 
 Return ONLY valid JSON in this exact shape:
 {"sql": "SELECT ...", "intent": "brief plain-English description of what the SQL does"}
@@ -47,7 +72,7 @@ No markdown fences. No commentary outside the JSON. Just the JSON object.`
       maxTokens: 1024,
     })
 
-    // 4. Parse Gemini's JSON response, stripping any markdown fences
+    // 5. Parse Gemini's JSON response, stripping any markdown fences
     const cleaned = sqlRawText
       .replace(/^```(?:json)?\n?/, '')
       .replace(/\n?```$/, '')
@@ -65,7 +90,7 @@ No markdown fences. No commentary outside the JSON. Just the JSON object.`
 
     const sql = parsed.sql.trim().replace(/;$/, '')
 
-    // 5. Safety checks — defense in depth
+    // 6. Safety checks — defense in depth
     if (!/^\s*select\s/i.test(sql)) {
       return NextResponse.json(
         { error: 'Only SELECT queries are allowed', sql },
@@ -79,22 +104,64 @@ No markdown fences. No commentary outside the JSON. Just the JSON object.`
       )
     }
 
-    // 6. Execute via Supabase RPC
-    const { data: rows, error: queryError } = await supabase.rpc('run_demo_query', {
-      query_text: sql,
-    })
+    // 7. Execute query
+    let rows: any[] = []
+    let queryErrorMsg: string | null = null
 
-    if (queryError) {
+    if (isUserConnection) {
+      // Execute query on the user's PostgreSQL database
+      let userClient: Client | null = null
+      try {
+        userClient = new Client({
+          host: connection.host,
+          port: Number(connection.port) || 5432,
+          database: connection.database_name,
+          user: connection.username,
+          password: connection.password_encrypted,
+          connectionTimeoutMillis: 10000, // 10s connection timeout
+          statement_timeout: 15000,       // 15s statement execution timeout
+          ssl: connection.ssl_enabled ? { rejectUnauthorized: false } : false
+        })
+
+        await userClient.connect()
+
+        // Safely wrap the SQL generated in a subquery and limit to 500 rows for security
+        const limitedSql = `SELECT * FROM (${sql}) AS user_query LIMIT 500`
+        const queryRes = await userClient.query(limitedSql)
+        rows = queryRes.rows
+
+      } catch (err: any) {
+        console.error('User database execution error:', err)
+        queryErrorMsg = err.message || 'Database query execution failed.'
+      } finally {
+        if (userClient) {
+          await userClient.end().catch((e) => console.error('Error closing user pg client:', e))
+        }
+      }
+    } else {
+      // Execute via standard demo RPC
+      const { data: rpcRows, error: rpcError } = await supabase.rpc('run_demo_query', {
+        query_text: sql,
+      })
+
+      if (rpcError) {
+        queryErrorMsg = rpcError.message
+      } else {
+        rows = Array.isArray(rpcRows) ? rpcRows : []
+      }
+    }
+
+    if (queryErrorMsg) {
       return NextResponse.json(
-        { sql, intent: parsed.intent, error: queryError.message },
+        { sql, intent: parsed.intent, error: queryErrorMsg },
         { status: 500 }
       )
     }
 
-    const rowCount = Array.isArray(rows) ? rows.length : 0
-    const previewRows = Array.isArray(rows) ? rows.slice(0, 5) : []
+    const rowCount = rows.length
+    const previewRows = rows.slice(0, 5)
 
-    // 7. Narration call
+    // 8. Narration call
     const narrationPrompt = `A user asked: "${question}"
 
 The SQL that ran: ${sql}
@@ -109,14 +176,15 @@ Write a 2-sentence plain-English explanation for a non-technical business execut
       maxTokens: 512,
     })
 
-    // 8. Return everything
+    // 9. Return everything
     return NextResponse.json({
       sql,
       intent: parsed.intent,
-      rows: Array.isArray(rows) ? rows : [],
+      rows,
       rowCount,
       narration,
     })
+
   } catch (err: any) {
     console.error('Ask route error:', err)
     return NextResponse.json(

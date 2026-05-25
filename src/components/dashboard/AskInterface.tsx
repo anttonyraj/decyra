@@ -63,7 +63,11 @@ export default function AskInterface() {
       const res = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, dataSource: activeSource })
+        body: JSON.stringify({
+          question,
+          dataSource: activeSource,
+          connectionId: activeSource
+        })
       })
 
       const json = await res.json()

@@ -1,16 +1,14 @@
 'use client'
 
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Database, MessageSquare, Clock, Settings, Menu, X, LogOut, ChevronRight } from 'lucide-react'
-
-// Define the Data Source type and Context
-export type DataSourceType = 'demo' | 'postgres' | 'snowflake' | 'mysql' | 'bigquery'
+import { Database, MessageSquare, Clock, Settings, Menu, X, LogOut, Plus } from 'lucide-react'
+import ConnectPostgresModal from './ConnectPostgresModal'
 
 interface DataSourceContextType {
-  activeSource: DataSourceType
-  setActiveSource: (source: DataSourceType) => void
+  activeSource: string // 'demo' or custom connection UUID
+  setActiveSource: (source: string) => void
 }
 
 const DataSourceContext = createContext<DataSourceContextType | undefined>(undefined)
@@ -31,9 +29,28 @@ export function DashboardShell({
   children: React.ReactNode
 }) {
   const router = useRouter()
-  const [activeSource, setActiveSource] = useState<DataSourceType>('demo')
+  const [activeSource, setActiveSource] = useState<string>('demo')
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [isConnectOpen, setIsConnectOpen] = useState(false)
+  const [connections, setConnections] = useState<any[]>([])
+  
   const supabase = createClient()
+
+  const fetchConnections = async () => {
+    try {
+      const res = await fetch('/api/connections/list')
+      const data = await res.json()
+      if (Array.isArray(data)) {
+        setConnections(data)
+      }
+    } catch (err) {
+      console.error('Failed to fetch saved connections:', err)
+    }
+  }
+
+  useEffect(() => {
+    fetchConnections()
+  }, [])
 
   const handleSignOut = async () => {
     try {
@@ -42,7 +59,6 @@ export function DashboardShell({
       router.refresh()
     } catch (err) {
       console.error('Error signing out:', err)
-      // Fallback
       window.location.href = '/login'
     }
   }
@@ -86,7 +102,7 @@ export function DashboardShell({
           {/* Demo Database */}
           <button
             onClick={() => setActiveSource('demo')}
-            className={`w-full h-10 flex items-center justify-between rounded-lg transition-all text-left ${
+            className={`w-full h-10 flex items-center justify-between rounded-lg transition-all text-left cursor-pointer ${
               activeSource === 'demo'
                 ? 'bg-[#F4F6FB] border-l-3 border-[#F96167] pl-[9px] pr-3 text-[#1E2761] font-semibold'
                 : 'pl-3 pr-3 text-[#1E2761] hover:bg-[#F4F6FB]'
@@ -102,40 +118,55 @@ export function DashboardShell({
             </div>
           </button>
 
-          {/* PostgreSQL */}
-          <div
-            className={`w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 transition-all ${
-              activeSource === 'postgres'
-                ? 'bg-[#F4F6FB] border-l-3 border-[#F96167] pl-[9px] text-[#1E2761] font-semibold'
-                : 'text-[#1E2761] hover:bg-[#F4F6FB]'
-            }`}
-          >
+          {/* Dynamic User Connections */}
+          {connections.map((conn) => {
+            const isActive = activeSource === conn.id
+            return (
+              <button
+                key={conn.id}
+                onClick={() => setActiveSource(conn.id)}
+                className={`w-full h-10 flex items-center justify-between rounded-lg transition-all text-left cursor-pointer ${
+                  isActive
+                    ? 'bg-[#F4F6FB] border-l-3 border-[#F96167] pl-[9px] pr-3 text-[#1E2761] font-semibold'
+                    : 'pl-3 pr-3 text-[#1E2761] hover:bg-[#F4F6FB]'
+                }`}
+              >
+                <div className="flex items-center gap-2.5 overflow-hidden pr-2">
+                  <Database className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#F96167]' : 'text-[#5A6478]'}`} />
+                  <span className="text-sm font-medium truncate" title={conn.name}>{conn.name}</span>
+                </div>
+                {isActive && (
+                  <div className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-semibold border border-green-200 shrink-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                    <span>Active</span>
+                  </div>
+                )}
+              </button>
+            )
+          })}
+
+          {/* PostgreSQL Connect Button */}
+          <div className="w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 text-[#1E2761] hover:bg-[#F4F6FB]">
             <div className="flex items-center gap-2.5">
               <Database className="w-4 h-4 text-[#5A6478]" />
               <span className="text-sm font-medium">PostgreSQL</span>
             </div>
             <button
-              onClick={() => setActiveSource('postgres')}
+              onClick={() => setIsConnectOpen(true)}
               className="text-[11px] text-[#F96167] hover:underline font-semibold cursor-pointer"
             >
               Connect
             </button>
           </div>
 
-          {/* Snowflake */}
-          <div
-            className={`w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 transition-all ${
-              activeSource === 'snowflake'
-                ? 'bg-[#F4F6FB] border-l-3 border-[#F96167] pl-[9px] text-[#1E2761] font-semibold'
-                : 'text-[#1E2761] hover:bg-[#F4F6FB]'
-            }`}
-          >
+          {/* Snowflake Connect (placeholder) */}
+          <div className="w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 text-[#1E2761] hover:bg-[#F4F6FB]">
             <div className="flex items-center gap-2.5">
               <Database className="w-4 h-4 text-[#5A6478]" />
               <span className="text-sm font-medium">Snowflake</span>
             </div>
             <button
-              onClick={() => setActiveSource('snowflake')}
+              onClick={() => setIsConnectOpen(true)}
               className="text-[11px] text-[#F96167] hover:underline font-semibold cursor-pointer"
             >
               Connect
@@ -165,8 +196,11 @@ export function DashboardShell({
           </div>
         </div>
 
-        <button className="text-[13px] text-[#5A6478] hover:text-[#1E2761] transition-colors pl-3 pt-2.5 flex items-center gap-1 font-medium hover:underline text-left">
-          + Add connection
+        <button 
+          onClick={() => setIsConnectOpen(true)}
+          className="text-[13px] text-[#5A6478] hover:text-[#1E2761] transition-colors pl-3 pt-4 flex items-center gap-1 font-medium hover:underline text-left cursor-pointer"
+        >
+          <Plus size={14} /> Add connection
         </button>
 
         <div className="w-full h-[1px] bg-[#E5E9F2] my-5" />
@@ -225,7 +259,7 @@ export function DashboardShell({
         </div>
         <button
           onClick={handleSignOut}
-          className="w-full h-9 flex items-center gap-2 text-xs text-[#5A6478] hover:text-[#F96167] transition-all rounded-lg hover:bg-red-50/50 px-2"
+          className="w-full h-9 flex items-center gap-2 text-xs text-[#5A6478] hover:text-[#F96167] transition-all rounded-lg hover:bg-red-50/50 px-2 cursor-pointer"
         >
           <LogOut className="w-3.5 h-3.5" />
           <span className="font-semibold">Sign out</span>
@@ -289,6 +323,14 @@ export function DashboardShell({
           </main>
         </div>
       </div>
+
+      <ConnectPostgresModal
+        isOpen={isConnectOpen}
+        onClose={() => setIsConnectOpen(false)}
+        onSaveSuccess={() => {
+          fetchConnections()
+        }}
+      />
     </DataSourceContext.Provider>
   )
 }
