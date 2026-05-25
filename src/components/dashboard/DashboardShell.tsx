@@ -3,9 +3,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Database, MessageSquare, Clock, Settings, Menu, X, LogOut, Plus, Snowflake } from 'lucide-react'
+import { Database, MessageSquare, Clock, Settings, Menu, X, LogOut, Plus, Snowflake, LucideIcon } from 'lucide-react'
 import ConnectPostgresModal from './ConnectPostgresModal'
 import ConnectSnowflakeModal from './ConnectSnowflakeModal'
+import ComingSoonModal from './ComingSoonModal'
 
 interface DataSourceContextType {
   activeSource: string // 'demo' or custom connection UUID
@@ -34,6 +35,12 @@ export function DashboardShell({
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [isConnectOpen, setIsConnectOpen] = useState(false)
   const [isSnowflakeConnectOpen, setIsSnowflakeConnectOpen] = useState(false)
+  
+  // Coming Soon waitlist states
+  const [comingSoonName, setComingSoonName] = useState('MySQL')
+  const [comingSoonIcon, setComingSoonIcon] = useState<LucideIcon>(Database)
+  const [isComingSoonOpen, setIsComingSoonOpen] = useState(false)
+
   const [connections, setConnections] = useState<any[]>([])
   
   const supabase = createClient()
@@ -66,6 +73,9 @@ export function DashboardShell({
   }
 
   const initial = user?.email ? user.email.charAt(0).toUpperCase() : 'U'
+
+  const activeConnection = connections.find(c => c.id === activeSource)
+  const activeSourceName = activeSource === 'demo' ? 'Demo Database' : activeConnection ? activeConnection.name : 'Unknown Database'
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white">
@@ -177,27 +187,41 @@ export function DashboardShell({
             </button>
           </div>
 
-          {/* MySQL */}
-          <div className="w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 opacity-60">
+          {/* MySQL (Coming Soon) */}
+          <button
+            onClick={() => {
+              setComingSoonName('MySQL')
+              setComingSoonIcon(() => Database)
+              setIsComingSoonOpen(true)
+            }}
+            className="w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 hover:bg-[#F4F6FB] cursor-pointer text-[#1E2761]"
+          >
             <div className="flex items-center gap-2.5">
               <Database className="w-4 h-4 text-[#5A6478]" />
-              <span className="text-sm text-[#5A6478]">MySQL</span>
+              <span className="text-sm font-medium">MySQL</span>
             </div>
-            <span className="bg-[#FDE2E3] text-[#F96167] text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider">
+            <span className="bg-[#FDE2E3] text-[#F96167] text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider shrink-0">
               SOON
             </span>
-          </div>
+          </button>
 
-          {/* BigQuery */}
-          <div className="w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 opacity-60">
+          {/* BigQuery (Coming Soon) */}
+          <button
+            onClick={() => {
+              setComingSoonName('BigQuery')
+              setComingSoonIcon(() => Database)
+              setIsComingSoonOpen(true)
+            }}
+            className="w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 hover:bg-[#F4F6FB] cursor-pointer text-[#1E2761]"
+          >
             <div className="flex items-center gap-2.5">
               <Database className="w-4 h-4 text-[#5A6478]" />
-              <span className="text-sm text-[#5A6478]">BigQuery</span>
+              <span className="text-sm font-medium">BigQuery</span>
             </div>
-            <span className="bg-[#FDE2E3] text-[#F96167] text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider">
+            <span className="bg-[#FDE2E3] text-[#F96167] text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider shrink-0">
               SOON
             </span>
-          </div>
+          </button>
         </div>
 
         <button 
@@ -321,6 +345,15 @@ export function DashboardShell({
             </div>
           </header>
 
+          {/* STATUS BAR */}
+          <div className="h-[36px] bg-white border-b border-[#E5E9F2] px-6 flex items-center justify-between shrink-0 text-[11px] text-[#5A6478] select-none font-medium">
+            <span>Dashboard &gt; Ask</span>
+            <div className="flex items-center gap-1.5 text-[#1E2761]">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <span>{activeSourceName}</span>
+            </div>
+          </div>
+
           {/* PAGE CONTENT */}
           <main className="flex-grow overflow-y-auto p-6 md:p-10">
             {children}
@@ -342,6 +375,13 @@ export function DashboardShell({
         onSaveSuccess={() => {
           fetchConnections()
         }}
+      />
+
+      <ComingSoonModal
+        name={comingSoonName}
+        icon={comingSoonIcon}
+        isOpen={isComingSoonOpen}
+        onClose={() => setIsComingSoonOpen(false)}
       />
     </DataSourceContext.Provider>
   )
