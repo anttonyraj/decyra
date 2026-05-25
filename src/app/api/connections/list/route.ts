@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     // 2. Fetch connections (selecting everything except password_encrypted for security)
     const { data, error } = await supabase
       .from('connections')
-      .select('id, name, type, host, port, database_name, username, ssl_enabled, status, last_tested_at, created_at')
+      .select('id, name, type, connection_type, host, port, database_name, username, ssl_enabled, status, last_tested_at, created_at, account, warehouse, schema_name, role')
       .order('created_at', { ascending: false })
 
     if (error) {

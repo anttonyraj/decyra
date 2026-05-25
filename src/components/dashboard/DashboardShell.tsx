@@ -3,8 +3,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Database, MessageSquare, Clock, Settings, Menu, X, LogOut, Plus } from 'lucide-react'
+import { Database, MessageSquare, Clock, Settings, Menu, X, LogOut, Plus, Snowflake } from 'lucide-react'
 import ConnectPostgresModal from './ConnectPostgresModal'
+import ConnectSnowflakeModal from './ConnectSnowflakeModal'
 
 interface DataSourceContextType {
   activeSource: string // 'demo' or custom connection UUID
@@ -32,6 +33,7 @@ export function DashboardShell({
   const [activeSource, setActiveSource] = useState<string>('demo')
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [isConnectOpen, setIsConnectOpen] = useState(false)
+  const [isSnowflakeConnectOpen, setIsSnowflakeConnectOpen] = useState(false)
   const [connections, setConnections] = useState<any[]>([])
   
   const supabase = createClient()
@@ -121,6 +123,8 @@ export function DashboardShell({
           {/* Dynamic User Connections */}
           {connections.map((conn) => {
             const isActive = activeSource === conn.id
+            const isSnow = conn.connection_type === 'snowflake' || conn.type === 'snowflake'
+            const IconComponent = isSnow ? Snowflake : Database
             return (
               <button
                 key={conn.id}
@@ -132,7 +136,7 @@ export function DashboardShell({
                 }`}
               >
                 <div className="flex items-center gap-2.5 overflow-hidden pr-2">
-                  <Database className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#F96167]' : 'text-[#5A6478]'}`} />
+                  <IconComponent className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#F96167]' : 'text-[#5A6478]'}`} />
                   <span className="text-sm font-medium truncate" title={conn.name}>{conn.name}</span>
                 </div>
                 {isActive && (
@@ -159,14 +163,14 @@ export function DashboardShell({
             </button>
           </div>
 
-          {/* Snowflake Connect (placeholder) */}
+          {/* Snowflake Connect Button */}
           <div className="w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 text-[#1E2761] hover:bg-[#F4F6FB]">
             <div className="flex items-center gap-2.5">
-              <Database className="w-4 h-4 text-[#5A6478]" />
+              <Snowflake className="w-4 h-4 text-[#5A6478]" />
               <span className="text-sm font-medium">Snowflake</span>
             </div>
             <button
-              onClick={() => setIsConnectOpen(true)}
+              onClick={() => setIsSnowflakeConnectOpen(true)}
               className="text-[11px] text-[#F96167] hover:underline font-semibold cursor-pointer"
             >
               Connect
@@ -327,6 +331,14 @@ export function DashboardShell({
       <ConnectPostgresModal
         isOpen={isConnectOpen}
         onClose={() => setIsConnectOpen(false)}
+        onSaveSuccess={() => {
+          fetchConnections()
+        }}
+      />
+
+      <ConnectSnowflakeModal
+        isOpen={isSnowflakeConnectOpen}
+        onClose={() => setIsSnowflakeConnectOpen(false)}
         onSaveSuccess={() => {
           fetchConnections()
         }}
