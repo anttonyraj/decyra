@@ -15,8 +15,10 @@ import {
 } from '@/components/ui/table'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useDataSource } from './DashboardShell'
 
-export default function AskInterface({ userEmail }: { userEmail: string }) {
+export default function AskInterface() {
+  const { activeSource } = useDataSource()
   const router = useRouter()
   const [question, setQuestion] = useState('')
   const [loading, setLoading] = useState(false)
@@ -41,7 +43,7 @@ export default function AskInterface({ userEmail }: { userEmail: string }) {
       const res = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question })
+        body: JSON.stringify({ question, dataSource: activeSource })
       })
 
       const json = await res.json()
@@ -90,11 +92,13 @@ export default function AskInterface({ userEmail }: { userEmail: string }) {
   }
 
   return (
-    <div className="w-full max-w-[900px] mx-auto py-8 px-4 flex flex-col items-center">
+    <div className="w-full max-w-[900px] mx-auto py-4 px-4 flex flex-col items-center">
       <div className="text-center mb-8">
         <div className="text-[12px] font-bold text-[#1E2761] uppercase tracking-widest mb-4">ASK</div>
         <h1 className="text-[32px] font-serif text-[#1E2761] mb-2 leading-tight">Ask Decyra anything about your data</h1>
-        <p className="text-[#5A6478] text-[16px]">Type a question. Get the SQL, the answer, and an explanation.</p>
+        <p className="text-[#5A6478] text-[16px]">
+          Querying <span className="font-semibold text-[#1E2761]">{activeSource === 'demo' ? 'Demo Database' : activeSource === 'postgres' ? 'PostgreSQL' : activeSource === 'snowflake' ? 'Snowflake' : activeSource.toUpperCase()}</span>. Get the SQL, the answer, and an explanation.
+        </p>
       </div>
 
       <div className="flex flex-wrap gap-2 justify-center mb-6">
