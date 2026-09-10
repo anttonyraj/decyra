@@ -26,7 +26,7 @@ import {
 } from 'recharts'
 
 export default function AskInterface() {
-  const { activeSource } = useDataSource()
+  const { activeSource, prefilledQuestion, setPrefilledQuestion, connections } = useDataSource()
   const router = useRouter()
   const [question, setQuestion] = useState('')
   const [loading, setLoading] = useState(false)
@@ -46,6 +46,16 @@ export default function AskInterface() {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Auto-run if question was passed from History / Favorites
+  useEffect(() => {
+    if (prefilledQuestion) {
+      const q = prefilledQuestion
+      setQuestion(q)
+      setPrefilledQuestion('')
+      executeQuery(q)
+    }
+  }, [prefilledQuestion])
 
   // Timer effect for branded loading state messages
   useEffect(() => {
@@ -75,19 +85,23 @@ export default function AskInterface() {
     'Which products have the highest average order value?'
   ]
 
-  const handleSubmit = async () => {
-    if (!question.trim() || loading) return
+  const executeQuery = async (customQ?: string) => {
+    const qToRun = (customQ || question).trim()
+    if (!qToRun || loading) return
 
     setLoading(true)
     setError(null)
     setResult(null)
+
+    const activeConn = connections?.find((c: any) => c.id === activeSource)
+    const activeSourceName = activeSource === 'demo' ? 'Demo Database' : activeConn ? activeConn.name : 'Custom Database'
 
     try {
       const res = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          question,
+          question: qToRun,
           dataSource: activeSource,
           connectionId: activeSource
         })
@@ -98,6 +112,39 @@ export default function AskInterface() {
       if (res.ok) {
         setResult(json)
         setAnimationKey(prev => prev + 1)
+
+        // Save to History (local cache + remote Supabase)
+        const historyEntry = {
+          id: 'local_' + Date.now(),
+          question: qToRun,
+          sql: json.sql,
+          intent: json.intent,
+          row_count: json.rowCount || 0,
+          is_favorite: false,
+          connection_id: activeSource,
+          connection_name: activeSourceName,
+          created_at: new Date().toISOString()
+        }
+
+        try {
+          const stored = localStorage.getItem('decyra_query_history')
+          const arr = stored ? JSON.parse(stored) : []
+          arr.unshift(historyEntry)
+          localStorage.setItem('decyra_query_history', JSON.stringify(arr.slice(0, 100)))
+        } catch (e) {}
+
+        fetch('/api/history', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            question: qToRun,
+            sql: json.sql,
+            intent: json.intent,
+            rowCount: json.rowCount || 0,
+            connectionId: activeSource,
+            connectionName: activeSourceName
+          })
+        }).catch(err => console.warn('Failed to save to remote history:', err))
       } else {
         if (res.status === 401) {
           router.push('/login')
@@ -119,6 +166,8 @@ export default function AskInterface() {
       setLoading(false)
     }
   }
+
+  const handleSubmit = () => executeQuery()
 
   const handleClear = () => {
     setQuestion('')

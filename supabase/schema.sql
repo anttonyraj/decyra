@@ -162,3 +162,28 @@ DO $$ BEGIN
   WITH CHECK (true);
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
+
+-- 10. Create Query History & Favorites Table
+CREATE TABLE IF NOT EXISTS public.queries_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  question TEXT NOT NULL,
+  sql TEXT NOT NULL,
+  intent TEXT,
+  row_count INT DEFAULT 0,
+  is_favorite BOOLEAN DEFAULT false,
+  connection_id TEXT DEFAULT 'demo',
+  connection_name TEXT DEFAULT 'Demo Database',
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.queries_history ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+  CREATE POLICY "Users can manage their own query history"
+  ON public.queries_history FOR ALL TO authenticated
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+

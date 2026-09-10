@@ -7,10 +7,19 @@ import { Database, MessageSquare, Clock, Settings, Menu, X, LogOut, Plus, Snowfl
 import ConnectPostgresModal from './ConnectPostgresModal'
 import ConnectSnowflakeModal from './ConnectSnowflakeModal'
 import ComingSoonModal from './ComingSoonModal'
+import HistoryView from './HistoryView'
+import SettingsView from './SettingsView'
 
 interface DataSourceContextType {
   activeSource: string // 'demo' or custom connection UUID
   setActiveSource: (source: string) => void
+  activeTab: 'ask' | 'history' | 'settings'
+  setActiveTab: (tab: 'ask' | 'history' | 'settings') => void
+  runHistoryQuery: (question: string) => void
+  prefilledQuestion: string
+  setPrefilledQuestion: (q: string) => void
+  connections: any[]
+  refreshConnections: () => Promise<void>
 }
 
 const DataSourceContext = createContext<DataSourceContextType | undefined>(undefined)
@@ -32,6 +41,8 @@ export function DashboardShell({
 }) {
   const router = useRouter()
   const [activeSource, setActiveSource] = useState<string>('demo')
+  const [activeTab, setActiveTab] = useState<'ask' | 'history' | 'settings'>('ask')
+  const [prefilledQuestion, setPrefilledQuestion] = useState('')
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [isConnectOpen, setIsConnectOpen] = useState(false)
   const [isSnowflakeConnectOpen, setIsSnowflakeConnectOpen] = useState(false)
@@ -76,6 +87,12 @@ export function DashboardShell({
 
   const activeConnection = connections.find(c => c.id === activeSource)
   const activeSourceName = activeSource === 'demo' ? 'Demo Database' : activeConnection ? activeConnection.name : 'Unknown Database'
+
+  const runHistoryQuery = (q: string) => {
+    setPrefilledQuestion(q)
+    setActiveTab('ask')
+    setIsMobileOpen(false)
+  }
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white">
@@ -240,34 +257,49 @@ export function DashboardShell({
 
         <div className="flex flex-col gap-1">
           {/* Ask */}
-          <div className="w-full h-10 flex items-center rounded-lg bg-[#F4F6FB] border-l-3 border-[#F96167] pl-[9px] pr-3 text-[#1E2761] font-semibold">
+          <button
+            onClick={() => { setActiveTab('ask'); setIsMobileOpen(false); }}
+            className={`w-full h-10 flex items-center rounded-lg transition-all cursor-pointer text-left ${
+              activeTab === 'ask'
+                ? 'bg-[#F4F6FB] border-l-3 border-[#F96167] pl-[9px] pr-3 text-[#1E2761] font-semibold'
+                : 'pl-3 pr-3 text-[#5A6478] hover:text-[#1E2761] hover:bg-[#F4F6FB]'
+            }`}
+          >
             <div className="flex items-center gap-2.5">
-              <MessageSquare className="w-4 h-4 text-[#F96167]" />
+              <MessageSquare className={`w-4 h-4 ${activeTab === 'ask' ? 'text-[#F96167]' : 'text-[#5A6478]'}`} />
               <span className="text-sm">Ask</span>
             </div>
-          </div>
+          </button>
 
           {/* History */}
-          <div className="w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 opacity-60">
+          <button
+            onClick={() => { setActiveTab('history'); setIsMobileOpen(false); }}
+            className={`w-full h-10 flex items-center rounded-lg transition-all cursor-pointer text-left ${
+              activeTab === 'history'
+                ? 'bg-[#F4F6FB] border-l-3 border-[#F96167] pl-[9px] pr-3 text-[#1E2761] font-semibold'
+                : 'pl-3 pr-3 text-[#5A6478] hover:text-[#1E2761] hover:bg-[#F4F6FB]'
+            }`}
+          >
             <div className="flex items-center gap-2.5">
-              <Clock className="w-4 h-4 text-[#5A6478]" />
-              <span className="text-sm text-[#5A6478]">History</span>
+              <Clock className={`w-4 h-4 ${activeTab === 'history' ? 'text-[#F96167]' : 'text-[#5A6478]'}`} />
+              <span className="text-sm">History</span>
             </div>
-            <span className="bg-[#FDE2E3] text-[#F96167] text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider">
-              SOON
-            </span>
-          </div>
+          </button>
 
           {/* Settings */}
-          <div className="w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 opacity-60">
+          <button
+            onClick={() => { setActiveTab('settings'); setIsMobileOpen(false); }}
+            className={`w-full h-10 flex items-center rounded-lg transition-all cursor-pointer text-left ${
+              activeTab === 'settings'
+                ? 'bg-[#F4F6FB] border-l-3 border-[#F96167] pl-[9px] pr-3 text-[#1E2761] font-semibold'
+                : 'pl-3 pr-3 text-[#5A6478] hover:text-[#1E2761] hover:bg-[#F4F6FB]'
+            }`}
+          >
             <div className="flex items-center gap-2.5">
-              <Settings className="w-4 h-4 text-[#5A6478]" />
-              <span className="text-sm text-[#5A6478]">Settings</span>
+              <Settings className={`w-4 h-4 ${activeTab === 'settings' ? 'text-[#F96167]' : 'text-[#5A6478]'}`} />
+              <span className="text-sm">Settings</span>
             </div>
-            <span className="bg-[#FDE2E3] text-[#F96167] text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider">
-              SOON
-            </span>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -297,7 +329,19 @@ export function DashboardShell({
   )
 
   return (
-    <DataSourceContext.Provider value={{ activeSource, setActiveSource }}>
+    <DataSourceContext.Provider
+      value={{
+        activeSource,
+        setActiveSource,
+        activeTab,
+        setActiveTab,
+        runHistoryQuery,
+        prefilledQuestion,
+        setPrefilledQuestion,
+        connections,
+        refreshConnections: fetchConnections
+      }}
+    >
       <div className="w-screen h-screen flex overflow-hidden bg-[#FAFBFC] font-sans">
         {/* DESKTOP SIDEBAR */}
         <aside className="hidden md:block w-[260px] h-full shrink-0 bg-white border-r border-[#E5E9F2] p-6">
@@ -347,7 +391,7 @@ export function DashboardShell({
 
           {/* STATUS BAR */}
           <div className="h-[36px] bg-white border-b border-[#E5E9F2] px-6 flex items-center justify-between shrink-0 text-[11px] text-[#5A6478] select-none font-medium">
-            <span>Dashboard &gt; Ask</span>
+            <span>Dashboard &gt; {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}</span>
             <div className="flex items-center gap-1.5 text-[#1E2761]">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
               <span>{activeSourceName}</span>
@@ -356,7 +400,9 @@ export function DashboardShell({
 
           {/* PAGE CONTENT */}
           <main className="flex-grow overflow-y-auto p-6 md:p-10">
-            {children}
+            {activeTab === 'ask' && children}
+            {activeTab === 'history' && <HistoryView />}
+            {activeTab === 'settings' && <SettingsView user={user} />}
           </main>
         </div>
       </div>
