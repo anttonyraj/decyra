@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Loader2, Copy, Search, MessageSquare, Download, Check } from 'lucide-react'
+import { Loader2, Copy, Search, MessageSquare, Download, Check, Sparkles, CornerDownRight, RotateCcw, FileSpreadsheet, ArrowRight, UploadCloud } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useDataSource } from './DashboardShell'
 import {
@@ -26,9 +26,18 @@ import {
 } from 'recharts'
 
 export default function AskInterface() {
-  const { activeSource, prefilledQuestion, setPrefilledQuestion, connections } = useDataSource()
+  const { 
+    activeSource, 
+    prefilledQuestion, 
+    setPrefilledQuestion, 
+    connections,
+    activeUploadedFile,
+    openUploadModal
+  } = useDataSource()
+  
   const router = useRouter()
   const [question, setQuestion] = useState('')
+  const [followUpQuestion, setFollowUpQuestion] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
@@ -36,6 +45,15 @@ export default function AskInterface() {
   const [tableCopied, setTableCopied] = useState(false)
   const [downloadingChart, setDownloadingChart] = useState(false)
   const [mounted, setMounted] = useState(false)
+
+  // Multi-turn conversation thread tracking
+  const [conversationThread, setConversationThread] = useState<Array<{
+    question: string
+    sql: string
+    intent?: string
+    narration: string
+    rowCount: number
+  }>>([])
 
   // Branded loader text transition state
   const [loadingText, setLoadingText] = useState("Analyzing your question...")
@@ -65,103 +83,214 @@ export default function AskInterface() {
     }
 
     const timer1 = setTimeout(() => {
-      setLoadingText("Generating SQL...")
-    }, 3000)
+      setLoadingText(activeUploadedFile ? "Generating in-memory SQL..." : "Generating SQL...")
+    }, 2500)
 
     const timer2 = setTimeout(() => {
-      setLoadingText("Running query...")
-    }, 6000)
+      setLoadingText(activeUploadedFile ? "Querying spreadsheet records..." : "Running query...")
+    }, 5000)
 
     return () => {
       clearTimeout(timer1)
       clearTimeout(timer2)
     }
-  }, [loading])
+  }, [loading, activeUploadedFile])
 
-  const chips = [
-    'Show me top 10 customers by total revenue',
-    'Which sales reps are below 80% of quota this quarter?',
-    'How many orders did we have last month by region?',
-    'Which products have the highest average order value?'
+  // Suggest chips based on whether an uploaded file is active or database
+  const getChips = () => {
+    if (activeUploadedFile) {
+      const cols = activeUploadedFile.columns || []
+      const numCol = cols.find(c => /amount|revenue|total|price|cost|sales|value|qty|quantity/i.test(c)) || cols[1] || 'value'
+      const catCol = cols.find(c => /dept|department|region|category|status|name|account|type/i.test(c)) || cols[0] || 'category'
+
+      return [
+        `Show the first 10 rows from ${activeUploadedFile.tableName}`,
+        `What is the total count of records?`,
+        `Break down total ${numCol} by ${catCol}`,
+        `Which 5 records have the highest ${numCol}?`
+      ]
+    }
+
+    return [
+      'Show me top 10 customers by total revenue',
+      'Which sales reps are below 80% of quota this quarter?',
+      'How many orders did we have last month by region?',
+      'Which products have the highest average order value?'
+    ]
+  }
+
+  const chips = getChips()
+
+  const followUpChips = [
+    'Now filter that to only enterprise accounts',
+    'Break that down month-by-month',
+    'Show only the top 5 results',
+    'Sort from lowest to highest',
+    'What is the average and total sum?'
   ]
 
-  const executeQuery = async (customQ?: string) => {
-    const qToRun = (customQ || question).trim()
+  const saveQueryToHistory = (q: string, sql: string, intent: string, rowCount: number, sourceName: string) => {
+    const historyEntry = {
+      id: 'local_' + Date.now(),
+      question: q,
+      sql,
+      intent,
+      row_count: rowCount,
+      is_favorite: false,
+      connection_id: activeSource,
+      connection_name: sourceName,
+      created_at: new Date().toISOString()
+    }
+
+    try {
+      const stored = localStorage.getItem('decyra_query_history')
+      const arr = stored ? JSON.parse(stored) : []
+      arr.unshift(historyEntry)
+      localStorage.setItem('decyra_query_history', JSON.stringify(arr.slice(0, 100)))
+    } catch (e) {}
+
+    fetch('/api/history', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question: q,
+        sql,
+        intent,
+        rowCount,
+        connectionId: activeSource,
+        connectionName: sourceName
+      })
+    }).catch(err => console.warn('Failed to save to remote history:', err))
+  }
+
+  const executeQuery = async (customQ?: string, isFollowUp: boolean = false) => {
+    const qToRun = (customQ || (isFollowUp ? followUpQuestion : question)).trim()
     if (!qToRun || loading) return
 
     setLoading(true)
     setError(null)
-    setResult(null)
+    if (!isFollowUp) {
+      setResult(null)
+      setConversationThread([])
+    }
 
-    const activeConn = connections?.find((c: any) => c.id === activeSource)
-    const activeSourceName = activeSource === 'demo' ? 'Demo Database' : activeConn ? activeConn.name : 'Custom Database'
+    const previousQuestion = isFollowUp ? (result?.question || question) : undefined
+    const previousSql = isFollowUp ? result?.sql : undefined
+    const previousIntent = isFollowUp ? result?.intent : undefined
 
     try {
-      const res = await fetch('/api/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          question: qToRun,
-          dataSource: activeSource,
-          connectionId: activeSource
-        })
-      })
-
-      const json = await res.json()
-
-      if (res.ok) {
-        setResult(json)
-        setAnimationKey(prev => prev + 1)
-
-        // Save to History (local cache + remote Supabase)
-        const historyEntry = {
-          id: 'local_' + Date.now(),
-          question: qToRun,
-          sql: json.sql,
-          intent: json.intent,
-          row_count: json.rowCount || 0,
-          is_favorite: false,
-          connection_id: activeSource,
-          connection_name: activeSourceName,
-          created_at: new Date().toISOString()
-        }
-
-        try {
-          const stored = localStorage.getItem('decyra_query_history')
-          const arr = stored ? JSON.parse(stored) : []
-          arr.unshift(historyEntry)
-          localStorage.setItem('decyra_query_history', JSON.stringify(arr.slice(0, 100)))
-        } catch (e) {}
-
-        fetch('/api/history', {
+      if (activeUploadedFile) {
+        // Querying structured uploaded file (CSV, JSON, XML, Excel) via AlaSQL on server
+        const res = await fetch('/api/ask', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             question: qToRun,
+            isUploadedFile: true,
+            customSchema: activeUploadedFile.schemaText,
+            tableName: activeUploadedFile.tableName,
+            fileRows: activeUploadedFile.rows,
+            previousQuestion,
+            previousSql,
+            previousIntent,
+          })
+        })
+
+        const json = await res.json()
+
+        if (!res.ok) {
+          throw new Error(json.error || 'Failed to generate query for file.')
+        }
+
+        const fullResult = {
+          ...json,
+          question: qToRun,
+          isFollowUp,
+          previousQuestion
+        }
+
+        setResult(fullResult)
+        setAnimationKey(prev => prev + 1)
+        if (isFollowUp) {
+          setFollowUpQuestion('')
+        }
+
+        setConversationThread(prev => [
+          ...prev,
+          {
+            question: qToRun,
             sql: json.sql,
             intent: json.intent,
-            rowCount: json.rowCount || 0,
-            connectionId: activeSource,
-            connectionName: activeSourceName
-          })
-        }).catch(err => console.warn('Failed to save to remote history:', err))
+            narration: json.narration,
+            rowCount: json.rowCount || 0
+          }
+        ])
+
+        saveQueryToHistory(qToRun, json.sql, json.intent, json.rowCount || 0, activeUploadedFile.name)
+
       } else {
-        if (res.status === 401) {
-          router.push('/login')
-          return
-        }
-        
-        const errStr = (json.error || '').toLowerCase()
-        if (errStr.includes('select') || errStr.includes('forbidden')) {
-          setError('I can only answer read-only questions about your data.')
-        } else if (json.error === 'AI returned malformed response') {
-          setError('I had trouble understanding that question. Try rephrasing it as a question about your data.')
+        // Querying Demo Database or Postgres/Snowflake Connection
+        const activeConn = connections?.find((c: any) => c.id === activeSource)
+        const activeSourceName = activeSource === 'demo' ? 'Demo Database' : activeConn ? activeConn.name : 'Custom Database'
+
+        const res = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            question: qToRun,
+            dataSource: activeSource,
+            connectionId: activeSource,
+            previousQuestion,
+            previousSql,
+            previousIntent,
+          })
+        })
+
+        const json = await res.json()
+
+        if (res.ok) {
+          const fullResult = {
+            ...json,
+            question: qToRun,
+            isFollowUp,
+            previousQuestion
+          }
+          setResult(fullResult)
+          setAnimationKey(prev => prev + 1)
+          if (isFollowUp) {
+            setFollowUpQuestion('')
+          }
+
+          setConversationThread(prev => [
+            ...prev,
+            {
+              question: qToRun,
+              sql: json.sql,
+              intent: json.intent,
+              narration: json.narration,
+              rowCount: json.rowCount || 0
+            }
+          ])
+
+          saveQueryToHistory(qToRun, json.sql, json.intent, json.rowCount || 0, activeSourceName)
         } else {
-          setError('Something went wrong. Please try again.')
+          if (res.status === 401) {
+            router.push('/login')
+            return
+          }
+          
+          const errStr = (json.error || '').toLowerCase()
+          if (errStr.includes('select') || errStr.includes('forbidden')) {
+            setError('I can only answer read-only questions about your data.')
+          } else if (json.error === 'AI returned malformed response') {
+            setError('I had trouble understanding that question. Try rephrasing it as a question about your data.')
+          } else {
+            setError(json.error || 'Something went wrong. Please try again.')
+          }
         }
       }
-    } catch (err) {
-      setError('Something went wrong. Please try again.')
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -169,10 +298,18 @@ export default function AskInterface() {
 
   const handleSubmit = () => executeQuery()
 
+  const handleFollowUpSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    if (!followUpQuestion.trim() || loading) return
+    executeQuery(followUpQuestion, true)
+  }
+
   const handleClear = () => {
     setQuestion('')
+    setFollowUpQuestion('')
     setResult(null)
     setError(null)
+    setConversationThread([])
   }
 
   const handleCopy = () => {
@@ -388,25 +525,41 @@ export default function AskInterface() {
         /* ── Centered Empty State ── */
         <div className="w-full max-w-[640px] flex flex-col items-center text-center animate-fade-in-up">
           <div className="w-16 h-16 rounded-full bg-white border border-[#E5E9F2] shadow-[0_1px_3px_rgba(0,0,0,0.05)] flex items-center justify-center mb-6 shrink-0">
-            <MessageSquare size={32} className="text-[#B0B8CC]" />
+            {activeUploadedFile ? (
+              <FileSpreadsheet size={30} className="text-[#F96167]" />
+            ) : (
+              <MessageSquare size={32} className="text-[#B0B8CC]" />
+            )}
           </div>
           
           <h1 
             className="text-[28px] font-bold text-[#1E2761] mb-2 leading-tight"
             style={{ fontFamily: 'Georgia, serif' }}
           >
-            Ask Decyra anything
+            {activeUploadedFile ? `Query ${activeUploadedFile.name}` : 'Ask Decyra anything'}
           </h1>
-          <p className="text-[#5A6478] text-sm mb-8 font-medium">
-            Select a question below or type your own to query your database.
-          </p>
+
+          {activeUploadedFile ? (
+            <div className="flex items-center gap-2 text-xs text-[#5A6478] mb-6 bg-white border border-[#E5E9F2] px-3.5 py-1.5 rounded-full shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span>In-memory Data Source: <strong>{activeUploadedFile.rowCount.toLocaleString()}</strong> rows</span>
+              <span>•</span>
+              <span><strong>{activeUploadedFile.columns.length}</strong> columns</span>
+              <span>•</span>
+              <span className="uppercase font-mono text-[10px] font-semibold text-[#F96167]">{activeUploadedFile.fileType}</span>
+            </div>
+          ) : (
+            <p className="text-[#5A6478] text-sm mb-8 font-medium">
+              Select a question below or type your own to query your data.
+            </p>
+          )}
 
           {/* Form Input area */}
           <div className="w-full relative mb-8">
             <Textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Ask anything about your data..."
+              placeholder={activeUploadedFile ? `Ask any question about ${activeUploadedFile.name}...` : "Ask anything about your data..."}
               rows={3}
               className="w-full text-base resize-none focus-visible:ring-[#F96167] bg-white shadow-sm pr-12 rounded-xl"
             />
@@ -414,7 +567,7 @@ export default function AskInterface() {
               <Button 
                 onClick={handleSubmit} 
                 disabled={loading || !question.trim()}
-                className="bg-[#F96167] hover:bg-[#e0565b] text-white rounded-[8px] px-6 h-10 font-semibold"
+                className="bg-[#F96167] hover:bg-[#e0565b] text-white rounded-[8px] px-6 h-10 font-semibold cursor-pointer"
               >
                 Ask Decyra
               </Button>
@@ -434,6 +587,16 @@ export default function AskInterface() {
               </button>
             ))}
           </div>
+
+          {!activeUploadedFile && (
+            <button
+              onClick={openUploadModal}
+              className="mt-7 flex items-center gap-2 text-xs font-semibold text-[#5A6478] hover:text-[#F96167] transition-colors cursor-pointer group"
+            >
+              <UploadCloud size={15} className="text-[#F96167] group-hover:scale-110 transition-transform" />
+              <span>Or <u>Upload a File (CSV, JSON, XML, Excel)</u> to query without a database</span>
+            </button>
+          )}
         </div>
       ) : (
         /* ── Standard Top-Aligned Query Layout ── */
@@ -442,7 +605,14 @@ export default function AskInterface() {
           {/* Header section (smaller when active) */}
           <div className="text-center mb-6">
             <div className="text-[10px] font-bold text-[#1E2761] uppercase tracking-widest mb-2">ASK</div>
-            <h1 className="text-xl font-serif font-bold text-[#1E2761]">Querying active source</h1>
+            <h1 className="text-xl font-serif font-bold text-[#1E2761]">
+              {activeUploadedFile ? `Querying ${activeUploadedFile.name}` : 'Querying active source'}
+            </h1>
+            {activeUploadedFile && (
+              <p className="text-xs text-[#5A6478] mt-1 font-mono">
+                {activeUploadedFile.rowCount.toLocaleString()} rows • {activeUploadedFile.columns.length} columns • In-memory SQL
+              </p>
+            )}
           </div>
 
           {/* Top Chips */}
@@ -518,6 +688,24 @@ export default function AskInterface() {
           {result && !loading && (
             <div key={animationKey} className="w-full flex flex-col gap-8">
               
+              {/* Follow-up Context Pill */}
+              {result.isFollowUp && result.previousQuestion && (
+                <div className="flex items-center justify-between bg-white border border-[#E5E9F2] rounded-xl px-4 py-2.5 shadow-2xs animate-fade-in-up">
+                  <div className="flex items-center gap-2 text-xs text-[#5A6478] overflow-hidden">
+                    <Sparkles size={14} className="text-[#F96167] shrink-0" />
+                    <span className="shrink-0 font-medium">Refined follow-up to:</span>
+                    <span className="font-semibold text-[#1E2761] italic truncate">"{result.previousQuestion}"</span>
+                  </div>
+                  <button
+                    onClick={handleClear}
+                    className="text-xs text-[#5A6478] hover:text-[#F96167] flex items-center gap-1 font-medium transition-colors cursor-pointer shrink-0 ml-3"
+                  >
+                    <RotateCcw size={12} />
+                    <span>New Question</span>
+                  </button>
+                </div>
+              )}
+
               {/* SQL Section */}
               <section className="animate-fade-in-up" style={{ animationDelay: '0ms' }}>
                 <div className="text-[12px] font-bold text-[#1E2761] uppercase tracking-widest mb-3">GENERATED SQL</div>
@@ -711,6 +899,98 @@ export default function AskInterface() {
                     {result.narration}
                   </p>
                 </Card>
+              </section>
+
+              {/* Conversational Multi-Turn ("Chat with your Data") Follow-Up Section */}
+              <section className="animate-fade-in-up bg-white rounded-2xl border border-[#E5E9F2] p-6 shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-[#FDE2E3] flex items-center justify-center text-[#F96167]">
+                      <Sparkles size={14} />
+                    </div>
+                    <h3 className="font-serif font-bold text-base text-[#1E2761]">
+                      Chat with your Data (Ask a follow-up)
+                    </h3>
+                  </div>
+                  <span className="text-[11px] font-semibold text-[#5A6478] bg-[#F4F6FB] border border-[#E5E9F2] px-2.5 py-0.5 rounded-full">
+                    Preserves SQL Context
+                  </span>
+                </div>
+                <p className="text-xs text-[#5A6478] mb-4">
+                  Ask questions that build upon your current result. The AI adapts the previous query instead of starting over.
+                </p>
+
+                {/* Quick Follow-up Chips */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {followUpChips.map((chip, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setFollowUpQuestion(chip)
+                        executeQuery(chip, true)
+                      }}
+                      disabled={loading}
+                      className="text-xs px-3 py-1.5 rounded-full border border-[#E5E9F2] bg-[#FAFBFC] text-[#1E2761] hover:border-[#F96167] hover:text-[#F96167] hover:bg-white transition-all cursor-pointer shadow-2xs font-medium disabled:opacity-50 flex items-center gap-1.5"
+                    >
+                      <CornerDownRight size={11} className="text-[#F96167]" />
+                      <span>{chip}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Follow-up Question Form */}
+                <form onSubmit={handleFollowUpSubmit} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <input
+                    type="text"
+                    value={followUpQuestion}
+                    onChange={(e) => setFollowUpQuestion(e.target.value)}
+                    placeholder="e.g. Now filter that to only enterprise accounts, or break that down month-by-month..."
+                    className="flex-1 h-11 px-4 text-sm bg-[#FAFBFC] border border-[#CBD5E1] rounded-xl focus:outline-hidden focus:border-[#F96167] focus:bg-white focus:ring-2 focus:ring-[#F96167]/20 shadow-2xs text-[#1E2761] placeholder:text-[#94A3B8]"
+                  />
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="submit"
+                      disabled={loading || !followUpQuestion.trim()}
+                      className="h-11 px-5 bg-[#F96167] hover:bg-[#e0565b] text-white rounded-xl font-semibold flex items-center gap-1.5 shrink-0 shadow-sm cursor-pointer"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          <span>Refining...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Ask Follow-up</span>
+                          <ArrowRight size={15} />
+                        </>
+                      )}
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={handleClear}
+                      className="h-11 px-3 text-xs font-semibold text-[#5A6478] hover:text-[#1E2761] transition-colors rounded-xl hover:bg-[#F4F6FB] cursor-pointer"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </form>
+
+                {/* Conversation Thread History Counter */}
+                {conversationThread.length > 1 && (
+                  <div className="mt-4 pt-3 border-t border-[#E5E9F2] flex items-center justify-between text-xs text-[#5A6478]">
+                    <div className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#F96167]" />
+                      <span>Active thread: <strong>{conversationThread.length} queries</strong></span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleClear}
+                      className="text-[#F96167] hover:underline font-semibold cursor-pointer"
+                    >
+                      Start fresh question
+                    </button>
+                  </div>
+                )}
               </section>
 
             </div>

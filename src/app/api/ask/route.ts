@@ -9,8 +9,38 @@ export async function POST(req: NextRequest) {
   try {
     // 1. Parse body
     const body = await req.json().catch(() => null)
+
+    // Check if client is requesting narration-only for in-memory/client executed queries
+    if (body?.action === 'narrate') {
+      const q = body.question || ''
+      const qSql = body.sql || ''
+      const rowCount = body.rowCount || 0
+      const previewRows = body.previewRows || []
+
+      const narrationPrompt = `A user asked: "${q}"
+
+The SQL that ran: ${qSql}
+
+The first ${Math.min(5, rowCount)} rows of the result (total rows returned: ${rowCount}):
+${JSON.stringify(previewRows)}
+
+Write a 2-sentence plain-English explanation for a non-technical business executive. State the headline finding clearly with the actual numbers from the data, then add one notable detail or pattern you see. Do not mention SQL. Do not say "the query returned" — write as if you're directly answering the user's question.`
+
+      const narration = await aiProvider.generateText({
+        userPrompt: narrationPrompt,
+        maxTokens: 512,
+      })
+
+      return NextResponse.json({ narration })
+    }
+
     const question = body?.question?.trim()
     const connectionId = body?.connectionId
+    const previousQuestion = body?.previousQuestion?.trim()
+    const previousSql = body?.previousSql?.trim()
+    const isUploadedFile = Boolean(body?.isUploadedFile)
+    const customSchema = body?.customSchema
+    const tableName = body?.tableName || 'uploaded_data'
 
     if (!question) {
       return NextResponse.json({ error: 'Question is required' }, { status: 400 })
@@ -23,12 +53,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // 3. Look up connection if provided (and not 'demo')
+    // Context for multi-turn follow-up
+    let followUpInstruction = ""
+    if (previousQuestion && previousSql) {
+      followUpInstruction = `\n\nCONVERSATION CONTEXT (FOLLOW-UP):
+The user previously asked: "${previousQuestion}"
+The previous SQL query was:
+${previousSql}
+
+INSTRUCTION FOR FOLLOW-UP:
+The user is asking a follow-up question: "${question}".
+Maintain query context and adapt/refine the previous SQL accordingly (e.g., adding filters, changing grouping, modifying aggregations, adjusting date ranges, or changing ORDER BY/LIMIT).
+If the user's new question is completely unrelated to the previous context, generate a fresh query from scratch.`
+    }
+
+    // 3. Look up connection or use uploaded file schema
     let isUserConnection = false
     let connection: any = null
     let schemaPromptText = DEMO_SCHEMA
 
-    if (connectionId && connectionId !== 'demo') {
+    if (isUploadedFile && customSchema) {
+      schemaPromptText = customSchema
+    } else if (connectionId && connectionId !== 'demo') {
       const { data: conn, error: connError } = await supabase
         .from('connections')
         .select('*')
@@ -49,7 +95,29 @@ export async function POST(req: NextRequest) {
 
     // 4. SQL generation system prompts
     let sqlSystemPrompt = ""
-    if (isSnowflake) {
+    if (isUploadedFile) {
+      // In-memory AlaSQL for structured uploaded files (CSV, JSON, XML, Excel)
+      sqlSystemPrompt = `You are an expert SQL generator for structured dataset files (CSV, JSON, XML, Excel) running on AlaSQL (in-memory ANSI SQL).
+
+Generate exactly one SELECT query to answer the user's question using the table '${tableName}'.
+
+RULES:
+- ONLY SELECT statements. Never INSERT, UPDATE, DELETE, DROP, ALTER, TRUNCATE, CREATE.
+- Use standard ANSI SQL syntax compatible with AlaSQL (e.g. SELECT col1, SUM(col2) FROM ${tableName} WHERE ... GROUP BY ... ORDER BY ... LIMIT 100).
+- Always include a LIMIT clause unless aggregating. Default LIMIT 100.
+- Use ONLY the table '${tableName}' and columns from the schema below. Do NOT prefix the table with schema names like 'demo.' or 'public.'.
+- Column names are case-sensitive or lower_snake_case as defined in the schema.
+- For case-insensitive string matching, you can use LOWER(col) = LOWER('value') or col LIKE '%value%'.
+- For date functions, use standard SQL comparisons or string filters.${followUpInstruction}
+
+SCHEMA:
+${schemaPromptText}
+
+Return ONLY valid JSON in this exact shape:
+{"sql": "SELECT ...", "intent": "brief plain-English description of what the SQL does"}
+
+No markdown fences. No commentary outside the JSON. Just the JSON object.`
+    } else if (isSnowflake) {
       sqlSystemPrompt = `You are an expert Snowflake SQL generator.
 
 Generate exactly one SELECT query to answer the user's question.
@@ -61,7 +129,7 @@ RULES:
 - Snowflake uses ILIKE for case-insensitive matching.
 - For date math use DATEADD, DATEDIFF, or CURRENT_DATE() with parens.
 - Use ONLY tables and columns from the schema below. Do not invent column names.
-- Always prefix tables with their fully qualified name format (e.g. DATABASE.SCHEMA.TABLE_NAME) as shown in the schema below.
+- Always prefix tables with their fully qualified name format (e.g. DATABASE.SCHEMA.TABLE_NAME) as shown in the schema below.${followUpInstruction}
 
 SCHEMA:
 ${schemaPromptText}
@@ -83,7 +151,7 @@ RULES:
 - Use ONLY tables and columns from the schema below. Do not invent column names.
 - For date math use date_trunc and current_date.
 - For percentages cast to numeric to avoid integer division.
-- Always prefix tables with their schema name (e.g. ${isUserConnection ? 'public.tablename' : 'demo.customers, demo.orders'}).
+- Always prefix tables with their schema name (e.g. ${isUserConnection ? 'public.tablename' : 'demo.customers, demo.orders'}).${followUpInstruction}
 
 SCHEMA:
 ${schemaPromptText}
@@ -136,7 +204,24 @@ No markdown fences. No commentary outside the JSON. Just the JSON object.`
     let rows: any[] = []
     let queryErrorMsg: string | null = null
 
-    if (isUserConnection) {
+    if (isUploadedFile) {
+      try {
+        const alasql = require('alasql')
+        alasql.tables[tableName] = { data: body?.fileRows || [] }
+        try {
+          const resRows = alasql(sql)
+          rows = Array.isArray(resRows) ? resRows : []
+        } catch (sqlErr: any) {
+          console.warn('AlaSQL retry with stripped table identifier:', sqlErr)
+          const stripped = sql.replace(new RegExp(`${tableName}\\.`, 'g'), '')
+          const resRows = alasql(stripped)
+          rows = Array.isArray(resRows) ? resRows : []
+        }
+      } catch (err: any) {
+        console.error('File AlaSQL query error:', err)
+        queryErrorMsg = err.message || 'Failed to query file records.'
+      }
+    } else if (isUserConnection) {
       if (isSnowflake) {
         // Execute on Snowflake REST API
         try {

@@ -9,9 +9,12 @@ import ConnectSnowflakeModal from './ConnectSnowflakeModal'
 import ComingSoonModal from './ComingSoonModal'
 import HistoryView from './HistoryView'
 import SettingsView from './SettingsView'
+import UploadFileModal from './UploadFileModal'
+import { ParsedFileResult } from '@/lib/fileParser'
+import { UploadCloud, FileSpreadsheet, Trash2 } from 'lucide-react'
 
 interface DataSourceContextType {
-  activeSource: string // 'demo' or custom connection UUID
+  activeSource: string // 'demo', custom connection UUID, or 'file_xxx'
   setActiveSource: (source: string) => void
   activeTab: 'ask' | 'history' | 'settings'
   setActiveTab: (tab: 'ask' | 'history' | 'settings') => void
@@ -20,6 +23,11 @@ interface DataSourceContextType {
   setPrefilledQuestion: (q: string) => void
   connections: any[]
   refreshConnections: () => Promise<void>
+  uploadedFiles: ParsedFileResult[]
+  setUploadedFiles: (files: ParsedFileResult[]) => void
+  activeUploadedFile: ParsedFileResult | null
+  removeUploadedFile: (id: string) => void
+  openUploadModal: () => void
 }
 
 const DataSourceContext = createContext<DataSourceContextType | undefined>(undefined)
@@ -46,6 +54,7 @@ export function DashboardShell({
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [isConnectOpen, setIsConnectOpen] = useState(false)
   const [isSnowflakeConnectOpen, setIsSnowflakeConnectOpen] = useState(false)
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
   
   // Coming Soon waitlist states
   const [comingSoonName, setComingSoonName] = useState('MySQL')
@@ -53,8 +62,49 @@ export function DashboardShell({
   const [isComingSoonOpen, setIsComingSoonOpen] = useState(false)
 
   const [connections, setConnections] = useState<any[]>([])
+  const [uploadedFiles, setUploadedFiles] = useState<ParsedFileResult[]>([])
   
   const supabase = createClient()
+
+  // Load saved uploaded files from local storage safely
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('decyra_uploaded_files')
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setUploadedFiles(parsed)
+        }
+      }
+    } catch (e) {
+      console.warn('Could not load cached uploaded files:', e)
+    }
+  }, [])
+
+  // Persist uploaded files whenever they change
+  const saveUploadedFiles = (files: ParsedFileResult[]) => {
+    setUploadedFiles(files)
+    try {
+      localStorage.setItem('decyra_uploaded_files', JSON.stringify(files))
+    } catch (e) {
+      console.warn('Could not persist uploaded files:', e)
+    }
+  }
+
+  const handleFileAdded = (newFile: ParsedFileResult) => {
+    const updated = [newFile, ...uploadedFiles.filter(f => f.id !== newFile.id)]
+    saveUploadedFiles(updated)
+    setActiveSource(newFile.id)
+    setActiveTab('ask')
+  }
+
+  const removeUploadedFile = (id: string) => {
+    const updated = uploadedFiles.filter(f => f.id !== id)
+    saveUploadedFiles(updated)
+    if (activeSource === id) {
+      setActiveSource('demo')
+    }
+  }
 
   const fetchConnections = async () => {
     try {
@@ -86,7 +136,14 @@ export function DashboardShell({
   const initial = user?.email ? user.email.charAt(0).toUpperCase() : 'U'
 
   const activeConnection = connections.find(c => c.id === activeSource)
-  const activeSourceName = activeSource === 'demo' ? 'Demo Database' : activeConnection ? activeConnection.name : 'Unknown Database'
+  const activeUploadedFile = uploadedFiles.find(f => f.id === activeSource) || null
+  
+  let activeSourceName = 'Demo Database'
+  if (activeUploadedFile) {
+    activeSourceName = `${activeUploadedFile.name} (${activeUploadedFile.rowCount.toLocaleString()} rows)`
+  } else if (activeSource !== 'demo' && activeConnection) {
+    activeSourceName = activeConnection.name
+  }
 
   const runHistoryQuery = (q: string) => {
     setPrefilledQuestion(q)
@@ -128,6 +185,72 @@ export function DashboardShell({
         </div>
 
         <div className="flex flex-col gap-1">
+          {/* Upload File (CSV / JSON / XML) Action Button */}
+          <button
+            onClick={() => setIsUploadModalOpen(true)}
+            className="w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 text-[#1E2761] hover:bg-[#F4F6FB] group transition-all cursor-pointer border border-dashed border-[#CBD5E1] hover:border-[#F96167] bg-[#FAFBFC] mb-1"
+          >
+            <div className="flex items-center gap-2">
+              <UploadCloud className="w-4 h-4 text-[#F96167]" />
+              <span className="text-[13px] font-semibold text-[#1E2761]">Upload File (CSV, JSON, XML)</span>
+            </div>
+            <span className="text-[10px] font-bold text-[#F96167] bg-[#FDE2E3] px-1.5 py-0.5 rounded">
+              NEW
+            </span>
+          </button>
+
+          {/* Uploaded File Data Sources */}
+          {uploadedFiles.map((file) => {
+            const isActive = activeSource === file.id
+            return (
+              <div
+                key={file.id}
+                className={`group relative w-full h-10 flex items-center justify-between rounded-lg transition-all text-left cursor-pointer ${
+                  isActive
+                    ? 'bg-[#F4F6FB] border-l-3 border-[#F96167] pl-[9px] pr-2 text-[#1E2761] font-semibold'
+                    : 'pl-3 pr-2 text-[#1E2761] hover:bg-[#F4F6FB]'
+                }`}
+              >
+                <button
+                  onClick={() => {
+                    setActiveSource(file.id)
+                    setActiveTab('ask')
+                    setIsMobileOpen(false)
+                  }}
+                  className="flex items-center gap-2.5 overflow-hidden flex-1 text-left min-w-0"
+                >
+                  <FileSpreadsheet className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#F96167]' : 'text-[#5A6478]'}`} />
+                  <span className="text-sm font-medium truncate" title={file.name}>
+                    {file.name}
+                  </span>
+                </button>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {isActive ? (
+                    <div className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-semibold border border-green-200">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                      <span>Active</span>
+                    </div>
+                  ) : (
+                    <span className="text-[9px] font-semibold text-[#5A6478] bg-white border border-[#E5E9F2] px-1.5 py-0.5 rounded font-mono group-hover:hidden">
+                      {file.fileType}
+                    </span>
+                  )}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      removeUploadedFile(file.id)
+                    }}
+                    className="hidden group-hover:flex p-1 text-[#5A6478] hover:text-red-600 rounded transition-colors cursor-pointer"
+                    title="Remove uploaded file"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+
           {/* Demo Database */}
           <button
             onClick={() => setActiveSource('demo')}
@@ -141,10 +264,12 @@ export function DashboardShell({
               <Database className={`w-4 h-4 ${activeSource === 'demo' ? 'text-[#F96167]' : 'text-[#5A6478]'}`} />
               <span className="text-sm font-medium">Demo Database</span>
             </div>
-            <div className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-semibold border border-green-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              <span>Active</span>
-            </div>
+            {activeSource === 'demo' && (
+              <div className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-semibold border border-green-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                <span>Active</span>
+              </div>
+            )}
           </button>
 
           {/* Dynamic User Connections */}
@@ -339,7 +464,12 @@ export function DashboardShell({
         prefilledQuestion,
         setPrefilledQuestion,
         connections,
-        refreshConnections: fetchConnections
+        refreshConnections: fetchConnections,
+        uploadedFiles,
+        setUploadedFiles: saveUploadedFiles,
+        activeUploadedFile,
+        removeUploadedFile,
+        openUploadModal: () => setIsUploadModalOpen(true)
       }}
     >
       <div className="w-screen h-screen flex overflow-hidden bg-[#FAFBFC] font-sans">
@@ -428,6 +558,12 @@ export function DashboardShell({
         icon={comingSoonIcon}
         isOpen={isComingSoonOpen}
         onClose={() => setIsComingSoonOpen(false)}
+      />
+
+      <UploadFileModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onFileAdded={handleFileAdded}
       />
     </DataSourceContext.Provider>
   )
