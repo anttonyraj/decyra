@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Loader2, Copy, Search, MessageSquare } from 'lucide-react'
+import { Loader2, Copy, Search, MessageSquare, Download, Check } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useDataSource } from './DashboardShell'
 import {
@@ -33,6 +33,8 @@ export default function AskInterface() {
   const [result, setResult] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  const [tableCopied, setTableCopied] = useState(false)
+  const [downloadingChart, setDownloadingChart] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   // Branded loader text transition state
@@ -129,6 +131,103 @@ export default function AskInterface() {
     navigator.clipboard.writeText(result.sql)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleExportCSV = () => {
+    if (!result || !result.rows || result.rows.length === 0) return
+    const headers = Object.keys(result.rows[0])
+    const csvContent = [
+      headers.join(','),
+      ...result.rows.map((row: any) =>
+        headers
+          .map((key) => {
+            const val = row[key]
+            if (val === null || val === undefined) return '""'
+            const escaped = String(val).replace(/"/g, '""')
+            return `"${escaped}"`
+          })
+          .join(',')
+      ),
+    ].join('\r\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `decyra_export_${Date.now()}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  const handleCopyTable = () => {
+    if (!result || !result.rows || result.rows.length === 0) return
+    const headers = Object.keys(result.rows[0])
+    // Tab-separated values for instant paste into Excel / Google Sheets
+    const tsvContent = [
+      headers.join('\t'),
+      ...result.rows.map((row: any) =>
+        headers.map((key) => String(row[key] ?? '')).join('\t')
+      ),
+    ].join('\n')
+
+    navigator.clipboard.writeText(tsvContent)
+    setTableCopied(true)
+    setTimeout(() => setTableCopied(false), 2000)
+  }
+
+  const handleDownloadChart = () => {
+    setDownloadingChart(true)
+    try {
+      const svgEl = document.querySelector('.recharts-wrapper svg') as SVGElement
+      if (!svgEl) {
+        setDownloadingChart(false)
+        return
+      }
+
+      const svgData = new XMLSerializer().serializeToString(svgEl)
+      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' })
+      const blobUrl = URL.createObjectURL(svgBlob)
+
+      const img = new Image()
+      img.onload = () => {
+        const bbox = svgEl.getBoundingClientRect()
+        const width = bbox.width || 700
+        const height = bbox.height || 320
+        const scale = 2 // 2x resolution for crisp high-dpi PNG
+
+        const canvas = document.createElement('canvas')
+        canvas.width = width * scale
+        canvas.height = height * scale
+        const ctx = canvas.getContext('2d')
+        if (ctx) {
+          ctx.scale(scale, scale)
+          // Solid white background for clean presentation
+          ctx.fillStyle = '#ffffff'
+          ctx.fillRect(0, 0, width, height)
+          ctx.drawImage(img, 0, 0, width, height)
+
+          const pngUrl = canvas.toDataURL('image/png')
+          const a = document.createElement('a')
+          a.href = pngUrl
+          a.download = `decyra_chart_${Date.now()}.png`
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+        }
+        URL.revokeObjectURL(blobUrl)
+        setDownloadingChart(false)
+      }
+      img.onerror = () => {
+        URL.revokeObjectURL(blobUrl)
+        setDownloadingChart(false)
+      }
+      img.src = blobUrl
+    } catch (e) {
+      console.error('Failed to export chart:', e)
+      setDownloadingChart(false)
+    }
   }
 
   const isNumeric = (val: any) => {
@@ -391,11 +490,42 @@ export default function AskInterface() {
 
               {/* Results Section */}
               <section className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="text-[12px] font-bold text-[#1E2761] uppercase tracking-widest">RESULTS</div>
-                  <span className="text-xs text-[#5A6478] font-medium bg-[#FAFBFC] border border-[#E5E9F2] px-2.5 py-0.5 rounded-full">
-                    {result.rowCount} {result.rowCount === 1 ? 'row' : 'rows'}
-                  </span>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="text-[12px] font-bold text-[#1E2761] uppercase tracking-widest">RESULTS</div>
+                    <span className="text-xs text-[#5A6478] font-medium bg-[#FAFBFC] border border-[#E5E9F2] px-2.5 py-0.5 rounded-full">
+                      {result.rowCount} {result.rowCount === 1 ? 'row' : 'rows'}
+                    </span>
+                  </div>
+                  {result.rowCount > 0 && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleCopyTable}
+                        className="px-2.5 py-1 rounded-md border border-[#E5E9F2] bg-white text-[#5A6478] hover:text-[#1E2761] hover:border-[#1E2761] transition-all duration-150 flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer"
+                        title="Copy formatted table for Excel or Google Sheets"
+                      >
+                        {tableCopied ? (
+                          <>
+                            <Check size={13} className="text-[#34A853]" />
+                            <span className="text-[#34A853] font-semibold">Copied</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={13} />
+                            <span>Copy Table</span>
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={handleExportCSV}
+                        className="px-2.5 py-1 rounded-md border border-[#E5E9F2] bg-white text-[#5A6478] hover:text-[#1E2761] hover:border-[#1E2761] transition-all duration-150 flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer"
+                        title="Download results as a CSV spreadsheet"
+                      >
+                        <Download size={13} />
+                        <span>Export CSV</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
                 
                 {result.rowCount === 0 ? (
@@ -454,7 +584,27 @@ export default function AskInterface() {
               {/* Visualization Section */}
               {mounted && chartConfig && (
                 <section className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-                  <div className="text-[12px] font-bold text-[#1E2761] uppercase tracking-widest mb-3">VISUALIZATION</div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-[12px] font-bold text-[#1E2761] uppercase tracking-widest">VISUALIZATION</div>
+                    <button
+                      onClick={handleDownloadChart}
+                      disabled={downloadingChart}
+                      className="px-2.5 py-1 rounded-md border border-[#E5E9F2] bg-white text-[#5A6478] hover:text-[#1E2761] hover:border-[#1E2761] transition-all duration-150 flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer disabled:opacity-50"
+                      title="Download chart as high-resolution PNG image"
+                    >
+                      {downloadingChart ? (
+                        <>
+                          <Loader2 size={13} className="animate-spin text-[#F96167]" />
+                          <span>Exporting...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Download size={13} />
+                          <span>Download Chart (PNG)</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                   <div className="bg-white rounded-xl border border-[#E5E9F2] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.05)] w-full">
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: hasLongLabels ? 25 : 5 }}>
