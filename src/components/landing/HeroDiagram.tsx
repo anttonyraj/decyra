@@ -14,6 +14,7 @@ import {
   ChevronDown,
   Layers,
   FileSpreadsheet,
+  Briefcase,
 } from "lucide-react";
 import DataSourceCard from "./DataSourceCard";
 import BrowserMockup from "./BrowserMockup";
@@ -21,11 +22,11 @@ import BrowserMockup from "./BrowserMockup";
 const sourceCards = [
   { icon: Database, label: "PostgreSQL", comingSoon: false, checkmark: true },
   { icon: Database, label: "Snowflake", comingSoon: false, checkmark: true },
-  { icon: FileSpreadsheet, label: "CSV, JSON & Excel", comingSoon: false, checkmark: true },
-  { icon: Layers, label: "Golden Layer (Multi-DB)", inProgress: true },
-  { icon: Database, label: "BigQuery", comingSoon: true },
-  { icon: Database, label: "MySQL / Redshift", comingSoon: true },
-  { icon: Plus, label: "More connectors", comingSoon: false, italic: true, href: "/#contact" },
+  { icon: FileSpreadsheet, label: "CSV, Parquet & Excel", comingSoon: false, checkmark: true },
+  { icon: Briefcase, label: "SAP (ERP & S/4HANA)", comingSoon: true },
+  { icon: Cloud, label: "Salesforce & SaaS", comingSoon: true },
+  { icon: Layers, label: "Virtual Golden Layer", inProgress: true },
+  { icon: Plus, label: "BigQuery, MySQL & More", comingSoon: false, italic: true, href: "/#contact" },
 ];
 
 const outputCards = [

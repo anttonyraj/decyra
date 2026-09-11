@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Database, Code2, Users, Zap, CheckCircle, XCircle, ShieldCheck, Lock, Eye, ServerOff } from "lucide-react";
+import { Database, Code2, Users, Zap, CheckCircle, XCircle, ShieldCheck, Lock, Eye, ServerOff, Globe, Mic, Sparkles, ExternalLink } from "lucide-react";
 import NavBar from "@/components/landing/NavBar";
 import HeroDiagram from "@/components/landing/HeroDiagram";
 import SectionLabel from "@/components/landing/SectionLabel";
@@ -189,8 +189,13 @@ const securityPillars = [
   },
   {
     icon: ServerOff,
+    heading: "100% Client-Side In-Memory Privacy.",
+    body: "When analyzing spreadsheets and files (CSV, Parquet, Excel), query execution happens entirely in your laptop's browser RAM. Your confidential data never leaves your computer or touches any server.",
+  },
+  {
+    icon: ShieldCheck,
     heading: "No data storage. No PII retained.",
-    body: "Your data never leaves your control. We do not store query results or train our AI models on your proprietary business data.",
+    body: "Your database records never leave your control. We do not store query results or train public AI models on your proprietary business data.",
   },
   {
     icon: Eye,
@@ -288,9 +293,9 @@ export default function HomePage() {
             </div>
 
             {/* Live Connectors & In-Progress Notice */}
-            <p className="mt-10 text-[13px] text-[#5A6478] text-center max-w-[840px] mx-auto leading-relaxed">
-              <span className="font-semibold text-[#1E2761]">Live Now:</span> PostgreSQL, Snowflake, and Local Datasets (Excel, CSV, JSON, XML).{" "}
-              <span className="font-semibold text-[#F96167]">In Progress:</span> Cross-Database Virtual Golden Layer & Data Marts — conversational queries that dynamically join tables across your production databases in-memory without building ETL pipelines.
+            <p className="mt-10 text-[13px] text-[#5A6478] text-center max-w-[860px] mx-auto leading-relaxed">
+              <span className="font-semibold text-[#1E2761]">Live Now:</span> PostgreSQL, Snowflake, and In-Browser Datasets (CSV, Parquet, Excel, JSON).{" "}
+              <span className="font-semibold text-[#F96167]">Enterprise Connectors &amp; Federation:</span> SAP (ERP &amp; S/4HANA), Salesforce CRM, HubSpot, and Cross-Database Virtual Golden Layer.
             </p>
           </div>
         </section>
@@ -435,6 +440,97 @@ export default function HomePage() {
               {questions.map((q) => (
                 <QuestionCard key={q} question={q} />
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── VOICE & MULTILINGUAL DATA INTELLIGENCE (POWERED BY SONICTRA AI) ── */}
+        <section
+          id="multilingual"
+          className="bg-[#F8FAFC] py-24 max-[640px]:py-16 border-t border-[#E5E9F2]"
+          aria-labelledby="multilingual-heading"
+        >
+          <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EBF3FE] border border-[#C7D7F7] text-[11px] font-bold text-[#1E2761] uppercase tracking-wider mb-4 shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 text-[#F96167]" />
+                <span>Powered by Sonictra AI</span>
+              </div>
+              <h2
+                id="multilingual-heading"
+                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-4"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                Speak in your language.
+                <br />
+                Query in governed, auditable SQL.
+              </h2>
+              <p className="text-[18px] text-[#5A6478] leading-relaxed max-w-[720px] mx-auto">
+                Global revenue and operations teams don't all speak English. With integrated Sonictra AI voice &amp; translation, your team can speak or type business questions in Arabic, Spanish, French, Hindi, Chinese, and 40+ world languages.
+              </p>
+            </div>
+
+            {/* Interactive Showcase Card */}
+            <div className="bg-white border border-[#CBD5E1] rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] p-8 max-[640px]:p-5 max-w-[1020px] mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Feature 1 */}
+                <div className="flex flex-col p-6 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
+                  <div className="w-10 h-10 rounded-lg bg-[#EBF3FE] flex items-center justify-center text-[#1E2761] mb-4">
+                    <Globe className="w-5 h-5 text-[#F96167]" />
+                  </div>
+                  <h3 className="text-base font-bold text-[#1E2761] mb-2" style={{ fontFamily: "Georgia, serif" }}>
+                    40+ World Languages
+                  </h3>
+                  <p className="text-sm text-[#5A6478] leading-relaxed">
+                    Native support for Arabic (العربية), Spanish, French, Hindi, Mandarin, German, and 40+ languages. Zero translation friction.
+                  </p>
+                </div>
+
+                {/* Feature 2 */}
+                <div className="flex flex-col p-6 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
+                  <div className="w-10 h-10 rounded-lg bg-[#EBF3FE] flex items-center justify-center text-[#1E2761] mb-4">
+                    <Mic className="w-5 h-5 text-[#F96167]" />
+                  </div>
+                  <h3 className="text-base font-bold text-[#1E2761] mb-2" style={{ fontFamily: "Georgia, serif" }}>
+                    Speech-to-Query Dictation
+                  </h3>
+                  <p className="text-sm text-[#5A6478] leading-relaxed">
+                    Click "Speak Question" and talk naturally. Dual-engine in-browser audio captures speech accurately across Chrome, Brave, Safari, and mobile.
+                  </p>
+                </div>
+
+                {/* Feature 3 */}
+                <div className="flex flex-col p-6 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0]">
+                  <div className="w-10 h-10 rounded-lg bg-[#EBF3FE] flex items-center justify-center text-[#1E2761] mb-4">
+                    <Sparkles className="w-5 h-5 text-[#F96167]" />
+                  </div>
+                  <h3 className="text-base font-bold text-[#1E2761] mb-2" style={{ fontFamily: "Georgia, serif" }}>
+                    Dual-Language Workflow
+                  </h3>
+                  <p className="text-sm text-[#5A6478] leading-relaxed">
+                    Ask in Arabic, review the auto-translated English text, freely edit parameters, and run governed SQL against your production data.
+                  </p>
+                </div>
+              </div>
+
+              {/* Live Status Bar & Sonictra Link */}
+              <div className="mt-8 pt-6 border-t border-[#E2E8F0] flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-xs text-[#5A6478]">
+                    Live in Decyra Dashboard: <strong>Speech recognition &amp; neural translation active</strong>
+                  </span>
+                </div>
+                <a
+                  href="https://www.sonictra.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1E2761] hover:text-[#F96167] transition-colors group cursor-pointer"
+                >
+                  <span>Explore Sonictra AI</span>
+                  <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </a>
+              </div>
             </div>
           </div>
         </section>

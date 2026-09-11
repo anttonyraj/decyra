@@ -105,6 +105,18 @@ export default function UploadFileModal({
           </p>
         </div>
 
+        {/* 100% In-Browser Privacy Indicator */}
+        <div className="mb-4 px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-between text-xs text-emerald-900">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-semibold text-[11px]">100% In-Browser Privacy</span>
+            <span className="text-[11px] text-emerald-700 hidden sm:inline">• Runs in your laptop's local RAM (data never leaves your machine)</span>
+          </div>
+          <span className="text-[10px] font-bold text-emerald-700 uppercase bg-white px-2 py-0.5 rounded shadow-2xs border border-emerald-200">
+            $0 Egress
+          </span>
+        </div>
+
         {error && (
           <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
             <AlertCircle size={15} className="shrink-0 text-red-500" />
@@ -129,7 +141,7 @@ export default function UploadFileModal({
             <input
               ref={fileInputRef}
               type="file"
-              accept=".csv,.tsv,.json,.xml,.xlsx,.xls"
+              accept=".csv,.tsv,.json,.xml,.xlsx,.xls,.parquet"
               className="hidden"
               onChange={handleChange}
             />
@@ -137,8 +149,8 @@ export default function UploadFileModal({
             {loading ? (
               <div className="flex flex-col items-center py-4">
                 <Loader2 size={32} className="text-[#F96167] animate-spin mb-3" />
-                <p className="text-sm font-semibold text-[#1E2761]">Analyzing columns & structure...</p>
-                <p className="text-xs text-[#5A6478] mt-1">Reading data rows and inferring types</p>
+                <p className="text-sm font-semibold text-[#1E2761]">Analyzing columns & structure in-memory...</p>
+                <p className="text-xs text-[#5A6478] mt-1">Reading data rows directly in browser RAM</p>
               </div>
             ) : (
               <>
@@ -149,10 +161,11 @@ export default function UploadFileModal({
                   Click to browse or drag & drop file
                 </p>
                 <p className="text-xs text-[#5A6478] mt-1">
-                  Supports CSV, Excel (.xlsx, .xls), JSON, and XML up to 25MB
+                  Supports CSV, Parquet, Excel (.xlsx, .xls), JSON, and XML up to 50MB
                 </p>
                 <div className="flex items-center gap-2 mt-4 text-[11px] font-medium text-[#5A6478]">
                   <span className="bg-white border border-[#E5E9F2] px-2 py-0.5 rounded shadow-xs">.CSV</span>
+                  <span className="bg-white border border-[#E5E9F2] px-2 py-0.5 rounded shadow-xs">.PARQUET</span>
                   <span className="bg-white border border-[#E5E9F2] px-2 py-0.5 rounded shadow-xs">.XLSX</span>
                   <span className="bg-white border border-[#E5E9F2] px-2 py-0.5 rounded shadow-xs">.JSON</span>
                   <span className="bg-white border border-[#E5E9F2] px-2 py-0.5 rounded shadow-xs">.XML</span>

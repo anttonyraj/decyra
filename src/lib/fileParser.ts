@@ -109,6 +109,11 @@ export async function parseUploadedFile(file: File): Promise<ParsedFileResult> {
     } else {
       rows = XLSX.utils.sheet_to_json(worksheet, { defval: '' })
     }
+  } else if (extension === 'parquet') {
+    const buffer = await file.arrayBuffer()
+    const { parquetReadObjects } = await import('hyparquet')
+    const parquetRows = await parquetReadObjects({ file: buffer })
+    rows = (parquetRows as any[]) || []
   } else {
     throw new Error(`Unsupported file format: .${extension}`)
   }

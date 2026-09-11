@@ -12,7 +12,7 @@ import HistoryView from './HistoryView'
 import SettingsView from './SettingsView'
 import UploadFileModal from './UploadFileModal'
 import { ParsedFileResult } from '@/lib/fileParser'
-import { UploadCloud, FileSpreadsheet, Trash2, Layers } from 'lucide-react'
+import { UploadCloud, FileSpreadsheet, Trash2, Layers, Briefcase, Cloud } from 'lucide-react'
 
 interface DataSourceContextType {
   activeSource: string // 'demo', custom connection UUID, or 'file_xxx'
@@ -187,17 +187,17 @@ export function DashboardShell({
         </div>
 
         <div className="flex flex-col gap-1">
-          {/* Upload File (CSV / JSON / XML) Action Button */}
+          {/* Upload File (CSV / Parquet / Excel) Action Button */}
           <button
             onClick={() => setIsUploadModalOpen(true)}
             className="w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 text-[#1E2761] hover:bg-[#F4F6FB] group transition-all cursor-pointer border border-dashed border-[#CBD5E1] hover:border-[#F96167] bg-[#FAFBFC] mb-1"
           >
             <div className="flex items-center gap-2">
               <UploadCloud className="w-4 h-4 text-[#F96167]" />
-              <span className="text-[13px] font-semibold text-[#1E2761]">Upload File (CSV, JSON, XML)</span>
+              <span className="text-[13px] font-semibold text-[#1E2761]">Upload File (CSV, Parquet, Excel)</span>
             </div>
-            <span className="text-[10px] font-bold text-[#F96167] bg-[#FDE2E3] px-1.5 py-0.5 rounded">
-              NEW
+            <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+              PRIVATE
             </span>
           </button>
 
@@ -364,6 +364,42 @@ export function DashboardShell({
             </div>
             <span className="bg-[#FDE2E3] text-[#F96167] text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider shrink-0">
               SOON
+            </span>
+          </button>
+
+          {/* SAP (ERP & S/4HANA) */}
+          <button
+            onClick={() => {
+              setComingSoonName('SAP (ERP & S/4HANA)')
+              setComingSoonIcon(() => Briefcase)
+              setIsComingSoonOpen(true)
+            }}
+            className="w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 hover:bg-[#F4F6FB] cursor-pointer text-[#1E2761]"
+          >
+            <div className="flex items-center gap-2.5">
+              <Briefcase className="w-4 h-4 text-[#5A6478]" />
+              <span className="text-sm font-medium">SAP (ERP)</span>
+            </div>
+            <span className="bg-[#EBF3FE] text-[#1E2761] text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider shrink-0">
+              ENTERPRISE
+            </span>
+          </button>
+
+          {/* Salesforce & SaaS */}
+          <button
+            onClick={() => {
+              setComingSoonName('Salesforce CRM')
+              setComingSoonIcon(() => Cloud)
+              setIsComingSoonOpen(true)
+            }}
+            className="w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 hover:bg-[#F4F6FB] cursor-pointer text-[#1E2761]"
+          >
+            <div className="flex items-center gap-2.5">
+              <Cloud className="w-4 h-4 text-[#5A6478]" />
+              <span className="text-sm font-medium">Salesforce</span>
+            </div>
+            <span className="bg-[#EBF3FE] text-[#1E2761] text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider shrink-0">
+              ENTERPRISE
             </span>
           </button>
 
