@@ -8,6 +8,7 @@ import { Menu, X } from "lucide-react";
 const navLinks = [
   { label: "Product", href: "#product" },
   { label: "How it works", href: "#how-it-works" },
+  { label: "Golden Layer", href: "#golden-layer", isNew: true },
   { label: "Why Decyra", href: "#why-decyra" },
   { label: "Built for", href: "#built-for" },
   { label: "Pricing", href: "#pricing" },
@@ -30,14 +31,19 @@ export default function NavBar() {
         </Link>
 
         {/* Center: nav links — desktop only */}
-        <div className="hidden lg:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-7">
           {navLinks.map((link) => (
             <a
               key={link.label}
               href={link.href}
-              className="text-sm text-[#5A6478] font-medium hover:text-[#1E2761] transition-colors duration-150"
+              className="text-sm text-[#5A6478] font-medium hover:text-[#1E2761] transition-colors duration-150 flex items-center gap-1.5"
             >
-              {link.label}
+              <span>{link.label}</span>
+              {link.isNew && (
+                <span className="bg-[#EBF3FE] text-[#1E2761] border border-[#C7D7F7] text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
+                  SOON
+                </span>
+              )}
             </a>
           ))}
         </div>
@@ -77,10 +83,15 @@ export default function NavBar() {
             <a
               key={link.label}
               href={link.href}
-              className="text-sm text-[#5A6478] font-medium py-2.5 hover:text-[#1E2761] transition-colors"
+              className="text-sm text-[#5A6478] font-medium py-2.5 hover:text-[#1E2761] transition-colors flex items-center justify-between"
               onClick={() => setMobileOpen(false)}
             >
-              {link.label}
+              <span>{link.label}</span>
+              {link.isNew && (
+                <span className="bg-[#EBF3FE] text-[#1E2761] border border-[#C7D7F7] text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
+                  SOON
+                </span>
+              )}
             </a>
           ))}
           <div className="border-t border-[#E5E9F2] mt-2 pt-3 flex flex-col gap-2">
