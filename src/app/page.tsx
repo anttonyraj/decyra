@@ -259,10 +259,24 @@ export default function HomePage() {
 
           <div className="relative max-w-[1280px] mx-auto px-8 max-[640px]:px-4 z-10">
             <div className="text-center max-w-[900px] mx-auto">
-              {/* Category label */}
-              <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#1E2761] mb-6">
-                AI DATA INTELLIGENCE
-              </p>
+              {/* Category & In-Progress Announcement Badge */}
+              <div className="flex flex-col items-center gap-3 mb-6">
+                <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#1E2761]">
+                  AI DATA INTELLIGENCE
+                </p>
+                <a
+                  href="#golden-layer"
+                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EBF3FE] border border-[#C7D7F7] text-[#1E2761] text-xs font-semibold shadow-2xs hover:border-[#1E2761] transition-colors"
+                >
+                  <span className="bg-[#1E2761] text-white text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                    IN PROGRESS
+                  </span>
+                  <span className="text-[#1E2761]">
+                    Virtual Golden Layer: Cross-Database Federation for Postgres, Snowflake & BigQuery
+                  </span>
+                  <span className="text-[#F96167] font-bold">→</span>
+                </a>
+              </div>
 
               {/* Headline */}
               <h1
@@ -309,9 +323,10 @@ export default function HomePage() {
               <HeroDiagram />
             </div>
 
-            {/* Disclaimer */}
-            <p className="mt-10 text-[13px] italic text-[#5A6478] text-center">
-              PostgreSQL connector available now. MySQL, Snowflake, BigQuery, and Redshift connectors rolling out over the next 12 weeks. Salesforce and HubSpot integrations coming soon.
+            {/* Live Connectors & In-Progress Notice */}
+            <p className="mt-10 text-[13px] text-[#5A6478] text-center max-w-[840px] mx-auto leading-relaxed">
+              <span className="font-semibold text-[#1E2761]">Live Now:</span> PostgreSQL, Snowflake, and Local Datasets (Excel, CSV, JSON, XML).{" "}
+              <span className="font-semibold text-[#F96167]">In Progress:</span> Cross-Database Virtual Golden Layer & Data Marts — conversational queries that dynamically join tables across your production databases in-memory without building ETL pipelines.
             </p>
           </div>
         </section>
@@ -328,6 +343,68 @@ export default function HomePage() {
             <p className="text-[16px] text-[#5A6478] leading-relaxed max-w-[640px] mx-auto">
               Decyra combines conversational AI with governed SQL execution, schema-aware querying, and operational business context. Not a chatbot. Not a dashboard. An AI analyst.
             </p>
+          </div>
+        </section>
+
+        {/* ── IN PROGRESS: VIRTUAL GOLDEN LAYER & DATA MARTS ── */}
+        <section id="golden-layer" className="bg-gradient-to-b from-white via-[#F4F8FE] to-white py-20 border-b border-[#E5E9F2] relative overflow-hidden">
+          <div className="absolute top-1/2 -left-40 w-96 h-96 rounded-full bg-[#1E2761]/5 blur-3xl pointer-events-none" />
+          <div className="absolute top-1/2 -right-40 w-96 h-96 rounded-full bg-[#F96167]/5 blur-3xl pointer-events-none" />
+
+          <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4 relative z-10">
+            <div className="text-center mb-14">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#1E2761] text-white mb-3 shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-[#F96167] animate-pulse" />
+                In Active Development • Q4 Release
+              </div>
+              <h2
+                className="text-[36px] max-[640px]:text-[28px] font-bold text-[#1E2761] leading-tight mb-4"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                Virtual Golden Layer & Cross-Database Federation
+              </h2>
+              <p className="text-[16px] text-[#5A6478] leading-relaxed max-w-[720px] mx-auto">
+                Break through corporate data silos. Decyra decomposes questions, queries PostgreSQL, Snowflake, and BigQuery simultaneously, and joins the results in-memory. Zero ETL pipelines required.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 max-[1024px]:grid-cols-1 gap-6">
+              <div className="bg-white border border-[#E5E9F2] rounded-2xl p-7 shadow-[0_4px_20px_rgba(30,39,97,0.04)] hover:border-[#C7D7F7] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-[#EBF3FE] flex items-center justify-center text-[#1E2761] font-bold mb-4">
+                  01
+                </div>
+                <h3 className="text-lg font-bold text-[#1E2761] mb-2" style={{ fontFamily: "Georgia, serif" }}>
+                  Pushdown In-Memory Execution
+                </h3>
+                <p className="text-[14px] text-[#5A6478] leading-relaxed">
+                  Decyra pushes filters and aggregations down to each native engine, then retrieves only matching summary records to join in-memory in milliseconds. Fast, scalable, and bandwidth-efficient.
+                </p>
+              </div>
+
+              <div className="bg-white border border-[#E5E9F2] rounded-2xl p-7 shadow-[0_4px_20px_rgba(30,39,97,0.04)] hover:border-[#C7D7F7] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-[#FDE2E3] flex items-center justify-center text-[#F96167] font-bold mb-4">
+                  02
+                </div>
+                <h3 className="text-lg font-bold text-[#1E2761] mb-2" style={{ fontFamily: "Georgia, serif" }}>
+                  Virtual Data Marts (No ETL)
+                </h3>
+                <p className="text-[14px] text-[#5A6478] leading-relaxed">
+                  Eliminate months of data engineering and tools like Fivetran and dbt just to answer questions spanning CRM and billing. Ask natural-language questions across unified entities instantly.
+                </p>
+              </div>
+
+              <div className="bg-white border border-[#E5E9F2] rounded-2xl p-7 shadow-[0_4px_20px_rgba(30,39,97,0.04)] hover:border-[#C7D7F7] transition-all">
+                <div className="w-10 h-10 rounded-xl bg-[#EAF7EE] flex items-center justify-center text-emerald-700 font-bold mb-4">
+                  03
+                </div>
+                <h3 className="text-lg font-bold text-[#1E2761] mb-2" style={{ fontFamily: "Georgia, serif" }}>
+                  Zero-Storage Enterprise Privacy
+                </h3>
+                <p className="text-[14px] text-[#5A6478] leading-relaxed">
+                  Decyra never persists or stores your customer data. Cross-database queries are computed ephemerally in RAM and discarded immediately after response, ensuring seamless SOC2 and GDPR compliance.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 

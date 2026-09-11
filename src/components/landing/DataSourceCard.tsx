@@ -7,6 +7,7 @@ interface DataSourceCardProps {
   icon: LucideIcon;
   label: string;
   comingSoon?: boolean;
+  inProgress?: boolean;
   italic?: boolean;
   variant?: "left" | "right";
   checkmark?: boolean;
@@ -17,6 +18,7 @@ export default function DataSourceCard({
   icon: Icon,
   label,
   comingSoon = false,
+  inProgress = false,
   italic = false,
   variant = "left",
   checkmark = false,
@@ -49,6 +51,22 @@ export default function DataSourceCard({
           }}
         >
           Soon
+        </span>
+      )}
+      {inProgress && (
+        <span
+          className="flex-shrink-0 rounded-[4px] font-semibold uppercase leading-none"
+          style={{
+            background: "#EBF3FE",
+            color: "#1E2761",
+            fontSize: "9px",
+            letterSpacing: "0.08em",
+            padding: "2px 6px",
+            border: "1px solid #D0E1FD",
+            marginRight: "0px",
+          }}
+        >
+          In Progress
         </span>
       )}
       {checkmark && (

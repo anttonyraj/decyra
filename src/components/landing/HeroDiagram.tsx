@@ -12,17 +12,19 @@ import {
   Calendar,
   Mail,
   ChevronDown,
+  Layers,
+  FileSpreadsheet,
 } from "lucide-react";
 import DataSourceCard from "./DataSourceCard";
 import BrowserMockup from "./BrowserMockup";
 
 const sourceCards = [
-  { icon: Database, label: "PostgreSQL / MySQL", comingSoon: false, checkmark: true },
-  { icon: Database, label: "Snowflake", comingSoon: true },
+  { icon: Database, label: "PostgreSQL", comingSoon: false, checkmark: true },
+  { icon: Database, label: "Snowflake", comingSoon: false, checkmark: true },
+  { icon: FileSpreadsheet, label: "CSV, JSON & Excel", comingSoon: false, checkmark: true },
+  { icon: Layers, label: "Golden Layer (Multi-DB)", inProgress: true },
   { icon: Database, label: "BigQuery", comingSoon: true },
-  { icon: Database, label: "Redshift", comingSoon: true },
-  { icon: Cloud, label: "Salesforce", comingSoon: true },
-  { icon: Cloud, label: "HubSpot", comingSoon: true },
+  { icon: Database, label: "MySQL / Redshift", comingSoon: true },
   { icon: Plus, label: "More connectors", comingSoon: false, italic: true, href: "mailto:founder@decyra.systems?subject=Requesting%20more%20connectors" },
 ];
 

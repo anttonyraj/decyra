@@ -7,11 +7,12 @@ import { Database, MessageSquare, Clock, Settings, Menu, X, LogOut, Plus, Snowfl
 import ConnectPostgresModal from './ConnectPostgresModal'
 import ConnectSnowflakeModal from './ConnectSnowflakeModal'
 import ComingSoonModal from './ComingSoonModal'
+import GoldenLayerModal from './GoldenLayerModal'
 import HistoryView from './HistoryView'
 import SettingsView from './SettingsView'
 import UploadFileModal from './UploadFileModal'
 import { ParsedFileResult } from '@/lib/fileParser'
-import { UploadCloud, FileSpreadsheet, Trash2 } from 'lucide-react'
+import { UploadCloud, FileSpreadsheet, Trash2, Layers } from 'lucide-react'
 
 interface DataSourceContextType {
   activeSource: string // 'demo', custom connection UUID, or 'file_xxx'
@@ -55,6 +56,7 @@ export function DashboardShell({
   const [isConnectOpen, setIsConnectOpen] = useState(false)
   const [isSnowflakeConnectOpen, setIsSnowflakeConnectOpen] = useState(false)
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
+  const [isGoldenLayerOpen, setIsGoldenLayerOpen] = useState(false)
   
   // Coming Soon waitlist states
   const [comingSoonName, setComingSoonName] = useState('MySQL')
@@ -364,6 +366,20 @@ export function DashboardShell({
               SOON
             </span>
           </button>
+
+          {/* Golden Layer / Multi-DB Federation (In Progress) */}
+          <button
+            onClick={() => setIsGoldenLayerOpen(true)}
+            className="w-full mt-2 py-2 px-3 flex items-center justify-between rounded-lg border border-dashed border-[#C7D7F7] bg-[#F4F8FE] hover:bg-[#EAF2FD] transition-all cursor-pointer text-[#1E2761] group shadow-2xs"
+          >
+            <div className="flex items-center gap-2">
+              <Layers className="w-3.5 h-3.5 text-[#1E2761] group-hover:text-[#F96167] transition-colors" />
+              <span className="text-[12px] font-semibold">Golden Layer</span>
+            </div>
+            <span className="bg-[#1E2761] text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider shrink-0">
+              IN PROGRESS
+            </span>
+          </button>
         </div>
 
         <button 
@@ -564,6 +580,11 @@ export function DashboardShell({
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         onFileAdded={handleFileAdded}
+      />
+
+      <GoldenLayerModal
+        isOpen={isGoldenLayerOpen}
+        onClose={() => setIsGoldenLayerOpen(false)}
       />
     </DataSourceContext.Provider>
   )
