@@ -106,7 +106,7 @@ export default function DataSourceCard({
     </>
   );
 
-  const className = `source-card flex items-center gap-2.5 border border-[#E5E9F2] rounded-lg px-3 py-2.5 bg-white cursor-default select-none ${
+  const className = `source-card h-[46px] flex items-center gap-2.5 border border-[#E5E9F2] rounded-lg px-3 bg-white cursor-default select-none ${
     variant === "right" ? "flex-row-reverse text-right" : ""
   } ${href ? "cursor-pointer hover:border-[#1E2761] transition-colors duration-150" : ""}`;
 

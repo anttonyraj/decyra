@@ -91,8 +91,7 @@ function FlowConnector({ cardCenters }: { cardCenters: number[] }) {
 }
 
 export default function HeroDiagram() {
-  const leftCenters = [24, 74, 124, 174, 224, 274, 324, 374, 424, 474];
-  const rightCenters = [24, 74, 124, 174, 224, 274, 324, 374, 424, 474];
+  const centers = [23, 77, 131, 185, 239, 293, 347, 401, 455, 509];
 
   return (
     <div className="w-full">
@@ -100,7 +99,7 @@ export default function HeroDiagram() {
       <div className="hidden md:grid items-start gap-0" style={{ gridTemplateColumns: "1fr auto 2fr auto 1fr" }}>
         {/* LEFT: data sources */}
         <div className="flex flex-col">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#1E2761] mb-3 text-center">
+          <p className="h-7 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#1E2761] mb-2 flex items-center justify-center">
             Your Data Sources
           </p>
           <div className="flex flex-col gap-2">
@@ -122,22 +121,28 @@ export default function HeroDiagram() {
         </div>
 
         {/* CONNECTOR: left → center */}
-        <FlowConnector cardCenters={leftCenters} />
+        <div className="flex flex-col self-stretch">
+          <div className="h-7 mb-2" />
+          <FlowConnector cardCenters={centers} />
+        </div>
 
         {/* CENTER: mockup */}
         <div className="flex flex-col">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#1E2761] mb-3 text-center">
+          <p className="h-7 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#1E2761] mb-2 flex items-center justify-center">
             Decyra
           </p>
           <BrowserMockup />
         </div>
 
         {/* CONNECTOR: center → right */}
-        <FlowConnector cardCenters={rightCenters} />
+        <div className="flex flex-col self-stretch">
+          <div className="h-7 mb-2" />
+          <FlowConnector cardCenters={centers} />
+        </div>
 
         {/* RIGHT: outputs */}
         <div className="flex flex-col">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#1E2761] mb-3 text-center">
+          <p className="h-7 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#1E2761] mb-2 flex items-center justify-center">
             What You Get
           </p>
           <div className="flex flex-col gap-2">
