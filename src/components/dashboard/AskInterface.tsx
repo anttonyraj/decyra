@@ -62,6 +62,9 @@ export default function AskInterface() {
   const [translationNotice, setTranslationNotice] = useState<string | null>(null)
   const [translatedNarration, setTranslatedNarration] = useState<string | null>(null)
   const [translatingNarration, setTranslatingNarration] = useState(false)
+  const [speechError, setSpeechError] = useState<string | null>(null)
+  const [originalSpokenText, setOriginalSpokenText] = useState<string>('')
+  const [originalSpokenLang, setOriginalSpokenLang] = useState<string>('')
 
   const currentLang = SUPPORTED_LANGUAGES.find(l => l.code === selectedLanguage) || SUPPORTED_LANGUAGES[0]
   const isRtl = currentLang.dir === 'rtl'
@@ -72,7 +75,9 @@ export default function AskInterface() {
     }
   }, [])
 
-  const toggleListening = (target: 'main' | 'followUp' = 'main') => {
+  const toggleListening = async (target: 'main' | 'followUp' = 'main') => {
+    setSpeechError(null)
+
     if (isListening) {
       if (recognitionRef.current) {
         try {
@@ -85,44 +90,117 @@ export default function AskInterface() {
 
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     if (!SpeechRecognition) {
-      alert("Speech recognition is not supported in your browser. Please use Google Chrome or Microsoft Edge.")
+      setSpeechError("Speech recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.")
       return
+    }
+
+    // Explicitly prompt for microphone access via MediaDevices if supported
+    try {
+      if (navigator?.mediaDevices?.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        // Stop stream tracks immediately so SpeechRecognition can take over the mic
+        stream.getTracks().forEach((track) => track.stop())
+      }
+    } catch (permErr: any) {
+      console.warn("Microphone permission check error:", permErr)
+      if (permErr?.name === 'NotAllowedError' || permErr?.name === 'PermissionDeniedError') {
+        setSpeechError("Microphone access was denied. Please click the lock or camera icon in your browser address bar to allow microphone access.")
+        return
+      }
     }
 
     try {
       const recognition = new SpeechRecognition()
       recognitionRef.current = recognition
-      recognition.lang = currentLang.speechCode || 'en-US'
-      recognition.continuous = false
+      
+      const speechLocale = currentLang.speechCode || (selectedLanguage === 'ar' ? 'ar-SA' : 'en-US')
+      recognition.lang = speechLocale
+      recognition.continuous = true
       recognition.interimResults = true
+      recognition.maxAlternatives = 1
+
+      let accumulated = ''
 
       recognition.onstart = () => {
         setIsListening(true)
+        setSpeechError(null)
       }
 
       recognition.onresult = (event: any) => {
-        const transcript = Array.from(event.results)
-          .map((r: any) => r[0].transcript)
-          .join('')
+        let interim = ''
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const trans = event.results[i][0].transcript
+          if (event.results[i].isFinal) {
+            accumulated += trans + ' '
+          } else {
+            interim += trans
+          }
+        }
+
+        const liveText = (accumulated + interim).trim()
+        if (!liveText) return
+
         if (target === 'main') {
-          setQuestion(transcript)
+          setQuestion(liveText)
         } else {
-          setFollowUpQuestion(transcript)
+          setFollowUpQuestion(liveText)
         }
       }
 
       recognition.onerror = (event: any) => {
         console.warn('Speech recognition error:', event.error)
+        if (event.error === 'not-allowed') {
+          setSpeechError("Microphone permission blocked. Please click the lock icon in your address bar and allow Microphone.")
+        } else if (event.error === 'audio-capture') {
+          setSpeechError("No microphone found on your device. Please connect a microphone.")
+        } else if (event.error === 'network') {
+          setSpeechError("Network error during speech recognition. Please check your connection.")
+        }
         setIsListening(false)
       }
 
-      recognition.onend = () => {
+      recognition.onend = async () => {
         setIsListening(false)
+        const recorded = accumulated.trim() || (target === 'main' ? question : followUpQuestion).trim()
+        
+        // If user spoke in Arabic or non-English, automatically translate into English!
+        const isForeign = selectedLanguage === 'ar' || speechLocale.startsWith('ar') || /[\u0600-\u06FF]/.test(recorded) || (selectedLanguage !== 'en' && selectedLanguage !== 'auto')
+        if (recorded && isForeign) {
+          setOriginalSpokenText(recorded)
+          setOriginalSpokenLang(selectedLanguage === 'ar' || /[\u0600-\u06FF]/.test(recorded) ? 'ar' : selectedLanguage)
+          
+          try {
+            setTranslating(true)
+            const res = await fetch('/api/translate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                text: recorded,
+                targetLang: 'en',
+                sourceLang: selectedLanguage === 'auto' ? 'auto' : selectedLanguage,
+              }),
+            })
+            const data = await res.json()
+            if (data.translatedText) {
+              if (target === 'main') {
+                setQuestion(data.translatedText)
+              } else {
+                setFollowUpQuestion(data.translatedText)
+              }
+              setTranslationNotice(`Google Translated from ${data.detectedSource?.toUpperCase() || 'ARABIC'} to English. You can edit the question below.`)
+            }
+          } catch (trErr) {
+            console.error("Auto-translate speech error:", trErr)
+          } finally {
+            setTranslating(false)
+          }
+        }
       }
 
       recognition.start()
-    } catch (e) {
+    } catch (e: any) {
       console.error('Error starting speech recognition:', e)
+      setSpeechError(e.message || "Failed to start speech recognition. Please check browser microphone permissions.")
       setIsListening(false)
     }
   }
@@ -432,7 +510,8 @@ export default function AskInterface() {
     setTranslationNotice(null)
 
     try {
-      const targetLang = selectedLanguage === 'ar' ? 'ar' : selectedLanguage !== 'auto' ? selectedLanguage : 'en'
+      const hasArabic = /[\u0600-\u06FF]/.test(textToTranslate)
+      const targetLang = hasArabic ? 'en' : (selectedLanguage === 'ar' ? 'ar' : 'en')
       const res = await fetch('/api/translate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -444,15 +523,17 @@ export default function AskInterface() {
 
       const data = await res.json()
       if (data.translatedText) {
+        setOriginalSpokenText(textToTranslate)
+        setOriginalSpokenLang(data.detectedSource || (hasArabic ? 'ar' : 'auto'))
         if (targetField === 'main') {
           setQuestion(data.translatedText)
         } else {
           setFollowUpQuestion(data.translatedText)
         }
         setTranslationNotice(
-          `Google Translated (${data.detectedSource?.toUpperCase() || 'AUTO'} → ${data.targetLang?.toUpperCase()})`
+          `Google Translated (${data.detectedSource?.toUpperCase() || 'DETECTED'} → ${data.targetLang?.toUpperCase()}). You can edit the question in English below.`
         )
-        setTimeout(() => setTranslationNotice(null), 4000)
+        setTimeout(() => setTranslationNotice(null), 6000)
       }
     } catch (e) {
       console.error('Failed to translate via Google Translate:', e)
@@ -837,6 +918,8 @@ export default function AskInterface() {
             isListening={isListening}
             onToggleListening={() => toggleListening('main')}
             speechSupported={speechSupported}
+            speechError={speechError}
+            onDismissError={() => setSpeechError(null)}
             onGoogleTranslate={() => handleGoogleTranslate('main')}
             isTranslating={translating}
             hasTextToTranslate={question.trim().length > 0}
@@ -844,9 +927,38 @@ export default function AskInterface() {
           />
 
           {translationNotice && (
-            <div className="text-[11px] font-semibold text-[#4285F4] bg-[#EEF4FE] border border-[#C6DCFC] px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1.5 animate-fade-in-up">
-              <Languages size={12} />
+            <div className="text-[11px] font-semibold text-[#4285F4] bg-[#EEF4FE] border border-[#C6DCFC] px-3.5 py-1.5 rounded-full mb-3 inline-flex items-center gap-1.5 animate-fade-in-up">
+              <Languages size={13} />
               <span>{translationNotice}</span>
+            </div>
+          )}
+
+          {/* Dual-Language Banner: Original Spoken/Typed Language + English Editable Notification */}
+          {originalSpokenText && (
+            <div className="w-full mb-3 p-3.5 bg-white border border-[#CBD5E1] rounded-xl shadow-xs text-left animate-fade-in-up">
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-md bg-[#F1F5F9] text-[#1E2761] text-[10px] font-bold uppercase tracking-wider">
+                    {originalSpokenLang === 'ar' || /[\u0600-\u06FF]/.test(originalSpokenText) ? '🇸🇦 Spoken in Arabic' : '🌐 Original Speech'}
+                  </span>
+                  <span className="text-[11px] text-[#5A6478] font-medium hidden sm:inline">
+                    Auto-translated to English below (feel free to edit before running):
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuestion(originalSpokenText)
+                    setOriginalSpokenText('')
+                  }}
+                  className="text-xs text-[#F96167] hover:underline font-semibold cursor-pointer shrink-0"
+                >
+                  Use Original
+                </button>
+              </div>
+              <p className="text-sm font-semibold text-[#1E2761] bg-[#F8FAFC] p-2.5 rounded-lg border border-[#E2E8F0]" dir={originalSpokenLang === 'ar' || /[\u0600-\u06FF]/.test(originalSpokenText) ? 'rtl' : 'ltr'}>
+                "{originalSpokenText}"
+              </p>
             </div>
           )}
 
@@ -856,9 +968,9 @@ export default function AskInterface() {
               <Textarea
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
-                placeholder={activeUploadedFile ? `Ask any question about ${activeUploadedFile.name}...` : currentLang.placeholder}
+                placeholder={activeUploadedFile ? `Ask any question about ${activeUploadedFile.name}...` : (selectedLanguage === 'ar' ? 'اكتب أو تحدث بالعربية (سيتم عرض الترجمة بالإنجليزية تلقائياً لتعديلها)...' : currentLang.placeholder)}
                 rows={3}
-                dir={isRtl ? 'rtl' : 'ltr'}
+                dir={/[\u0600-\u06FF]/.test(question) ? 'rtl' : 'ltr'}
                 className="w-full text-base resize-none focus-visible:ring-[#F96167] bg-white shadow-sm pr-12 rounded-xl"
               />
               {question.trim().length > 0 && (
@@ -872,7 +984,7 @@ export default function AskInterface() {
                 </button>
               )}
             </div>
-            <div className="mt-4 flex items-center justify-start gap-3">
+            <div className="mt-4 flex flex-wrap items-center justify-start gap-3">
               <Button 
                 onClick={handleSubmit} 
                 disabled={loading || !question.trim()}
@@ -880,6 +992,18 @@ export default function AskInterface() {
               >
                 {isRtl ? "اسأل ديسيرا" : "Ask Decyra"}
               </Button>
+              {/[\u0600-\u06FF]/.test(question) && (
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => handleGoogleTranslate('main')}
+                  disabled={translating}
+                  className="h-10 px-4 text-xs font-semibold text-[#4285F4] border-[#4285F4]/30 hover:bg-[#EEF4FE] rounded-[8px] flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  {translating ? <Loader2 size={13} className="animate-spin text-[#4285F4]" /> : <Languages size={13} />}
+                  <span>Translate Arabic to English</span>
+                </Button>
+              )}
               {question.trim().length > 0 && (
                 <button
                   type="button"
@@ -954,6 +1078,8 @@ export default function AskInterface() {
             isListening={isListening}
             onToggleListening={() => toggleListening('main')}
             speechSupported={speechSupported}
+            speechError={speechError}
+            onDismissError={() => setSpeechError(null)}
             onGoogleTranslate={() => handleGoogleTranslate('main')}
             isTranslating={translating}
             hasTextToTranslate={question.trim().length > 0}
@@ -961,9 +1087,38 @@ export default function AskInterface() {
           />
 
           {translationNotice && (
-            <div className="text-[11px] font-semibold text-[#4285F4] bg-[#EEF4FE] border border-[#C6DCFC] px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1.5 animate-fade-in-up">
-              <Languages size={12} />
+            <div className="text-[11px] font-semibold text-[#4285F4] bg-[#EEF4FE] border border-[#C6DCFC] px-3.5 py-1.5 rounded-full mb-3 inline-flex items-center gap-1.5 animate-fade-in-up">
+              <Languages size={13} />
               <span>{translationNotice}</span>
+            </div>
+          )}
+
+          {/* Dual-Language Banner: Original Spoken/Typed Language + English Editable Notification */}
+          {originalSpokenText && (
+            <div className="w-full mb-3 p-3.5 bg-white border border-[#CBD5E1] rounded-xl shadow-xs text-left animate-fade-in-up">
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-md bg-[#F1F5F9] text-[#1E2761] text-[10px] font-bold uppercase tracking-wider">
+                    {originalSpokenLang === 'ar' || /[\u0600-\u06FF]/.test(originalSpokenText) ? '🇸🇦 Spoken in Arabic' : '🌐 Original Speech'}
+                  </span>
+                  <span className="text-[11px] text-[#5A6478] font-medium hidden sm:inline">
+                    Auto-translated to English below (feel free to edit before running):
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuestion(originalSpokenText)
+                    setOriginalSpokenText('')
+                  }}
+                  className="text-xs text-[#F96167] hover:underline font-semibold cursor-pointer shrink-0"
+                >
+                  Use Original
+                </button>
+              </div>
+              <p className="text-sm font-semibold text-[#1E2761] bg-[#F8FAFC] p-2.5 rounded-lg border border-[#E2E8F0]" dir={originalSpokenLang === 'ar' || /[\u0600-\u06FF]/.test(originalSpokenText) ? 'rtl' : 'ltr'}>
+                "{originalSpokenText}"
+              </p>
             </div>
           )}
 
@@ -973,9 +1128,9 @@ export default function AskInterface() {
               <Textarea
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
-                placeholder={currentLang.placeholder}
+                placeholder={selectedLanguage === 'ar' ? 'اكتب أو تحدث بالعربية (سيتم عرض الترجمة بالإنجليزية تلقائياً لتعديلها)...' : currentLang.placeholder}
                 rows={3}
-                dir={isRtl ? 'rtl' : 'ltr'}
+                dir={/[\u0600-\u06FF]/.test(question) ? 'rtl' : 'ltr'}
                 className="w-full text-base resize-none focus-visible:ring-[#F96167] pr-10"
               />
               {question.trim().length > 0 && (
@@ -989,7 +1144,7 @@ export default function AskInterface() {
                 </button>
               )}
             </div>
-            <div className="mt-4 flex items-center justify-start gap-4">
+            <div className="mt-4 flex flex-wrap items-center justify-start gap-3">
               <Button 
                 onClick={handleSubmit} 
                 disabled={loading || !question.trim()}
@@ -1004,6 +1159,18 @@ export default function AskInterface() {
                   isRtl ? "اسأل ديسيرا" : "Ask Decyra"
                 )}
               </Button>
+              {/[\u0600-\u06FF]/.test(question) && (
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => handleGoogleTranslate('main')}
+                  disabled={translating}
+                  className="h-10 px-4 text-xs font-semibold text-[#4285F4] border-[#4285F4]/30 hover:bg-[#EEF4FE] rounded-[6px] flex items-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  {translating ? <Loader2 size={13} className="animate-spin text-[#4285F4]" /> : <Languages size={13} />}
+                  <span>Translate Arabic to English</span>
+                </Button>
+              )}
               {question.trim().length > 0 && (
                 <button
                   type="button"
