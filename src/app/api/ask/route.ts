@@ -4,6 +4,7 @@ import { DEMO_SCHEMA } from '../../../lib/schema'
 import { aiProvider } from '../../../lib/ai/provider'
 import { Client } from 'pg'
 import { executeSnowflakeQuery } from '../../../lib/connectors/snowflake'
+import alasql from 'alasql'
 
 export async function POST(req: NextRequest) {
   try {
@@ -165,7 +166,7 @@ No markdown fences. No commentary outside the JSON. Just the JSON object.`
     const sqlRawText = await aiProvider.generateText({
       systemPrompt: sqlSystemPrompt,
       userPrompt: question,
-      maxTokens: 1024,
+      maxTokens: 384,
     })
 
     // 5. Parse Gemini's JSON response, stripping any markdown fences
@@ -206,7 +207,6 @@ No markdown fences. No commentary outside the JSON. Just the JSON object.`
 
     if (isUploadedFile) {
       try {
-        const alasql = require('alasql')
         alasql.tables[tableName] = { data: body?.fileRows || [] }
         try {
           const resRows = alasql(sql)
@@ -297,24 +297,36 @@ No markdown fences. No commentary outside the JSON. Just the JSON object.`
     const rowCount = rows.length
     const previewRows = rows.slice(0, 5)
 
-    // 8. Narration call (safely wrapped so query results and charts always display)
-    let narration = `Found ${rowCount} ${rowCount === 1 ? 'record' : 'records'} matching your query.`
-    try {
-      const narrationPrompt = `A user asked: "${question}"
+    // 8. Instant Smart Narration for Single-Value / Aggregation Results (0ms lag)
+    let narration = ''
+    if (rowCount === 0) {
+      narration = 'No matching records were found for this query.'
+    } else if (rowCount === 1 && Object.keys(rows[0]).length === 1) {
+      const singleKey = Object.keys(rows[0])[0]
+      const rawVal = rows[0][singleKey]
+      const cleanKey = singleKey.replace(/_/g, ' ').replace(/[()*\"]/g, '').trim().toLowerCase()
+      const formattedVal = typeof rawVal === 'number' ? rawVal.toLocaleString() : String(rawVal)
+      narration = `The total ${cleanKey || 'result'} is ${formattedVal}.`
+    } else {
+      // For multi-row results, generate concise narration with a tight token budget and timeout
+      try {
+        const narrationPrompt = `A user asked: "${question}"
 
-The SQL that ran: ${sql}
-
-The first ${Math.min(5, rowCount)} rows of the result (total rows returned: ${rowCount}):
+Data returned (${rowCount} rows, first 5 shown):
 ${JSON.stringify(previewRows)}
 
-Write a 2-sentence plain-English explanation for a non-technical business executive. State the headline finding clearly with the actual numbers from the data, then add one notable detail or pattern you see. Do not mention SQL. Do not say "the query returned" — write as if you're directly answering the user's question.`
+Write a concise 1-2 sentence business executive finding answering the question with the specific numbers. Do not mention SQL or code.`
 
-      narration = await aiProvider.generateText({
-        userPrompt: narrationPrompt,
-        maxTokens: 512,
-      })
-    } catch (narrationErr) {
-      console.warn('Narration generation fallback:', narrationErr)
+        narration = await Promise.race([
+          aiProvider.generateText({
+            userPrompt: narrationPrompt,
+            maxTokens: 128,
+          }),
+          new Promise<string>((_, reject) => setTimeout(() => reject(new Error('timeout')), 2000))
+        ])
+      } catch {
+        narration = `Found ${rowCount} ${rowCount === 1 ? 'record' : 'records'} matching your query.`
+      }
     }
 
     // 9. Return everything

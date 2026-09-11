@@ -26,7 +26,7 @@ export const aiProvider: AIProvider = {
           systemInstruction: systemPrompt,
           generationConfig: {
             maxOutputTokens: maxTokens,
-            temperature: 0.1,
+            temperature: 0,
           },
         })
 
