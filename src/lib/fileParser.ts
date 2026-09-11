@@ -9,6 +9,26 @@ export interface ParsedFileResult {
   rows: any[]
   schemaText: string
   fileType: string
+  uploadedAt?: string
+}
+
+export type UploadedFileRecord = ParsedFileResult
+
+export function generateSchemaFromRows(tableName: string, rows: Record<string, any>[]): string {
+  if (!rows || rows.length === 0) return `TABLE ${tableName}\n  (empty)`
+  const columns = Object.keys(rows[0] || {})
+  const columnTypes: Record<string, string> = {}
+  columns.forEach(col => {
+    const values = rows.map(r => r[col])
+    columnTypes[col] = inferType(values)
+  })
+  return [
+    `TABLE ${tableName}`,
+    ...columns.map(c => `  ${c} (${columnTypes[c]})`),
+    '',
+    `Sample Rows (first ${Math.min(3, rows.length)}):`,
+    JSON.stringify(rows.slice(0, 3), null, 2)
+  ].join('\n')
 }
 
 function cleanColumnName(col: string, fallbackIdx?: number): string {

@@ -11,8 +11,9 @@ import GoldenLayerModal from './GoldenLayerModal'
 import HistoryView from './HistoryView'
 import SettingsView from './SettingsView'
 import UploadFileModal from './UploadFileModal'
+import ConnectApiModal from './ConnectApiModal'
 import { ParsedFileResult } from '@/lib/fileParser'
-import { UploadCloud, FileSpreadsheet, Trash2, Layers, Briefcase, Cloud } from 'lucide-react'
+import { UploadCloud, FileSpreadsheet, Trash2, Layers, Briefcase, Cloud, Globe } from 'lucide-react'
 
 interface DataSourceContextType {
   activeSource: string // 'demo', custom connection UUID, or 'file_xxx'
@@ -56,6 +57,7 @@ export function DashboardShell({
   const [isConnectOpen, setIsConnectOpen] = useState(false)
   const [isSnowflakeConnectOpen, setIsSnowflakeConnectOpen] = useState(false)
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
+  const [isApiModalOpen, setIsApiModalOpen] = useState(false)
   const [isGoldenLayerOpen, setIsGoldenLayerOpen] = useState(false)
   
   // Coming Soon waitlist states
@@ -198,6 +200,20 @@ export function DashboardShell({
             </div>
             <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
               PRIVATE
+            </span>
+          </button>
+
+          {/* Connect REST API / Webhook Action Button */}
+          <button
+            onClick={() => setIsApiModalOpen(true)}
+            className="w-full h-10 flex items-center justify-between rounded-lg pl-3 pr-3 text-[#1E2761] hover:bg-[#F4F6FB] group transition-all cursor-pointer border border-[#E2E8F0] hover:border-indigo-400 bg-white mb-1 shadow-sm"
+          >
+            <div className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-indigo-600" />
+              <span className="text-[13px] font-semibold text-[#1E2761]">Connect REST API</span>
+            </div>
+            <span className="text-[9px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded">
+              JSON
             </span>
           </button>
 
@@ -679,6 +695,12 @@ export function DashboardShell({
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         onFileAdded={handleFileAdded}
+      />
+
+      <ConnectApiModal
+        isOpen={isApiModalOpen}
+        onClose={() => setIsApiModalOpen(false)}
+        onApiAdded={handleFileAdded}
       />
 
       <GoldenLayerModal

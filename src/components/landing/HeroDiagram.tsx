@@ -16,6 +16,8 @@ import {
   FileSpreadsheet,
   Briefcase,
   FileText,
+  Globe,
+  Zap,
 } from "lucide-react";
 import DataSourceCard from "./DataSourceCard";
 import BrowserMockup from "./BrowserMockup";
@@ -28,6 +30,7 @@ const sourceCards = [
   { icon: Cloud, label: "Azure ADLS Gen2", subtext: "Delta Lake • Fabric", lakehouse: true },
   { icon: Cloud, label: "Google Cloud Storage", subtext: "BigLake • Parquet", lakehouse: true },
   { icon: FileSpreadsheet, label: "CSV, Parquet & Excel", subtext: "100% In-Browser RAM", comingSoon: false, checkmark: true },
+  { icon: Globe, label: "REST APIs & Webhooks", subtext: "Stripe • Shopify • Custom JSON", comingSoon: false, checkmark: true },
   { icon: Briefcase, label: "SAP (ERP & S/4HANA)", comingSoon: true },
   { icon: Cloud, label: "Salesforce CRM & SaaS", comingSoon: true },
   { icon: Layers, label: "Virtual Golden Layer", inProgress: true },
@@ -39,6 +42,7 @@ const outputCards = [
   { icon: PieChart, label: "Win-rate by segment", comingSoon: false },
   { icon: TrendingUp, label: "Customer churn & expansion", comingSoon: false },
   { icon: PieChart, label: "Executive revenue findings", comingSoon: false },
+  { icon: Zap, label: "Live API & Webhook data sync", comingSoon: false },
   { icon: AlertCircle, label: "Anomaly & metric drift alerts", comingSoon: true },
   { icon: Calendar, label: "Scheduled automated reports", comingSoon: true },
   { icon: Mail, label: "Email & Slack digests", comingSoon: true },
@@ -91,7 +95,7 @@ function FlowConnector({ cardCenters }: { cardCenters: number[] }) {
 }
 
 export default function HeroDiagram() {
-  const centers = [23, 77, 131, 185, 239, 293, 347, 401, 455, 509];
+  const centers = [23, 77, 131, 185, 239, 293, 347, 401, 455, 509, 563];
 
   return (
     <div className="w-full">

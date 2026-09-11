@@ -292,8 +292,8 @@ export default function HomePage() {
 
             {/* Live Connectors & In-Progress Notice */}
             <p className="mt-10 text-[13px] text-[#5A6478] text-center max-w-[960px] mx-auto leading-relaxed">
-              <span className="font-semibold text-[#1E2761]">Live Operational Data:</span> PostgreSQL, Snowflake, and In-Browser Private Datasets (CSV, Parquet, Excel).{" "}
-              <span className="font-semibold text-[#059669]">Cloud Data Lakes:</span> Amazon S3, Azure ADLS Gen2, and Google Cloud Storage (Apache Iceberg, Delta Lake, Parquet).{" "}
+              <span className="font-semibold text-[#1E2761]">Live Operational Data:</span> PostgreSQL, Snowflake, REST APIs &amp; Webhooks (Stripe, Shopify, Custom JSON), and In-Browser Private Datasets (CSV, Parquet, Excel).{" "}
+              <span className="font-semibold text-[#059669]">Cloud Data Lakes &amp; Warehouses:</span> Google BigQuery, Amazon S3, Azure ADLS Gen2, and Google Cloud Storage (Apache Iceberg, Delta Lake, Parquet).{" "}
               <span className="font-semibold text-[#F96167]">Enterprise Connectors:</span> SAP (ERP &amp; S/4HANA), Salesforce CRM, and Virtual Golden Layer.
             </p>
           </div>
