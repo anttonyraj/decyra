@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Loader2, Copy, Search, MessageSquare, Download, Check, Sparkles, CornerDownRight, RotateCcw, FileSpreadsheet, ArrowRight, UploadCloud } from 'lucide-react'
+import { Loader2, Copy, Search, MessageSquare, Download, Check, Sparkles, CornerDownRight, RotateCcw, FileSpreadsheet, ArrowRight, UploadCloud, BarChart3, PieChart as PieIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useDataSource } from './DashboardShell'
 import {
@@ -23,6 +23,9 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
+  PieChart,
+  Pie,
+  Cell,
 } from 'recharts'
 
 export default function AskInterface() {
@@ -44,6 +47,7 @@ export default function AskInterface() {
   const [copied, setCopied] = useState(false)
   const [tableCopied, setTableCopied] = useState(false)
   const [downloadingChart, setDownloadingChart] = useState(false)
+  const [selectedChartType, setSelectedChartType] = useState<'bar' | 'donut'>('bar')
   const [mounted, setMounted] = useState(false)
 
   // Multi-turn conversation thread tracking
@@ -416,17 +420,31 @@ export default function AskInterface() {
     }
   }
 
-  const isNumeric = (val: any) => {
-    if (typeof val === 'number') return true
-    if (typeof val === 'string') return /^[\d,.-]+$/.test(val)
+  const CHART_COLORS = ['#F96167', '#1E2761', '#2A9D8F', '#E76F51', '#457B9D', '#F4A261', '#6C5CE7', '#00B894', '#E84393']
+
+  const isNumeric = (val: any): boolean => {
+    if (typeof val === 'number') return !isNaN(val)
+    if (typeof val === 'string') {
+      const clean = val.replace(/[$,€£%\s,]/g, '').trim()
+      return /^[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?$/.test(clean) && clean !== ''
+    }
     return false
+  }
+
+  const cleanNum = (val: any): number => {
+    if (typeof val === 'number') return isNaN(val) ? 0 : val
+    if (typeof val === 'string') {
+      const clean = val.replace(/[$,€£%\s,]/g, '').trim()
+      const n = parseFloat(clean)
+      return isNaN(n) ? 0 : n
+    }
+    return 0
   }
 
   const formatNumber = (val: any) => {
     if (val === null || val === undefined) return ''
     if (!isNumeric(val)) return String(val)
-    const num = Number(typeof val === 'string' ? val.replace(/,/g, '') : val)
-    if (isNaN(num)) return String(val)
+    const num = cleanNum(val)
     
     if (num % 1 === 0) {
       return num.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })
@@ -453,44 +471,133 @@ export default function AskInterface() {
 
   const columnStats = result ? getColumnStats(result.rows) : { numericCols: new Set<string>() }
 
-  const getChartConfig = (rows: any[]) => {
-    if (!rows || rows.length < 2) return null
-    const firstRow = rows[0]
-    const keys = Object.keys(firstRow)
-    
-    let numericKey: string | null = null
-    let categoryKey: string | null = null
+  interface ChartConfigResult {
+    categoryKey: string
+    numericKey: string
+    title: string
+    chartData: any[]
+    isFrequency?: boolean
+  }
 
-    for (const key of keys) {
-      const isNum = rows.every(row => {
-        const val = row[key]
-        return val === null || val === undefined || isNumeric(val)
-      })
-      if (isNum && !numericKey) {
-        numericKey = key
-      } else if (!isNum && !categoryKey) {
-        categoryKey = key
+  const getChartConfig = (rows: any[]): ChartConfigResult | null => {
+    if (!rows || rows.length === 0) return null
+    const firstRow = rows[0]
+    if (!firstRow) return null
+    const keys = Object.keys(firstRow)
+    if (keys.length === 0) return null
+
+    // 1. Classify columns
+    const numericCols: string[] = []
+    const categoryCols: string[] = []
+
+    keys.forEach(key => {
+      const numericCount = rows.filter(r => isNumeric(r[key])).length
+      if (numericCount >= Math.ceil(rows.length * 0.6)) {
+        numericCols.push(key)
+      } else {
+        categoryCols.push(key)
+      }
+    })
+
+    // Case A: Categorical column + Numeric column
+    if (numericCols.length > 0 && categoryCols.length > 0) {
+      const catKey = categoryCols[0]
+      const numKey = numericCols[0]
+      const chartData = rows.slice(0, 30).map(r => ({
+        ...r,
+        [catKey]: String(r[catKey] ?? 'Unknown'),
+        [numKey]: cleanNum(r[numKey])
+      }))
+      return {
+        categoryKey: catKey,
+        numericKey: numKey,
+        chartData,
+        title: `${numKey.replace(/_/g, ' ')} by ${catKey.replace(/_/g, ' ')}`,
+        isFrequency: false
       }
     }
 
-    if (numericKey && !categoryKey) {
-      categoryKey = keys.find(k => k !== numericKey) || null
+    // Case B: Only numeric columns (e.g. metrics summary)
+    if (numericCols.length > 0 && categoryCols.length === 0) {
+      if (rows.length === 1) {
+        const chartData = numericCols.map(col => ({
+          metric: col.replace(/_/g, ' '),
+          value: cleanNum(rows[0][col])
+        }))
+        return {
+          categoryKey: 'metric',
+          numericKey: 'value',
+          chartData,
+          title: 'Metrics Overview',
+          isFrequency: false
+        }
+      } else {
+        const numKey = numericCols[0]
+        const chartData = rows.slice(0, 30).map((r, i) => ({
+          ...r,
+          record: `Item ${i + 1}`,
+          [numKey]: cleanNum(r[numKey])
+        }))
+        return {
+          categoryKey: 'record',
+          numericKey: numKey,
+          chartData,
+          title: `${numKey.replace(/_/g, ' ')} across records`,
+          isFrequency: false
+        }
+      }
     }
 
-    if (!numericKey || !categoryKey) return null
+    // Case C: Pure Text / Categorical columns (like Packing List items/statuses)
+    if (categoryCols.length > 0) {
+      // Find the best column to group: preference for status, type, category, or column with small distinct set
+      let chosenCol = categoryCols[0]
+      let bestDistinctCount = 999999
 
-    return { categoryKey, numericKey }
+      for (const col of categoryCols) {
+        const uniqueVals = new Set(rows.map(r => String(r[col] ?? '').trim()).filter(Boolean))
+        if (uniqueVals.size >= 1 && uniqueVals.size <= 25 && uniqueVals.size < bestDistinctCount) {
+          chosenCol = col
+          bestDistinctCount = uniqueVals.size
+        }
+      }
+
+      const frequencyMap: Record<string, number> = {}
+      rows.forEach(r => {
+        const val = String(r[chosenCol] ?? '').trim()
+        if (val) {
+          frequencyMap[val] = (frequencyMap[val] || 0) + 1
+        }
+      })
+
+      const entries = Object.entries(frequencyMap)
+      if (entries.length > 0) {
+        const chartData = entries
+          .map(([name, count]) => ({
+            category: name,
+            count
+          }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 15)
+
+        const cleanColName = chosenCol.replace(/^__empty_?/, 'column_').replace(/_/g, ' ')
+        return {
+          categoryKey: 'category',
+          numericKey: 'count',
+          chartData,
+          title: `Distribution of ${cleanColName} (${rows.length} ${rows.length === 1 ? 'record' : 'records'})`,
+          isFrequency: true
+        }
+      }
+    }
+
+    return null
   }
 
   const chartConfig = result ? getChartConfig(result.rows) : null
-  const chartData = (result && chartConfig) ? result.rows.map((row: any) => ({
-    ...row,
-    [chartConfig.categoryKey]: String(row[chartConfig.categoryKey] || ''),
-    [chartConfig.numericKey]: Number(String(row[chartConfig.numericKey] || '0').replace(/,/g, ''))
-  })) : []
 
-  const hasLongLabels = (result && chartConfig)
-    ? result.rows.some((row: any) => String(row[chartConfig.categoryKey] || '').length > 6)
+  const hasLongLabels = (chartConfig && chartConfig.chartData)
+    ? chartConfig.chartData.some((row: any) => String(row[chartConfig.categoryKey] || '').length > 6)
     : false
 
   const showEmptyState = !question.trim() && !loading && !result && !error
@@ -821,70 +928,142 @@ export default function AskInterface() {
               {/* Visualization Section */}
               {mounted && chartConfig && (
                 <section className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="text-[12px] font-bold text-[#1E2761] uppercase tracking-widest">VISUALIZATION</div>
-                    <button
-                      onClick={handleDownloadChart}
-                      disabled={downloadingChart}
-                      className="px-2.5 py-1 rounded-md border border-[#E5E9F2] bg-white text-[#5A6478] hover:text-[#1E2761] hover:border-[#1E2761] transition-all duration-150 flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer disabled:opacity-50"
-                      title="Download chart as high-resolution PNG image"
-                    >
-                      {downloadingChart ? (
-                        <>
-                          <Loader2 size={13} className="animate-spin text-[#F96167]" />
-                          <span>Exporting...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Download size={13} />
-                          <span>Download Chart (PNG)</span>
-                        </>
-                      )}
-                    </button>
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="text-[12px] font-bold text-[#1E2761] uppercase tracking-widest">
+                        VISUALIZATION
+                      </div>
+                      <span className="text-[11px] text-[#5A6478] bg-[#FAFBFC] border border-[#E5E9F2] px-2.5 py-0.5 rounded-full font-medium capitalize">
+                        {chartConfig.title}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {/* Chart Type Toggle: Bar vs Donut */}
+                      <div className="flex items-center bg-[#F4F6FB] p-0.5 rounded-lg border border-[#E5E9F2]">
+                        <button
+                          onClick={() => setSelectedChartType('bar')}
+                          className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded-md transition-all cursor-pointer font-medium ${
+                            selectedChartType === 'bar'
+                              ? 'bg-white text-[#1E2761] shadow-2xs font-semibold'
+                              : 'text-[#5A6478] hover:text-[#1E2761]'
+                          }`}
+                          title="Bar Chart View"
+                        >
+                          <BarChart3 size={13} />
+                          <span>Bar</span>
+                        </button>
+                        <button
+                          onClick={() => setSelectedChartType('donut')}
+                          className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded-md transition-all cursor-pointer font-medium ${
+                            selectedChartType === 'donut'
+                              ? 'bg-white text-[#1E2761] shadow-2xs font-semibold'
+                              : 'text-[#5A6478] hover:text-[#1E2761]'
+                          }`}
+                          title="Donut / Pie Chart View"
+                        >
+                          <PieIcon size={13} />
+                          <span>Donut</span>
+                        </button>
+                      </div>
+
+                      <button
+                        onClick={handleDownloadChart}
+                        disabled={downloadingChart}
+                        className="px-2.5 py-1 rounded-md border border-[#E5E9F2] bg-white text-[#5A6478] hover:text-[#1E2761] hover:border-[#1E2761] transition-all duration-150 flex items-center gap-1.5 text-xs font-medium shadow-sm cursor-pointer disabled:opacity-50"
+                        title="Download chart as high-resolution PNG image"
+                      >
+                        {downloadingChart ? (
+                          <>
+                            <Loader2 size={13} className="animate-spin text-[#F96167]" />
+                            <span>Exporting...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Download size={13} />
+                            <span>Download Chart (PNG)</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
+
                   <div className="bg-white rounded-xl border border-[#E5E9F2] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.05)] w-full">
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: hasLongLabels ? 25 : 5 }}>
-                        <CartesianGrid vertical={false} stroke="#F4F6FB" strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey={chartConfig.categoryKey}
-                          fontSize={11}
-                          stroke="#5A6478"
-                          tickLine={false}
-                          {...(hasLongLabels ? {
-                            angle: -45,
-                            textAnchor: 'end',
-                            height: 60
-                          } : {
-                            angle: 0,
-                            textAnchor: 'middle',
-                            height: 30
-                          })}
-                        />
-                        <YAxis 
-                          fontSize={11}
-                          stroke="#5A6478"
-                          tickLine={false}
-                          axisLine={false}
-                          tickFormatter={(val) => Number(val).toLocaleString()}
-                        />
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: '#fff', 
-                            borderColor: '#E5E9F2', 
-                            borderRadius: '8px', 
-                            boxShadow: '0 4px 12px rgba(30,39,97,0.08)',
-                            fontSize: '12px'
-                          }} 
-                          formatter={(val) => [Number(val).toLocaleString(), chartConfig.numericKey]}
-                          labelStyle={{ fontWeight: 'bold', color: '#1E2761' }}
-                        />
-                        <Bar 
-                          dataKey={chartConfig.numericKey} 
-                          fill="#F96167" 
-                          radius={[4, 4, 0, 0]}
-                        />
-                      </BarChart>
+                    <ResponsiveContainer width="100%" height={320}>
+                      {selectedChartType === 'bar' ? (
+                        <BarChart data={chartConfig.chartData} margin={{ top: 10, right: 10, left: 10, bottom: hasLongLabels ? 30 : 10 }}>
+                          <CartesianGrid vertical={false} stroke="#F4F6FB" strokeDasharray="3 3" />
+                          <XAxis 
+                            dataKey={chartConfig.categoryKey}
+                            fontSize={11}
+                            stroke="#5A6478"
+                            tickLine={false}
+                            {...(hasLongLabels ? {
+                              angle: -35,
+                              textAnchor: 'end',
+                              height: 60
+                            } : {
+                              angle: 0,
+                              textAnchor: 'middle',
+                              height: 30
+                            })}
+                          />
+                          <YAxis 
+                            fontSize={11}
+                            stroke="#5A6478"
+                            tickLine={false}
+                            axisLine={false}
+                            tickFormatter={(val) => Number(val).toLocaleString()}
+                          />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: '#fff', 
+                              borderColor: '#E5E9F2', 
+                              borderRadius: '8px', 
+                              boxShadow: '0 4px 12px rgba(30,39,97,0.08)',
+                              fontSize: '12px'
+                            }} 
+                            formatter={(val) => [Number(val).toLocaleString(), chartConfig.numericKey.replace(/_/g, ' ')]}
+                            labelStyle={{ fontWeight: 'bold', color: '#1E2761' }}
+                          />
+                          <Bar 
+                            dataKey={chartConfig.numericKey} 
+                            fill="#F96167" 
+                            radius={[4, 4, 0, 0]}
+                          >
+                            {chartConfig.chartData.map((_, index) => (
+                              <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      ) : (
+                        <PieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: '#fff', 
+                              borderColor: '#E5E9F2', 
+                              borderRadius: '8px', 
+                              boxShadow: '0 4px 12px rgba(30,39,97,0.08)',
+                              fontSize: '12px'
+                            }} 
+                            formatter={(val, name) => [Number(val).toLocaleString(), String(name)]}
+                          />
+                          <Pie
+                            data={chartConfig.chartData}
+                            dataKey={chartConfig.numericKey}
+                            nameKey={chartConfig.categoryKey}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={60}
+                            outerRadius={105}
+                            paddingAngle={3}
+                          >
+                            {chartConfig.chartData.map((_, index) => (
+                              <Cell key={`donut-cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                            ))}
+                          </Pie>
+                        </PieChart>
+                      )}
                     </ResponsiveContainer>
                   </div>
                 </section>

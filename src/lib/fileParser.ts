@@ -11,12 +11,16 @@ export interface ParsedFileResult {
   fileType: string
 }
 
-function cleanColumnName(col: string): string {
-  return col
-    .trim()
+function cleanColumnName(col: string, fallbackIdx?: number): string {
+  let name = String(col || '').trim()
+  if (/^__empty/i.test(name) || !name) {
+    const numMatch = name.match(/\d+/)
+    return numMatch ? `column_${numMatch[0]}` : (fallbackIdx !== undefined ? `column_${fallbackIdx + 1}` : 'column')
+  }
+  return name
     .replace(/[^\w\s]/g, '')
     .replace(/\s+/g, '_')
-    .toLowerCase() || 'col'
+    .toLowerCase() || (fallbackIdx !== undefined ? `column_${fallbackIdx + 1}` : 'col')
 }
 
 function inferType(values: any[]): 'NUMERIC' | 'DATE' | 'TEXT' {
@@ -24,7 +28,7 @@ function inferType(values: any[]): 'NUMERIC' | 'DATE' | 'TEXT' {
   if (sample.length === 0) return 'TEXT'
 
   const allNumbers = sample.every(v => {
-    const s = String(v).replace(/,/g, '').trim()
+    const s = String(v).replace(/[$,€£%\s,]/g, '').trim()
     return !isNaN(Number(s)) && s !== ''
   })
   if (allNumbers) return 'NUMERIC'
@@ -72,7 +76,39 @@ export async function parseUploadedFile(file: File): Promise<ParsedFileResult> {
     const workbook = XLSX.read(buffer, { type: 'array' })
     const sheetName = workbook.SheetNames[0]
     const worksheet = workbook.Sheets[sheetName]
-    rows = XLSX.utils.sheet_to_json(worksheet)
+    
+    // Intelligent header detection for Excel
+    const rawMatrix = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' }) as any[][]
+    
+    if (rawMatrix && rawMatrix.length > 0) {
+      let bestHeaderIdx = 0
+      let maxNonEmpty = 0
+      for (let i = 0; i < Math.min(5, rawMatrix.length); i++) {
+        const textCount = (rawMatrix[i] || []).filter(c => typeof c === 'string' && c.trim().length > 0).length
+        if (textCount > maxNonEmpty) {
+          maxNonEmpty = textCount
+          bestHeaderIdx = i
+        }
+      }
+
+      if (bestHeaderIdx > 0 && maxNonEmpty >= 2) {
+        const headers = (rawMatrix[bestHeaderIdx] || []).map((h, i) => cleanColumnName(String(h || ''), i))
+        rows = []
+        for (let i = bestHeaderIdx + 1; i < rawMatrix.length; i++) {
+          const rowData = rawMatrix[i] || []
+          if (rowData.every(c => c === '' || c === null || c === undefined)) continue
+          const obj: Record<string, any> = {}
+          headers.forEach((h, colIdx) => {
+            obj[h] = rowData[colIdx] ?? ''
+          })
+          rows.push(obj)
+        }
+      } else {
+        rows = XLSX.utils.sheet_to_json(worksheet, { defval: '' })
+      }
+    } else {
+      rows = XLSX.utils.sheet_to_json(worksheet, { defval: '' })
+    }
   } else {
     throw new Error(`Unsupported file format: .${extension}`)
   }
@@ -84,14 +120,14 @@ export async function parseUploadedFile(file: File): Promise<ParsedFileResult> {
   // Normalize row keys to clean identifiers
   const rawColumns = Object.keys(rows[0] || {})
   const columnMapping: Record<string, string> = {}
-  rawColumns.forEach(raw => {
-    columnMapping[raw] = cleanColumnName(raw)
+  rawColumns.forEach((raw, idx) => {
+    columnMapping[raw] = cleanColumnName(raw, idx)
   })
 
   const normalizedRows = rows.map(r => {
     const cleaned: Record<string, any> = {}
-    Object.keys(r).forEach(k => {
-      cleaned[columnMapping[k] || cleanColumnName(k)] = r[k]
+    Object.keys(r).forEach((k, idx) => {
+      cleaned[columnMapping[k] || cleanColumnName(k, idx)] = r[k]
     })
     return cleaned
   })
