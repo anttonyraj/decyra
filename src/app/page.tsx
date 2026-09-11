@@ -11,6 +11,7 @@ import Footer from "@/components/landing/Footer";
 import { HowItWorksGraphic, WhyDecyraGraphic, BuiltForGraphic, PricingGraphic, SecurityGraphic, HeroBackgroundGraphic } from "@/components/landing/SectionGraphics";
 import VisitorTracker from "@/components/landing/VisitorTracker";
 import RotatingHeadline from "@/components/landing/RotatingHeadline";
+import AgenticAiSection from "@/components/landing/AgenticAiSection";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -414,6 +415,9 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* ── AUTONOMOUS AGENTIC AI SUITE ── */}
+        <AgenticAiSection />
 
         {/* ── WHAT YOU CAN ASK ── */}
         <section
