@@ -645,6 +645,128 @@ export default function InvestorsPage() {
                   </ul>
                 </div>
               </div>
+
+              {/* Question 7: Switching Cost & Retention Moat */}
+              <div className="bg-white rounded-2xl border border-[#E5E9F2] p-8 sm:p-10 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="w-8 h-8 rounded-lg bg-[#1E2761] text-white flex items-center justify-center text-xs font-bold font-mono">07</span>
+                  <h3 className="text-xl font-bold text-[#1E2761] font-serif">
+                    &quot;If you don&apos;t store customer data, what is your switching cost and retention moat?&quot;
+                  </h3>
+                </div>
+                <div className="space-y-4 text-sm text-[#5A6478] leading-relaxed">
+                  <p>
+                    Data storage is a commodity; <strong>semantic business logic and cross-database lineage are an immovable enterprise moat</strong>. Decyra&apos;s switching costs compound over time in three ways:
+                  </p>
+                  <div className="grid sm:grid-cols-3 gap-4 pt-1">
+                    <div className="p-4 rounded-xl bg-[#FAFBFC] border border-[#E5E9F2]">
+                      <div className="font-bold text-[#1E2761] text-xs mb-1">1. The Semantic Metric Dictionary</div>
+                      <div className="text-xs text-[#5A6478]">
+                        Once RevOps, Finance, and Product define complex composite metrics (e.g., &quot;Enterprise Net Churn&quot; joined across Stripe and Postgres), those business definitions live permanently in Decyra.
+                      </div>
+                    </div>
+                    <div className="p-4 rounded-xl bg-[#FAFBFC] border border-[#E5E9F2]">
+                      <div className="font-bold text-[#1E2761] text-xs mb-1">2. Team Workflow &amp; Dashboard Lock-in</div>
+                      <div className="text-xs text-[#5A6478]">
+                        Every saved board, executive Slack report, and monthly board pack chart references Decyra&apos;s query endpoints. Unplugging Decyra immediately blinds operational leadership.
+                      </div>
+                    </div>
+                    <div className="p-4 rounded-xl bg-[#FAFBFC] border border-[#E5E9F2]">
+                      <div className="font-bold text-[#1E2761] text-xs mb-1">3. Cross-Database Semantic Graph</div>
+                      <div className="text-xs text-[#5A6478]">
+                        Decyra learns foreign key patterns and synonym mappings as users query the system. This trained enterprise graph cannot be exported to a generic competitor.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Question 8: Production Safety & Crash Prevention */}
+              <div className="bg-white rounded-2xl border border-[#E5E9F2] p-8 sm:p-10 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="w-8 h-8 rounded-lg bg-[#1E2761] text-white flex items-center justify-center text-xs font-bold font-mono">08</span>
+                  <h3 className="text-xl font-bold text-[#1E2761] font-serif">
+                    &quot;What prevents a business operator from running a query that crashes production databases?&quot;
+                  </h3>
+                </div>
+                <div className="space-y-4 text-sm text-[#5A6478] leading-relaxed">
+                  <p>
+                    Every database administrator (DBA) fears giving non-technical operators query access. Decyra implements <strong>four military-grade production safeguards</strong>:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-2 text-[#5A6478]">
+                    <li>
+                      <strong className="text-[#1E2761]">Automatic Read-Replica Routing:</strong> Decyra connects exclusively to read replicas or follower instances, isolating the primary transactional database from all analytical load.
+                    </li>
+                    <li>
+                      <strong className="text-[#1E2761]">Pushdown Cost &amp; Partition Estimation:</strong> Before any SQL is dispatched, Decyra inspects the query plan (`EXPLAIN`). If a query triggers an unindexed full-table scan over millions of rows, execution is blocked and partition filters are automatically suggested.
+                    </li>
+                    <li>
+                      <strong className="text-[#1E2761]">Strict Circuit Breakers &amp; Timeouts:</strong> Hard statement timeouts (default 5,000ms) and automatic row caps prevent runaway queries or locks.
+                    </li>
+                    <li>
+                      <strong className="text-[#1E2761]">Mandatory Read-Only AST Validation:</strong> Our compiler physically rejects mutating statements (`INSERT`, `UPDATE`, `DELETE`, `DROP`, `TRUNCATE`, `ALTER`) before they ever touch the network wire.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Question 9: Schema Drift */}
+              <div className="bg-white rounded-2xl border border-[#E5E9F2] p-8 sm:p-10 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="w-8 h-8 rounded-lg bg-[#1E2761] text-white flex items-center justify-center text-xs font-bold font-mono">09</span>
+                  <h3 className="text-xl font-bold text-[#1E2761] font-serif">
+                    &quot;How does Decyra handle Schema Drift when engineering alters database tables?&quot;
+                  </h3>
+                </div>
+                <div className="space-y-4 text-sm text-[#5A6478] leading-relaxed">
+                  <p>
+                    In fast-moving companies, backend developers rename columns, add new tables, and deprecate fields every week. Decyra solves this with <strong>Autonomous Schema Sync &amp; Vector Re-grounding</strong>:
+                  </p>
+                  <div className="grid sm:grid-cols-2 gap-4 pt-1">
+                    <div className="p-4 rounded-xl bg-[#FAFBFC] border border-[#E5E9F2]">
+                      <div className="font-bold text-[#1E2761] text-xs mb-1">Continuous Asynchronous DDL Diffing</div>
+                      <div className="text-xs text-[#5A6478]">
+                        Decyra runs non-blocking periodic schema inspections to capture newly added columns, altered data types, and dropped constraints without performance impact.
+                      </div>
+                    </div>
+                    <div className="p-4 rounded-xl bg-[#FAFBFC] border border-[#E5E9F2]">
+                      <div className="font-bold text-[#1E2761] text-xs mb-1">Semantic Alias Healing</div>
+                      <div className="text-xs text-[#5A6478]">
+                        If `user_id` is renamed to `account_uuid`, our vector embeddings recognize semantic equivalence, preserve historical dashboard definitions, and notify workspace admins to approve the alias update.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Question 10: Build vs Buy / In-House DIY Defense */}
+              <div className="bg-white rounded-2xl border border-[#E5E9F2] p-8 sm:p-10 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="w-8 h-8 rounded-lg bg-[#1E2761] text-white flex items-center justify-center text-xs font-bold font-mono">10</span>
+                  <h3 className="text-xl font-bold text-[#1E2761] font-serif">
+                    &quot;Why can&apos;t an internal enterprise team just build this with DuckDB + LangChain over a weekend?&quot;
+                  </h3>
+                </div>
+                <div className="space-y-4 text-sm text-[#5A6478] leading-relaxed">
+                  <p>
+                    A weekend hackathon script connecting an LLM to DuckDB works on a single toy dataset with 100 rows. It dies immediately in an enterprise environment due to <strong>The Enterprise Chasm</strong>:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-2 text-[#5A6478]">
+                    <li>
+                      <strong className="text-[#1E2761]">Multi-Dialect SQL Transpilation:</strong> Generating valid pushdown SQL that runs simultaneously across Postgres syntax, Snowflake syntax, and BigQuery syntax with dialect-specific date math and type casting requires years of compiler engineering.
+                    </li>
+                    <li>
+                      <strong className="text-[#1E2761]">Fine-Grained RBAC &amp; PII Column Masking:</strong> An intern must not see executive compensation columns, even if both work with the `employees` table. Decyra enforces column-level cryptographic masking and role authorization.
+                    </li>
+                    <li>
+                      <strong className="text-[#1E2761]">Sub-25ms Distributed Pushdown:</strong> Naive DIY scripts download entire tables into memory, causing server crashes. Decyra&apos;s pushdown optimizer extracts only the pre-aggregated micro-partitions.
+                    </li>
+                    <li>
+                      <strong className="text-[#1E2761]">Maintenance &amp; Opportunity Cost:</strong> Enterprises spend $400k+/year in engineering salaries trying to build and maintain internal data tools. Paying Decyra $199 - $999/month is a 10x ROI on day one.
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </section>
