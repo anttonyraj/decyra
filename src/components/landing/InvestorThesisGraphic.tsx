@@ -126,7 +126,7 @@ export default function InvestorThesisGraphic() {
                 {activeCycle === 2 && (
                   <>
                     <span className="w-2.5 h-2.5 rounded-full bg-[#F96167] animate-pulse" />
-                    In-Memory DuckDB Vector Join (11ms)
+                    Decyra Vectorized In-Memory Join (11ms)
                   </>
                 )}
                 {activeCycle === 3 && (

@@ -59,7 +59,7 @@ export default function GoldenLayerGraphic() {
   const phaseLabels = [
     "Step 1: AI Pushdown Query Decomposition",
     "Step 2: Concurrent Sub-query Execution",
-    "Step 3: In-Memory ANSI Join (DuckDB: 12ms)",
+    "Step 3: In-Memory Vectorized Join (12ms)",
     "Step 4: Unified Golden Record Rendered",
   ];
 
@@ -250,7 +250,7 @@ export default function GoldenLayerGraphic() {
 
             <div className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-[#F96167] text-white px-3 py-0.5 rounded-full mb-3 shadow-xs">
               <Zap className="w-3 h-3 animate-bounce" />
-              In-Memory Engine (DuckDB)
+              Decyra In-Memory Vector Core
             </div>
 
             <div className="w-14 h-14 mx-auto rounded-2xl bg-white shadow-md border border-[#C7D7F7] flex items-center justify-center mb-2.5 relative">

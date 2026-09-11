@@ -129,7 +129,7 @@ export default function InvestorsPage() {
                   2. Vectorized In-Memory Breakthroughs
                 </h3>
                 <p className="text-xs text-[#5A6478] leading-relaxed">
-                  Technologies like DuckDB and Apache Arrow now allow in-memory columnar joins across millions of records in 15 milliseconds on a lightweight serverless CPU. We can join disparate databases without needing a massive physical data lake.
+                  Modern vectorized SIMD computing and Apache Arrow columnar standards now allow in-memory joins across millions of records in 15 milliseconds on a lightweight serverless CPU. We can join disparate databases without needing a massive physical data lake.
                 </p>
               </div>
 
@@ -543,7 +543,7 @@ export default function InvestorsPage() {
                     <div className="p-4 rounded-xl bg-[#FAFBFC] border border-[#E5E9F2]">
                       <div className="font-bold text-[#1E2761] text-xs mb-1">2. In-Memory Vector Execution</div>
                       <div className="text-xs text-[#5A6478]">
-                        Extracted Arrow buffers are joined in our local vectorized in-memory DuckDB layer in 10-25ms. No warehouse replication.
+                        Extracted Arrow buffers are joined in Decyra&apos;s proprietary in-memory vectorized columnar layer in 10-25ms. No warehouse replication.
                       </div>
                     </div>
                     <div className="p-4 rounded-xl bg-[#FAFBFC] border border-[#E5E9F2]">
@@ -744,12 +744,12 @@ export default function InvestorsPage() {
                 <div className="flex items-center gap-3 mb-4">
                   <span className="w-8 h-8 rounded-lg bg-[#1E2761] text-white flex items-center justify-center text-xs font-bold font-mono">10</span>
                   <h3 className="text-xl font-bold text-[#1E2761] font-serif">
-                    &quot;Why can&apos;t an internal enterprise team just build this with DuckDB + LangChain over a weekend?&quot;
+                    &quot;Why can&apos;t an internal enterprise team just build this with open-source tools over a weekend?&quot;
                   </h3>
                 </div>
                 <div className="space-y-4 text-sm text-[#5A6478] leading-relaxed">
                   <p>
-                    A weekend hackathon script connecting an LLM to DuckDB works on a single toy dataset with 100 rows. It dies immediately in an enterprise environment due to <strong>The Enterprise Chasm</strong>:
+                    A weekend hackathon script connecting an LLM to an in-memory database works on a single toy dataset with 100 rows. It dies immediately in an enterprise environment due to <strong>The Enterprise Chasm</strong>:
                   </p>
                   <ul className="list-disc pl-5 space-y-2 text-[#5A6478]">
                     <li>

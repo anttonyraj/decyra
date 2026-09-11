@@ -97,7 +97,7 @@ export default function GoldenLayerModal({ isOpen, onClose }: GoldenLayerModalPr
             <div className="bg-gradient-to-r from-[#EBF3FE] to-[#F4F7FC] border border-[#D0E1FD] rounded-lg p-3 text-center">
               <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-[#1E2761]">
                 <Layers className="w-4 h-4 text-[#F96167]" />
-                Decyra In-Memory Join Engine (DuckDB)
+                Decyra In-Memory Vector Engine
               </div>
               <div className="text-[11px] text-[#5A6478] mt-0.5">
                 Subqueries execute concurrently; joined in RAM in milliseconds. Zero server data storage.

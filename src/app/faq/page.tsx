@@ -127,7 +127,7 @@ const FAQ_DATA: FAQItem[] = [
     id: "gold-1",
     category: "golden-layer",
     question: "What is the Virtual Golden Layer & Cross-Database Federation?",
-    answer: "The Virtual Golden Layer is Decyra's breakthrough engine for querying multiple heterogeneous databases (e.g., PostgreSQL + Snowflake + BigQuery) in a single natural language question without building complex ETL pipelines, managing Airflow DAGs, or paying for Fivetran/dbt syncs. Decyra executes pushdown queries to each system concurrently and performs ultra-fast vectorized joins in an in-memory DuckDB layer in milliseconds."
+    answer: "The Virtual Golden Layer is Decyra's breakthrough engine for querying multiple heterogeneous databases (e.g., PostgreSQL + Snowflake + BigQuery) in a single natural language question without building complex ETL pipelines, managing Airflow DAGs, or paying for Fivetran/dbt syncs. Decyra executes pushdown queries to each system concurrently and performs ultra-fast vectorized joins in Decyra's in-memory columnar execution core in milliseconds."
   },
   {
     id: "gold-2",
@@ -231,7 +231,7 @@ export default function FAQPage() {
               <Search className="w-5 h-5 text-[#8A94A6] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search questions (e.g. read-only, Snowflake, DuckDB, pricing)..."
+                placeholder="Search questions (e.g. read-only, Snowflake, Golden Layer, pricing)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-3.5 bg-white rounded-xl border border-[#D0D7E2] shadow-sm text-sm text-[#1E2761] placeholder:text-[#8A94A6] focus:outline-none focus:ring-2 focus:ring-[#1E2761]/20 focus:border-[#1E2761] transition-all"
