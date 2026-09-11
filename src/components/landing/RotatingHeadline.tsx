@@ -37,11 +37,13 @@ export default function RotatingHeadline() {
     <div className="text-center mx-auto max-w-[960px]">
       <h1
         id="hero-headline"
-        className="text-[58px] max-[1024px]:text-[46px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-[1.14] mb-5 tracking-tight"
+        className="mb-5 tracking-tight"
         style={{ fontFamily: "Georgia, serif" }}
       >
-        <span className="block">Ask your business data anything</span>
-        <span className="relative inline-grid text-center mt-2 min-h-[1.25em]">
+        <span className="block text-[58px] max-[1024px]:text-[46px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-[1.14]">
+          Ask your business data anything
+        </span>
+        <span className="relative inline-grid text-center mt-3 min-h-[1.3em] text-[34px] max-[1024px]:text-[26px] max-[640px]:text-[20px] font-semibold italic">
           {rotatingPhrases.map((item, i) => (
             <span
               key={item.phrase}
