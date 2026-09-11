@@ -7,6 +7,7 @@ interface DataSourceCardProps {
   icon: LucideIcon;
   label: string;
   subtext?: string;
+  lakehouse?: boolean;
   comingSoon?: boolean;
   inProgress?: boolean;
   italic?: boolean;
@@ -19,6 +20,7 @@ export default function DataSourceCard({
   icon: Icon,
   label,
   subtext,
+  lakehouse = false,
   comingSoon = false,
   inProgress = false,
   italic = false,
@@ -47,6 +49,22 @@ export default function DataSourceCard({
           </span>
         )}
       </div>
+      {lakehouse && (
+        <span
+          className="flex-shrink-0 rounded-[4px] font-bold uppercase leading-none"
+          style={{
+            background: "#ECFDF5",
+            color: "#059669",
+            fontSize: "8.5px",
+            letterSpacing: "0.08em",
+            padding: "2.5px 5px",
+            border: "1px solid #A7F3D0",
+            marginRight: "0px",
+          }}
+        >
+          Lakehouse
+        </span>
+      )}
       {comingSoon && (
         <span
           className="flex-shrink-0 rounded-[4px] font-semibold uppercase leading-none"

@@ -15,17 +15,21 @@ import {
   Layers,
   FileSpreadsheet,
   Briefcase,
+  FileText,
 } from "lucide-react";
 import DataSourceCard from "./DataSourceCard";
 import BrowserMockup from "./BrowserMockup";
 
 const sourceCards = [
-  { icon: Database, label: "PostgreSQL", comingSoon: false, checkmark: true },
+  { icon: Database, label: "PostgreSQL & MySQL", comingSoon: false, checkmark: true },
   { icon: Database, label: "Snowflake", comingSoon: false, checkmark: true },
-  { icon: Cloud, label: "AWS S3 & Cloud Lakes", subtext: "Iceberg • Delta • Parquet", comingSoon: false, checkmark: true },
+  { icon: Database, label: "Google BigQuery", subtext: "Cloud Warehouse", comingSoon: false, checkmark: true },
+  { icon: Cloud, label: "Amazon S3", subtext: "Iceberg • Delta • Parquet", lakehouse: true },
+  { icon: Cloud, label: "Azure ADLS Gen2", subtext: "Delta Lake • Fabric", lakehouse: true },
+  { icon: Cloud, label: "Google Cloud Storage", subtext: "BigLake • Parquet", lakehouse: true },
   { icon: FileSpreadsheet, label: "CSV, Parquet & Excel", subtext: "100% In-Browser RAM", comingSoon: false, checkmark: true },
   { icon: Briefcase, label: "SAP (ERP & S/4HANA)", comingSoon: true },
-  { icon: Cloud, label: "Salesforce & SaaS", comingSoon: true },
+  { icon: Cloud, label: "Salesforce CRM & SaaS", comingSoon: true },
   { icon: Layers, label: "Virtual Golden Layer", inProgress: true },
 ];
 
@@ -33,9 +37,13 @@ const outputCards = [
   { icon: TrendingUp, label: "Pipeline coverage analysis", comingSoon: false },
   { icon: Target, label: "Rep performance & quota tracking", comingSoon: false },
   { icon: PieChart, label: "Win-rate by segment", comingSoon: false },
-  { icon: AlertCircle, label: "Anomaly alerts", comingSoon: true },
-  { icon: Calendar, label: "Scheduled reports", comingSoon: true },
-  { icon: Mail, label: "Email digests", comingSoon: true },
+  { icon: TrendingUp, label: "Customer churn & expansion", comingSoon: false },
+  { icon: PieChart, label: "Executive revenue findings", comingSoon: false },
+  { icon: AlertCircle, label: "Anomaly & metric drift alerts", comingSoon: true },
+  { icon: Calendar, label: "Scheduled automated reports", comingSoon: true },
+  { icon: Mail, label: "Email & Slack digests", comingSoon: true },
+  { icon: Target, label: "Multi-turn conversation history", comingSoon: false },
+  { icon: FileText, label: "Auditable SQL & CSV/PNG export", comingSoon: false },
 ];
 
 /**
@@ -83,8 +91,8 @@ function FlowConnector({ cardCenters }: { cardCenters: number[] }) {
 }
 
 export default function HeroDiagram() {
-  const leftCenters = [42, 92, 142, 192, 242, 292, 342];
-  const rightCenters = [42, 92, 142, 192, 242, 292];
+  const leftCenters = [24, 74, 124, 174, 224, 274, 324, 374, 424, 474];
+  const rightCenters = [24, 74, 124, 174, 224, 274, 324, 374, 424, 474];
 
   return (
     <div className="w-full">
@@ -95,13 +103,14 @@ export default function HeroDiagram() {
           <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#1E2761] mb-3 text-center">
             Your Data Sources
           </p>
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-2">
             {sourceCards.map((card) => (
               <DataSourceCard
                 key={card.label}
                 icon={card.icon}
                 label={card.label}
                 subtext={(card as any).subtext}
+                lakehouse={(card as any).lakehouse}
                 comingSoon={card.comingSoon}
                 inProgress={(card as any).inProgress}
                 checkmark={(card as { checkmark?: boolean }).checkmark}
@@ -131,7 +140,7 @@ export default function HeroDiagram() {
           <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#1E2761] mb-3 text-center">
             What You Get
           </p>
-          <div className="flex flex-col gap-2.5">
+          <div className="flex flex-col gap-2">
             {outputCards.map((card) => (
               <DataSourceCard
                 key={card.label}
@@ -158,6 +167,7 @@ export default function HeroDiagram() {
                 icon={card.icon}
                 label={card.label}
                 subtext={(card as any).subtext}
+                lakehouse={(card as any).lakehouse}
                 comingSoon={card.comingSoon}
                 inProgress={(card as any).inProgress}
                 checkmark={(card as { checkmark?: boolean }).checkmark}
