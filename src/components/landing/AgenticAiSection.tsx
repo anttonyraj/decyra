@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import SectionLabel from "./SectionLabel";
 import {
   BrainCircuit,
@@ -39,7 +40,7 @@ interface AgentItem {
 const agentsList: AgentItem[] = [
   {
     id: "zero-egress",
-    name: "Agentic AI Zero Data Egress",
+    name: "Decyra Vault™",
     category: "Security & Privacy",
     status: "LIVE",
     statusColor: "text-emerald-700",
@@ -50,14 +51,14 @@ const agentsList: AgentItem[] = [
     iconBg: "bg-emerald-50",
     headline: "100% In-Memory Processing with Zero Cloud Data Storage",
     description:
-      "Unlike traditional AI tools that ingest and store customer databases on external servers, this agent conducts all schema discovery, SQL planning, and computation entirely in client browser RAM or in-place Cloud Lake storage.",
+      "Unlike traditional AI tools that ingest and store customer databases on external servers, Decyra Vault conducts all schema discovery, SQL planning, and computation entirely in client browser RAM or in-place Cloud Lake storage.",
     useCase: "Guarantees enterprise CISOs and compliance auditors that zero confidential customer records or financial transactions ever touch Decyra disks.",
     investorMoat: "Bypasses 9-month enterprise procurement friction and passes SOC2/HIPAA compliance reviews on Day 1.",
     samplePrompt: "Query 250,000 sensitive patient billing records with 100% in-browser RAM privacy."
   },
   {
     id: "self-healing",
-    name: "Agentic AI Self-Healing SQL",
+    name: "Auto-Healing SQL",
     category: "Reliability & Execution",
     status: "IN PROGRESS",
     statusColor: "text-[#1E2761]",
@@ -75,7 +76,7 @@ const agentsList: AgentItem[] = [
   },
   {
     id: "autonomous-analyst",
-    name: "Agentic AI Autonomous Analyst (Sentinel)",
+    name: "Sentinel™",
     category: "Autonomous Operations",
     status: "IN PROGRESS",
     statusColor: "text-[#1E2761]",
@@ -93,7 +94,7 @@ const agentsList: AgentItem[] = [
   },
   {
     id: "root-cause",
-    name: "Agentic AI Root-Cause Investigator",
+    name: "DeepCausal™",
     category: "Deep Analytics",
     status: "IN PROGRESS",
     statusColor: "text-[#1E2761]",
@@ -111,7 +112,7 @@ const agentsList: AgentItem[] = [
   },
   {
     id: "proactive-copilot",
-    name: "Agentic AI Proactive Copilot",
+    name: "SchemaPilot™",
     category: "Contextual Guidance",
     status: "FUTURE IMPLEMENTATION",
     statusColor: "text-amber-700",
@@ -129,7 +130,7 @@ const agentsList: AgentItem[] = [
   },
   {
     id: "sonictra-voice",
-    name: "Agentic AI Sonictra™ Voice Agent",
+    name: "Sonictra™",
     category: "Multi-Modal Intelligence",
     status: "LIVE",
     statusColor: "text-emerald-700",
@@ -328,13 +329,21 @@ export default function AgenticAiSection() {
               Join the private preview for our Autonomous AI Analyst, Sentinel digests, and self-healing SQL clusters.
             </p>
           </div>
-          <a
-            href="/contact"
-            className="shrink-0 bg-[#F96167] hover:bg-[#e8535a] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
-          >
-            <span>Request Private Beta Access</span>
-            <ArrowRight size={15} />
-          </a>
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <Link
+              href="/agentic-ai"
+              className="bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold text-sm px-5 py-3 rounded-lg transition-colors flex items-center gap-2"
+            >
+              <span>Explore Architecture &amp; Deep Dive</span>
+              <ArrowRight size={15} />
+            </Link>
+            <Link
+              href="/contact"
+              className="bg-[#F96167] hover:bg-[#e8535a] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+            >
+              <span>Request Private Beta</span>
+            </Link>
+          </div>
         </div>
       </div>
     </section>

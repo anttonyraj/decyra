@@ -7,7 +7,7 @@ import { Menu, X } from "lucide-react";
 
 const navLinks = [
   { label: "Product", href: "/#product" },
-  { label: "AI Agents", href: "/#agentic-ai", isNew: true },
+  { label: "AI Agents", href: "/agentic-ai", isNew: true },
   { label: "How it works", href: "/#how-it-works" },
   { label: "Golden Layer", href: "/golden-layer", isNew: true },
   { label: "Why Decyra", href: "/#why-decyra" },
