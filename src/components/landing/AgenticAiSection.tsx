@@ -39,7 +39,7 @@ interface AgentItem {
 const agentsList: AgentItem[] = [
   {
     id: "zero-egress",
-    name: "Agentic Zero Data Egress",
+    name: "Agentic AI Zero Data Egress",
     category: "Security & Privacy",
     status: "LIVE",
     statusColor: "text-emerald-700",
@@ -57,7 +57,7 @@ const agentsList: AgentItem[] = [
   },
   {
     id: "self-healing",
-    name: "Agentic Self-Healing SQL",
+    name: "Agentic AI Self-Healing SQL",
     category: "Reliability & Execution",
     status: "IN PROGRESS",
     statusColor: "text-[#1E2761]",
@@ -75,7 +75,7 @@ const agentsList: AgentItem[] = [
   },
   {
     id: "autonomous-analyst",
-    name: "Decyra Autonomous AI Analyst (Sentinel)",
+    name: "Agentic AI Autonomous Analyst (Sentinel)",
     category: "Autonomous Operations",
     status: "IN PROGRESS",
     statusColor: "text-[#1E2761]",
@@ -93,7 +93,7 @@ const agentsList: AgentItem[] = [
   },
   {
     id: "root-cause",
-    name: "Autonomous Root-Cause Investigator",
+    name: "Agentic AI Root-Cause Investigator",
     category: "Deep Analytics",
     status: "IN PROGRESS",
     statusColor: "text-[#1E2761]",
@@ -111,7 +111,7 @@ const agentsList: AgentItem[] = [
   },
   {
     id: "proactive-copilot",
-    name: "Schema-Aware Proactive Copilot",
+    name: "Agentic AI Proactive Copilot",
     category: "Contextual Guidance",
     status: "FUTURE IMPLEMENTATION",
     statusColor: "text-amber-700",
@@ -129,7 +129,7 @@ const agentsList: AgentItem[] = [
   },
   {
     id: "sonictra-voice",
-    name: "Sonictra™ Conversational Voice Agent",
+    name: "Agentic AI Sonictra™ Voice Agent",
     category: "Multi-Modal Intelligence",
     status: "LIVE",
     statusColor: "text-emerald-700",
