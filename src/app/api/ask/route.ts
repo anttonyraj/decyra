@@ -36,6 +36,7 @@ Write a 2-sentence plain-English explanation for a non-technical business execut
     }
 
     const question = body?.question?.trim()
+    const language = body?.language || 'auto'
     const connectionId = body?.connectionId
     const previousQuestion = body?.previousQuestion?.trim()
     const previousSql = body?.previousSql?.trim()
@@ -95,6 +96,15 @@ If the user's new question is completely unrelated to the previous context, gene
     const isSnowflake = isUserConnection && (connection.connection_type === 'snowflake' || connection.type === 'snowflake')
 
     // 4. SQL generation system prompts
+    let langInstruction = ""
+    if (language === 'ar') {
+      langInstruction = `\n- MULTILINGUAL INSTRUCTION (Powered by Sonictra AI): The user selected Arabic (العربية). You MUST write the "intent" field in natural, professional Modern Standard Arabic (العربية). However, the "sql" query MUST remain 100% valid ANSI standard SQL referencing the exact schema columns in English.`
+    } else if (language && language !== 'auto' && language !== 'en') {
+      langInstruction = `\n- MULTILINGUAL INSTRUCTION (Powered by Sonictra AI): The user selected ${language}. You MUST write the "intent" field in that language. The "sql" query MUST remain 100% valid ANSI standard SQL referencing the exact schema columns in English.`
+    } else {
+      langInstruction = `\n- MULTILINGUAL INSTRUCTION (Powered by Sonictra AI): If the user asks in Arabic or another non-English language, write the "intent" field in that language, while keeping the "sql" query 100% valid ANSI standard SQL referencing exact schema columns in English.`
+    }
+
     let sqlSystemPrompt = ""
     if (isUploadedFile) {
       // In-memory AlaSQL for structured uploaded files (CSV, JSON, XML, Excel)
@@ -109,7 +119,7 @@ RULES:
 - Use ONLY the table '${tableName}' and columns from the schema below. Do NOT prefix the table with schema names like 'demo.' or 'public.'.
 - Column names are case-sensitive or lower_snake_case as defined in the schema.
 - For case-insensitive string matching, you can use LOWER(col) = LOWER('value') or col LIKE '%value%'.
-- For date functions, use standard SQL comparisons or string filters.${followUpInstruction}
+- For date functions, use standard SQL comparisons or string filters.${followUpInstruction}${langInstruction}
 
 SCHEMA:
 ${schemaPromptText}
@@ -130,7 +140,7 @@ RULES:
 - Snowflake uses ILIKE for case-insensitive matching.
 - For date math use DATEADD, DATEDIFF, or CURRENT_DATE() with parens.
 - Use ONLY tables and columns from the schema below. Do not invent column names.
-- Always prefix tables with their fully qualified name format (e.g. DATABASE.SCHEMA.TABLE_NAME) as shown in the schema below.${followUpInstruction}
+- Always prefix tables with their fully qualified name format (e.g. DATABASE.SCHEMA.TABLE_NAME) as shown in the schema below.${followUpInstruction}${langInstruction}
 
 SCHEMA:
 ${schemaPromptText}
@@ -152,7 +162,7 @@ RULES:
 - Use ONLY tables and columns from the schema below. Do not invent column names.
 - For date math use date_trunc and current_date.
 - For percentages cast to numeric to avoid integer division.
-- Always prefix tables with their schema name (e.g. ${isUserConnection ? 'public.tablename' : 'demo.customers, demo.orders'}).${followUpInstruction}
+- Always prefix tables with their schema name (e.g. ${isUserConnection ? 'public.tablename' : 'demo.customers, demo.orders'}).${followUpInstruction}${langInstruction}
 
 SCHEMA:
 ${schemaPromptText}
@@ -310,12 +320,21 @@ No markdown fences. No commentary outside the JSON. Just the JSON object.`
     } else {
       // For multi-row results, generate concise narration with a tight token budget and timeout
       try {
+        let narrationLangNote = ""
+        if (language === 'ar') {
+          narrationLangNote = "\nIMPORTANT: Write this executive summary in fluent, professional Modern Standard Arabic (العربية). Do not use English."
+        } else if (language && language !== 'auto' && language !== 'en') {
+          narrationLangNote = `\nIMPORTANT: Write this executive summary in fluent ${language}.`
+        } else {
+          narrationLangNote = "\nIf the user asked their question in Arabic or another non-English language, write this finding in that same language."
+        }
+
         const narrationPrompt = `A user asked: "${question}"
 
 Data returned (${rowCount} rows, first 5 shown):
 ${JSON.stringify(previewRows)}
 
-Write a concise 1-2 sentence business executive finding answering the question with the specific numbers. Do not mention SQL or code.`
+Write a concise 1-2 sentence business executive finding answering the question with the specific numbers. Do not mention SQL or code.${narrationLangNote}`
 
         narration = await Promise.race([
           aiProvider.generateText({

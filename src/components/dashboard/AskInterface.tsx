@@ -12,9 +12,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Loader2, Copy, Search, MessageSquare, Download, Check, Sparkles, CornerDownRight, RotateCcw, FileSpreadsheet, ArrowRight, UploadCloud, BarChart3, PieChart as PieIcon } from 'lucide-react'
+import { Loader2, Copy, Search, MessageSquare, Download, Check, Sparkles, CornerDownRight, RotateCcw, FileSpreadsheet, ArrowRight, UploadCloud, BarChart3, PieChart as PieIcon, Mic } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useDataSource } from './DashboardShell'
+import SonictraVoiceBar, { SUPPORTED_LANGUAGES, LanguageOption } from './SonictraVoiceBar'
 import {
   ResponsiveContainer,
   BarChart,
@@ -49,6 +50,76 @@ export default function AskInterface() {
   const [downloadingChart, setDownloadingChart] = useState(false)
   const [selectedChartType, setSelectedChartType] = useState<'bar' | 'donut'>('bar')
   const [mounted, setMounted] = useState(false)
+
+  // Multilingual & Sonictra Voice-to-Text State (Speechnotes Web Speech API)
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('auto')
+  const [isListening, setIsListening] = useState(false)
+  const [speechSupported, setSpeechSupported] = useState(false)
+  const recognitionRef = React.useRef<any>(null)
+
+  const currentLang = SUPPORTED_LANGUAGES.find(l => l.code === selectedLanguage) || SUPPORTED_LANGUAGES[0]
+  const isRtl = currentLang.dir === 'rtl'
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      setSpeechSupported(true)
+    }
+  }, [])
+
+  const toggleListening = (target: 'main' | 'followUp' = 'main') => {
+    if (isListening) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop()
+        } catch (e) {}
+      }
+      setIsListening(false)
+      return
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SpeechRecognition) {
+      alert("Speech recognition is not supported in your browser. Please use Google Chrome or Microsoft Edge.")
+      return
+    }
+
+    try {
+      const recognition = new SpeechRecognition()
+      recognitionRef.current = recognition
+      recognition.lang = currentLang.speechCode || 'en-US'
+      recognition.continuous = false
+      recognition.interimResults = true
+
+      recognition.onstart = () => {
+        setIsListening(true)
+      }
+
+      recognition.onresult = (event: any) => {
+        const transcript = Array.from(event.results)
+          .map((r: any) => r[0].transcript)
+          .join('')
+        if (target === 'main') {
+          setQuestion(transcript)
+        } else {
+          setFollowUpQuestion(transcript)
+        }
+      }
+
+      recognition.onerror = (event: any) => {
+        console.warn('Speech recognition error:', event.error)
+        setIsListening(false)
+      }
+
+      recognition.onend = () => {
+        setIsListening(false)
+      }
+
+      recognition.start()
+    } catch (e) {
+      console.error('Error starting speech recognition:', e)
+      setIsListening(false)
+    }
+  }
 
   // Multi-turn conversation thread tracking
   const [conversationThread, setConversationThread] = useState<Array<{
@@ -190,6 +261,7 @@ export default function AskInterface() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             question: qToRun,
+            language: selectedLanguage,
             isUploadedFile: true,
             customSchema: activeUploadedFile.schemaText,
             tableName: activeUploadedFile.tableName,
@@ -242,6 +314,7 @@ export default function AskInterface() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             question: qToRun,
+            language: selectedLanguage,
             dataSource: activeSource,
             connectionId: activeSource,
             previousQuestion,
@@ -661,13 +734,24 @@ export default function AskInterface() {
             </p>
           )}
 
+          {/* Sonictra Multilingual & Voice Bar */}
+          <SonictraVoiceBar
+            selectedLanguage={selectedLanguage}
+            onLanguageChange={setSelectedLanguage}
+            isListening={isListening}
+            onToggleListening={() => toggleListening('main')}
+            speechSupported={speechSupported}
+            className="w-full mb-3"
+          />
+
           {/* Form Input area */}
           <div className="w-full relative mb-8">
             <Textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder={activeUploadedFile ? `Ask any question about ${activeUploadedFile.name}...` : "Ask anything about your data..."}
+              placeholder={activeUploadedFile ? `Ask any question about ${activeUploadedFile.name}...` : currentLang.placeholder}
               rows={3}
+              dir={isRtl ? 'rtl' : 'ltr'}
               className="w-full text-base resize-none focus-visible:ring-[#F96167] bg-white shadow-sm pr-12 rounded-xl"
             />
             <div className="mt-4 flex items-center justify-start gap-4">
@@ -676,7 +760,7 @@ export default function AskInterface() {
                 disabled={loading || !question.trim()}
                 className="bg-[#F96167] hover:bg-[#e0565b] text-white rounded-[8px] px-6 h-10 font-semibold cursor-pointer"
               >
-                Ask Decyra
+                {isRtl ? "اسأل ديسيرا" : "Ask Decyra"}
               </Button>
             </div>
           </div>
@@ -736,13 +820,24 @@ export default function AskInterface() {
             ))}
           </div>
 
+          {/* Sonictra Multilingual & Voice Bar */}
+          <SonictraVoiceBar
+            selectedLanguage={selectedLanguage}
+            onLanguageChange={setSelectedLanguage}
+            isListening={isListening}
+            onToggleListening={() => toggleListening('main')}
+            speechSupported={speechSupported}
+            className="w-full mb-3"
+          />
+
           {/* Textarea Input area */}
           <div className="w-full mb-8 relative">
             <Textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Ask anything..."
+              placeholder={currentLang.placeholder}
               rows={3}
+              dir={isRtl ? 'rtl' : 'ltr'}
               className="w-full text-base resize-none focus-visible:ring-[#F96167]"
             />
             <div className="mt-4 flex items-center justify-start gap-4">
@@ -754,14 +849,14 @@ export default function AskInterface() {
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Asking...
+                    {isRtl ? "جارٍ التحليل..." : "Asking..."}
                   </>
                 ) : (
-                  'Ask Decyra'
+                  isRtl ? "اسأل ديسيرا" : "Ask Decyra"
                 )}
               </Button>
               <button onClick={handleClear} className="text-[#5A6478] text-sm hover:text-[#1E2761] underline-offset-4 hover:underline">
-                Clear
+                {isRtl ? "مسح" : "Clear"}
               </button>
             </div>
           </div>
@@ -1071,10 +1166,12 @@ export default function AskInterface() {
 
               {/* Explanation Section */}
               <section className="animate-fade-in-up" style={{ animationDelay: '300ms' }}>
-                <div className="text-[12px] font-bold text-[#1E2761] uppercase tracking-widest mb-3">EXPLANATION</div>
-                <Card className="bg-[#FDE2E3] border-0 border-l-[3px] border-l-[#F96167] rounded-xl p-4 shadow-sm">
+                <div className="text-[12px] font-bold text-[#1E2761] uppercase tracking-widest mb-3">
+                  {isRtl ? "التحليل والاستنتاج" : "EXPLANATION"}
+                </div>
+                <Card className="bg-[#FDE2E3] border-0 border-l-[3px] border-l-[#F96167] rounded-xl p-4 shadow-sm" dir={isRtl ? 'rtl' : 'ltr'}>
                   <p className="text-[#1E2761] text-[15px] leading-relaxed">
-                    <span className="font-bold text-[#F96167]">Insight: </span>
+                    <span className="font-bold text-[#F96167]">{isRtl ? "الرؤية والتحليل: " : "Insight: "}</span>
                     {result.narration}
                   </p>
                 </Card>
@@ -1088,15 +1185,17 @@ export default function AskInterface() {
                       <Sparkles size={14} />
                     </div>
                     <h3 className="font-serif font-bold text-base text-[#1E2761]">
-                      Chat with your Data (Ask a follow-up)
+                      {isRtl ? "تحدث مع بياناتك (سؤال متابعة)" : "Chat with your Data (Ask a follow-up)"}
                     </h3>
                   </div>
                   <span className="text-[11px] font-semibold text-[#5A6478] bg-[#F4F6FB] border border-[#E5E9F2] px-2.5 py-0.5 rounded-full">
-                    Preserves SQL Context
+                    {isRtl ? "يحفظ سياق الاستعلام" : "Preserves SQL Context"}
                   </span>
                 </div>
                 <p className="text-xs text-[#5A6478] mb-4">
-                  Ask questions that build upon your current result. The AI adapts the previous query instead of starting over.
+                  {isRtl
+                    ? "اطرح أسئلة مبنية على النتيجة الحالية. سيتكيف الذكاء الاصطناعي مع الاستعلام السابق تلقائياً."
+                    : "Ask questions that build upon your current result. The AI adapts the previous query instead of starting over."}
                 </p>
 
                 {/* Quick Follow-up Chips */}
@@ -1119,13 +1218,30 @@ export default function AskInterface() {
 
                 {/* Follow-up Question Form */}
                 <form onSubmit={handleFollowUpSubmit} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <input
-                    type="text"
-                    value={followUpQuestion}
-                    onChange={(e) => setFollowUpQuestion(e.target.value)}
-                    placeholder="e.g. Now filter that to only enterprise accounts, or break that down month-by-month..."
-                    className="flex-1 h-11 px-4 text-sm bg-[#FAFBFC] border border-[#CBD5E1] rounded-xl focus:outline-hidden focus:border-[#F96167] focus:bg-white focus:ring-2 focus:ring-[#F96167]/20 shadow-2xs text-[#1E2761] placeholder:text-[#94A3B8]"
-                  />
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      value={followUpQuestion}
+                      onChange={(e) => setFollowUpQuestion(e.target.value)}
+                      placeholder={isRtl ? "مثلاً: صفِّ النتائج للشركات الكبرى فقط، أو قسمها شهرياً..." : "e.g. Now filter that to only enterprise accounts, or break that down month-by-month..."}
+                      dir={isRtl ? 'rtl' : 'ltr'}
+                      className="w-full h-11 pl-4 pr-11 text-sm bg-[#FAFBFC] border border-[#CBD5E1] rounded-xl focus:outline-hidden focus:border-[#F96167] focus:bg-white focus:ring-2 focus:ring-[#F96167]/20 shadow-2xs text-[#1E2761] placeholder:text-[#94A3B8]"
+                    />
+                    {speechSupported && (
+                      <button
+                        type="button"
+                        onClick={() => toggleListening('followUp')}
+                        className={`absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition-colors cursor-pointer ${
+                          isListening
+                            ? "bg-rose-500 text-white animate-pulse"
+                            : "text-[#5A6478] hover:text-[#F96167] hover:bg-black/5"
+                        }`}
+                        title="Dictate with voice (Speechnotes)"
+                      >
+                        <Mic className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2">
                     <Button
                       type="submit"
@@ -1135,12 +1251,12 @@ export default function AskInterface() {
                       {loading ? (
                         <>
                           <Loader2 size={16} className="animate-spin" />
-                          <span>Refining...</span>
+                          <span>{isRtl ? "جارٍ التحسين..." : "Refining..."}</span>
                         </>
                       ) : (
                         <>
-                          <span>Ask Follow-up</span>
-                          <ArrowRight size={15} />
+                          <span>{isRtl ? "إرسال المتابعة" : "Ask Follow-up"}</span>
+                          <ArrowRight size={15} className={isRtl ? "rotate-180" : ""} />
                         </>
                       )}
                     </Button>
@@ -1149,7 +1265,7 @@ export default function AskInterface() {
                       onClick={handleClear}
                       className="h-11 px-3 text-xs font-semibold text-[#5A6478] hover:text-[#1E2761] transition-colors rounded-xl hover:bg-[#F4F6FB] cursor-pointer"
                     >
-                      Reset
+                      {isRtl ? "إعادة تعيين" : "Reset"}
                     </button>
                   </div>
                 </form>
