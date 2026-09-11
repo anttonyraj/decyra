@@ -25,7 +25,7 @@ const sourceCards = [
   { icon: Layers, label: "Golden Layer (Multi-DB)", inProgress: true },
   { icon: Database, label: "BigQuery", comingSoon: true },
   { icon: Database, label: "MySQL / Redshift", comingSoon: true },
-  { icon: Plus, label: "More connectors", comingSoon: false, italic: true, href: "mailto:founder@decyra.systems?subject=Requesting%20more%20connectors" },
+  { icon: Plus, label: "More connectors", comingSoon: false, italic: true, href: "/#contact" },
 ];
 
 const outputCards = [

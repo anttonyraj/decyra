@@ -279,12 +279,12 @@ export default function GoldenLayerPage() {
               >
                 Get Started Free →
               </Link>
-              <a
-                href="mailto:founder@decyra.systems?subject=Golden%20Layer%20Beta%20Access"
+              <Link
+                href="/contact"
                 className="border border-white/30 text-white font-semibold rounded-lg px-8 py-3.5 text-sm hover:bg-white/10 transition-all"
               >
-                Contact Founders for Early Access
-              </a>
+                Contact Team for Early Access
+              </Link>
             </div>
           </div>
         </section>

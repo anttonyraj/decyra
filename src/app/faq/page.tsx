@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import NavBar from "@/components/landing/NavBar";
 import Footer from "@/components/landing/Footer";
+import FaqHeroGraphic from "@/components/landing/FaqHeroGraphic";
 import { 
   HelpCircle, 
   Search, 
@@ -220,6 +221,9 @@ export default function FAQPage() {
                 </button>
               )}
             </div>
+
+            {/* Concept Animation Graphic */}
+            <FaqHeroGraphic />
           </div>
         </section>
 
@@ -320,14 +324,14 @@ export default function FAQPage() {
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-                <a
-                  href="mailto:support@decyra.systems"
+                <Link
+                  href="/contact"
                   className="w-full sm:w-auto bg-[#F96167] text-white font-semibold text-xs rounded-lg px-5 py-3 hover:bg-[#e8535a] transition-all flex items-center justify-center gap-2 text-center"
                 >
-                  <Mail className="w-3.5 h-3.5" /> Email Engineering
-                </a>
+                  <Mail className="w-3.5 h-3.5" /> Contact Engineering
+                </Link>
                 <Link
-                  href="/#contact"
+                  href="/contact"
                   className="w-full sm:w-auto border border-white/30 text-white font-semibold text-xs rounded-lg px-5 py-3 hover:bg-white/10 transition-all text-center"
                 >
                   Contact Form

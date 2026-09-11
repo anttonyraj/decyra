@@ -2,14 +2,13 @@ import React from "react";
 import Link from "next/link";
 import { Database, Code2, Users, Zap, CheckCircle, XCircle, ShieldCheck, Lock, Eye, ServerOff } from "lucide-react";
 import NavBar from "@/components/landing/NavBar";
-import FaqAccordion from "@/components/landing/FaqAccordion";
 import HeroDiagram from "@/components/landing/HeroDiagram";
 import SectionLabel from "@/components/landing/SectionLabel";
 import QuestionCard from "@/components/landing/QuestionCard";
 import PricingCard from "@/components/landing/PricingCard";
 import ContactSection from "@/components/landing/ContactSection";
 import Footer from "@/components/landing/Footer";
-import { HowItWorksGraphic, WhyDecyraGraphic, BuiltForGraphic, PricingGraphic, FaqGraphic, SecurityGraphic, HeroBackgroundGraphic } from "@/components/landing/SectionGraphics";
+import { HowItWorksGraphic, WhyDecyraGraphic, BuiltForGraphic, PricingGraphic, SecurityGraphic, HeroBackgroundGraphic } from "@/components/landing/SectionGraphics";
 import VisitorTracker from "@/components/landing/VisitorTracker";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -175,10 +174,10 @@ const pricingTiers = [
       "Dedicated Slack support",
       "Custom integrations",
     ],
-    ctaLabel: "Talk to founder",
-    ctaHref: "mailto:founder@decyra.systems",
+    ctaLabel: "Contact sales",
+    ctaHref: "/#contact",
     highlighted: false,
-    external: true,
+    external: false,
   },
 ];
 
@@ -197,41 +196,6 @@ const securityPillars = [
     icon: Eye,
     heading: "Full transparency, audit-ready.",
     body: "See every SQL query before it runs. If a result looks interesting, you can instantly inspect the exact query that generated it.",
-  },
-];
-
-const faqItems = [
-  {
-    question: "Which databases do you support?",
-    answer: "PostgreSQL is fully supported today. MySQL and CSV uploads are currently in beta and rolling out soon.",
-  },
-  {
-    question: "Do I need to know SQL?",
-    answer: "No. Decyra writes the SQL for you based on your plain English questions. However, if you do know SQL, you can view and edit the generated query before executing it.",
-  },
-  {
-    question: "How is this different from ChatGPT?",
-    answer: "ChatGPT doesn't connect securely to your live database, hallucinates schemas, and isn't built for enterprise data privacy. Decyra reads your actual schema and executes safe, read-only queries against your operational data.",
-  },
-  {
-    question: "Do you store my data?",
-    answer: "No, we run queries against your database and return the results directly to your browser session. We don't store your query results or train our core models on them.",
-  },
-  {
-    question: "How accurate is the AI?",
-    answer: "Because Decyra is schema-aware, it maps questions to real tables and columns rather than guessing. Furthermore, Decyra shows you the SQL before running it, so you can always verify the logic.",
-  },
-  {
-    question: "What if the AI gets it wrong?",
-    answer: "Every result includes the exact query that generated it. You can review the SQL, tweak your question to be more specific, or edit the SQL directly to get exactly what you need.",
-  },
-  {
-    question: "Is there a free trial?",
-    answer: "Yes, you can start a 14-day trial that includes access to a demo database, allowing you to test the platform before connecting your own data. No credit card required.",
-  },
-  {
-    question: "Can I cancel anytime?",
-    answer: "Yes, all our monthly plans can be cancelled anytime directly from your billing settings.",
   },
 ];
 
@@ -736,104 +700,6 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-
-        {/* ── ROADMAP TEASER: VIRTUAL GOLDEN LAYER ── */}
-        <section id="golden-layer" className="bg-[#1E2761] text-white py-16 border-b border-[#2B3577] relative overflow-hidden">
-          <div className="absolute top-1/2 -left-40 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none" />
-          <div className="absolute top-1/2 -right-40 w-96 h-96 rounded-full bg-[#F96167]/10 blur-3xl pointer-events-none" />
-
-          <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4 relative z-10">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-8 bg-gradient-to-r from-white/[0.04] to-transparent p-8 sm:p-12 rounded-3xl border border-white/10">
-              <div className="max-w-[680px]">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/10 text-white mb-4 border border-white/15">
-                  <span className="w-2 h-2 rounded-full bg-[#F96167] animate-pulse" />
-                  In Active Engineering • Q4 Roadmap
-                </div>
-                <h2
-                  className="text-[36px] max-[640px]:text-[28px] font-bold leading-tight mb-4"
-                  style={{ fontFamily: "Georgia, serif" }}
-                >
-                  Virtual Golden Layer &amp; Cross-Database Federation
-                </h2>
-                <p className="text-[#BAC5DE] text-base leading-relaxed mb-6">
-                  Query across PostgreSQL, Snowflake, BigQuery, and spreadsheets in a single prompt. Decyra executes queries concurrently and joins them in-memory in milliseconds — eliminating $50k–$200k/year in brittle ETL pipelines.
-                </p>
-                <div className="flex flex-wrap items-center gap-4">
-                  <Link
-                    href="/golden-layer"
-                    className="bg-[#F96167] text-white font-semibold rounded-lg px-6 py-3 text-sm hover:bg-[#e8535a] transition-all shadow-sm flex items-center gap-2"
-                  >
-                    Explore Architecture &amp; Interactive Demo →
-                  </Link>
-                  <Link
-                    href="/golden-layer#next-gen-leaps"
-                    className="border border-white/30 text-white font-semibold rounded-lg px-6 py-3 text-sm hover:bg-white/10 transition-all"
-                  >
-                    View 3 Next-Gen Leaps
-                  </Link>
-                </div>
-              </div>
-
-              <div className="w-full lg:w-[420px] bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-xs flex flex-col justify-between">
-                <div className="text-xs font-bold uppercase tracking-wider text-[#F96167] mb-2">
-                  The Market Gap
-                </div>
-                <div className="text-xl font-bold text-white mb-2" style={{ fontFamily: "Georgia, serif" }}>
-                  Zero-ETL On-The-Fly Joins
-                </div>
-                <p className="text-[#BAC5DE] text-xs leading-relaxed mb-6">
-                  No replication pipelines. No Airflow DAGs. Pushdown execution extracts only filtered records, joining them via vectorized in-memory compute.
-                </p>
-                <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/10 text-center">
-                  <div className="bg-white/5 rounded-lg p-3">
-                    <div className="text-lg font-bold text-white font-mono">$120k+</div>
-                    <div className="text-[10px] text-[#BAC5DE] uppercase font-semibold">ETL Cost Saved</div>
-                  </div>
-                  <div className="bg-white/5 rounded-lg p-3">
-                    <div className="text-lg font-bold text-white font-mono">&lt; 15ms</div>
-                    <div className="text-[10px] text-[#BAC5DE] uppercase font-semibold">In-Memory Join</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── FAQ ── */}
-        <section
-          id="faq"
-          className="bg-[#FAFBFC] py-24 max-[640px]:py-16 border-b border-[#E5E9F2]"
-          aria-labelledby="faq-heading"
-        >
-          <div className="max-w-[800px] mx-auto px-8 max-[640px]:px-4">
-            <div className="text-center mb-8 flex flex-col items-center">
-              <SectionLabel>FAQ</SectionLabel>
-              <h2
-                id="faq-heading"
-                className="text-[40px] max-[640px]:text-[32px] font-bold text-[#1E2761] leading-tight mb-4"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                Common questions
-              </h2>
-              <div className="mb-6">
-                <FaqGraphic />
-              </div>
-            </div>
-            
-            <FaqAccordion items={faqItems} />
-
-            <div className="mt-10 text-center">
-              <Link
-                href="/faq"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white border border-[#D0D7E2] text-sm font-semibold text-[#1E2761] hover:text-[#F96167] hover:border-[#C7D7F7] shadow-xs transition-all"
-              >
-                <span>Browse all 20+ questions across Security, Connectors &amp; Federation</span>
-                <span>→</span>
-              </Link>
-            </div>
-          </div>
-        </section>
-
         {/* ── PRICING ── */}
         <section
           id="pricing"

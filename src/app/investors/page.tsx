@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import NavBar from "@/components/landing/NavBar";
 import Footer from "@/components/landing/Footer";
+import InvestorThesisGraphic from "@/components/landing/InvestorThesisGraphic";
 import { 
   TrendingUp, 
   ShieldCheck, 
@@ -39,7 +40,7 @@ export default function InvestorsPage() {
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4 relative z-10 text-center">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#1E2761] text-white mb-6 shadow-xs">
               <span className="w-2 h-2 rounded-full bg-[#F96167] animate-pulse" />
-              Decyra Investor Overview & Executive Memo
+              Decyra Investor Overview &amp; Executive Memo
             </div>
 
             <h1
@@ -53,19 +54,24 @@ export default function InvestorsPage() {
               Decyra replaces $200,000/year brittle ETL data pipelines and 2-week engineering backlogs with on-the-fly, in-memory cross-database federation powered by governed AI.
             </p>
 
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <a
-                href="mailto:founder@decyra.systems?subject=Decyra%20Investor%20Inquiry%20-%20Data%20Room%20Request"
+            <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
+              <Link
+                href="/contact"
                 className="bg-[#F96167] text-white font-semibold rounded-lg px-8 py-3.5 text-sm hover:bg-[#e8535a] transition-all shadow-sm flex items-center gap-2"
               >
-                <Mail className="w-4 h-4" /> Request Deck & Data Room
-              </a>
+                <Mail className="w-4 h-4" /> Request Deck &amp; Data Room
+              </Link>
               <Link
                 href="/golden-layer"
                 className="border border-[#1E2761] text-[#1E2761] font-semibold rounded-lg px-7 py-3.5 text-sm bg-white hover:bg-[#F4F8FE] transition-all flex items-center gap-2"
               >
                 Explore Virtual Golden Layer →
               </Link>
+            </div>
+
+            {/* Interactive Concept Animation Diagram */}
+            <div className="max-w-[1100px] mx-auto">
+              <InvestorThesisGraphic />
             </div>
           </div>
         </section>
@@ -319,12 +325,12 @@ export default function InvestorsPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a
-                href="mailto:founder@decyra.systems?subject=Investor%20Inquiry%20-%20Decyra%20Deck%20Request"
+              <Link
+                href="/contact"
                 className="w-full sm:w-auto bg-[#F96167] text-white font-semibold rounded-lg px-8 py-4 text-sm hover:bg-[#e8535a] transition-all shadow-md flex items-center justify-center gap-2"
               >
                 <Mail className="w-4 h-4" /> Request Pitch Deck &amp; Schedule Call
-              </a>
+              </Link>
               <Link
                 href="/login"
                 className="w-full sm:w-auto border border-white/30 text-white font-semibold rounded-lg px-7 py-4 text-sm hover:bg-white/10 transition-all text-center"
@@ -333,7 +339,7 @@ export default function InvestorsPage() {
               </Link>
             </div>
             <div className="text-xs text-[#BAC5DE]/70 mt-6">
-              Official Investor Relations: <a href="mailto:founder@decyra.systems" className="underline hover:text-white">founder@decyra.systems</a> • Decyra Systems Inc.
+              Official Investor Relations: <Link href="/contact" className="underline hover:text-white">Contact Founders &amp; Executive Team</Link> • Decyra Systems Inc.
             </div>
           </div>
         </section>

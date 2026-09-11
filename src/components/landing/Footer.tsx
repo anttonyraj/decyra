@@ -23,7 +23,7 @@ export default function Footer() {
               { label: "Investors", href: "/investors" },
               { label: "Privacy", href: "/privacy" },
               { label: "Terms", href: "/terms" },
-              { label: "Contact", href: "/#contact" },
+              { label: "Contact", href: "/contact" },
             ].map((link) => (
               <Link
                 key={link.label}

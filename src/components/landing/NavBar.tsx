@@ -10,10 +10,10 @@ const navLinks = [
   { label: "How it works", href: "/#how-it-works" },
   { label: "Golden Layer", href: "/golden-layer", isNew: true },
   { label: "Why Decyra", href: "/#why-decyra" },
-  { label: "Built for", href: "/#built-for" },
   { label: "Pricing", href: "/#pricing" },
   { label: "FAQ", href: "/faq" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Investors", href: "/investors" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function NavBar() {
@@ -31,7 +31,7 @@ export default function NavBar() {
         </Link>
 
         {/* Center: nav links — desktop only */}
-        <div className="hidden lg:flex items-center gap-7">
+        <div className="hidden lg:flex items-center gap-5 xl:gap-6">
           {navLinks.map((link) => (
             <a
               key={link.label}
