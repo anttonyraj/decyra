@@ -69,15 +69,147 @@ export default function AskInterface() {
   const currentLang = SUPPORTED_LANGUAGES.find(l => l.code === selectedLanguage) || SUPPORTED_LANGUAGES[0]
   const isRtl = currentLang.dir === 'rtl'
 
+  // Audio Recording (MediaRecorder) State for Brave and Universal Browser Compatibility
+  const mediaRecorderRef = React.useRef<MediaRecorder | null>(null)
+  const audioChunksRef = React.useRef<Blob[]>([])
+  const streamRef = React.useRef<MediaStream | null>(null)
+  const [isRecordingAudio, setIsRecordingAudio] = useState(false)
+  const [isTranscribingAudio, setIsTranscribingAudio] = useState(false)
+  const [preferAudioRecorder, setPreferAudioRecorder] = useState(false)
+
   useEffect(() => {
-    if (typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      setSpeechSupported(true)
+    if (typeof window !== 'undefined') {
+      const hasSpeechRec = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window
+      const hasMediaRec = typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== 'undefined'
+      setSpeechSupported(hasSpeechRec || hasMediaRec)
+
+      // Detect Brave Browser early: Brave blocks Google's speech recognition endpoint
+      const isBrave = (navigator as any).brave && typeof (navigator as any).brave.isBrave === 'function'
+      if (isBrave) {
+        setPreferAudioRecorder(true)
+      }
     }
   }, [])
+
+  // Universal In-Browser Audio Recorder (Brave, Chrome, Safari, Firefox, Edge)
+  const startAudioRecording = async (target: 'main' | 'followUp' = 'main') => {
+    try {
+      setSpeechError(null)
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      streamRef.current = stream
+      audioChunksRef.current = []
+
+      let mimeType = 'audio/webm'
+      if (typeof MediaRecorder.isTypeSupported === 'function') {
+        if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+          mimeType = 'audio/webm;codecs=opus'
+        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          mimeType = 'audio/mp4'
+        }
+      }
+
+      const recorder = new MediaRecorder(stream, { mimeType })
+      mediaRecorderRef.current = recorder
+
+      recorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          audioChunksRef.current.push(event.data)
+        }
+      }
+
+      recorder.onstop = async () => {
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach((track) => track.stop())
+          streamRef.current = null
+        }
+        setIsRecordingAudio(false)
+
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType })
+        if (audioBlob.size === 0) return
+
+        setIsTranscribingAudio(true)
+        try {
+          const reader = new FileReader()
+          reader.readAsDataURL(audioBlob)
+          reader.onloadend = async () => {
+            const base64Audio = reader.result as string
+            const res = await fetch('/api/transcribe', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                audio: base64Audio,
+                mimeType,
+                language: selectedLanguage,
+              }),
+            })
+            const data = await res.json()
+            if (data.transcript) {
+              const isForeign =
+                selectedLanguage === 'ar' ||
+                /[\u0600-\u06FF]/.test(data.transcript) ||
+                (selectedLanguage !== 'en' && selectedLanguage !== 'auto')
+
+              if (isForeign && data.englishTranslation) {
+                setOriginalSpokenText(data.transcript)
+                setOriginalSpokenLang(data.detectedLanguage || (selectedLanguage === 'ar' ? 'ar' : 'foreign'))
+                if (target === 'main') {
+                  setQuestion(data.englishTranslation)
+                } else {
+                  setFollowUpQuestion(data.englishTranslation)
+                }
+                setTranslationNotice(
+                  `Voice audio transcribed (${data.detectedLanguage || 'Original'}) and translated to English. You can edit the question below.`
+                )
+              } else {
+                if (target === 'main') {
+                  setQuestion(data.transcript)
+                } else {
+                  setFollowUpQuestion(data.transcript)
+                }
+              }
+            } else if (data.error) {
+              setSpeechError(data.error)
+            }
+          }
+        } catch (e: any) {
+          console.error('Audio transcription error:', e)
+          setSpeechError('Failed to transcribe audio. Please try again.')
+        } finally {
+          setIsTranscribingAudio(false)
+        }
+      }
+
+      recorder.start(250)
+      setIsRecordingAudio(true)
+      setIsListening(true)
+    } catch (err: any) {
+      console.error('Direct audio recorder start failed:', err)
+      setSpeechError('Microphone permission blocked. Please allow microphone access in your browser address bar.')
+      setIsRecordingAudio(false)
+      setIsListening(false)
+    }
+  }
+
+  const stopAudioRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try {
+        mediaRecorderRef.current.stop()
+      } catch (e) {}
+    }
+    setIsRecordingAudio(false)
+    setIsListening(false)
+  }
 
   const toggleListening = async (target: 'main' | 'followUp' = 'main') => {
     setSpeechError(null)
 
+    // If currently recording via Audio Recorder, stop it
+    if (isRecordingAudio) {
+      stopAudioRecording()
+      return
+    }
+
+    // If currently recording via Web Speech API, stop it
     if (isListening) {
       if (recognitionRef.current) {
         try {
@@ -88,23 +220,26 @@ export default function AskInterface() {
       return
     }
 
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-    if (!SpeechRecognition) {
-      setSpeechError("Speech recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.")
+    // If Brave browser or preferAudioRecorder is active, directly use audio recorder
+    if (preferAudioRecorder) {
+      startAudioRecording(target)
       return
     }
 
-    // Explicitly prompt for microphone access via MediaDevices if supported
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SpeechRecognition) {
+      startAudioRecording(target)
+      return
+    }
+
     try {
       if (navigator?.mediaDevices?.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-        // Stop stream tracks immediately so SpeechRecognition can take over the mic
         stream.getTracks().forEach((track) => track.stop())
       }
     } catch (permErr: any) {
-      console.warn("Microphone permission check error:", permErr)
       if (permErr?.name === 'NotAllowedError' || permErr?.name === 'PermissionDeniedError') {
-        setSpeechError("Microphone access was denied. Please click the lock or camera icon in your browser address bar to allow microphone access.")
+        setSpeechError("Microphone access was denied. Please click the lock icon in your browser URL bar and allow microphone.")
         return
       }
     }
@@ -149,12 +284,17 @@ export default function AskInterface() {
 
       recognition.onerror = (event: any) => {
         console.warn('Speech recognition error:', event.error)
-        if (event.error === 'not-allowed') {
-          setSpeechError("Microphone permission blocked. Please click the lock icon in your address bar and allow Microphone.")
+        if (event.error === 'network') {
+          // Brave Browser or privacy shield blocked Google's speech recognition endpoint!
+          // Seamlessly switch to the direct Audio Recorder!
+          setPreferAudioRecorder(true)
+          setIsListening(false)
+          startAudioRecording(target)
+          return
+        } else if (event.error === 'not-allowed') {
+          setSpeechError("Microphone permission blocked. Please click the lock or camera icon in your address bar and allow Microphone.")
         } else if (event.error === 'audio-capture') {
           setSpeechError("No microphone found on your device. Please connect a microphone.")
-        } else if (event.error === 'network') {
-          setSpeechError("Network error during speech recognition. Please check your connection.")
         }
         setIsListening(false)
       }
@@ -163,7 +303,6 @@ export default function AskInterface() {
         setIsListening(false)
         const recorded = accumulated.trim() || (target === 'main' ? question : followUpQuestion).trim()
         
-        // If user spoke in Arabic or non-English, automatically translate into English!
         const isForeign = selectedLanguage === 'ar' || speechLocale.startsWith('ar') || /[\u0600-\u06FF]/.test(recorded) || (selectedLanguage !== 'en' && selectedLanguage !== 'auto')
         if (recorded && isForeign) {
           setOriginalSpokenText(recorded)
@@ -199,9 +338,9 @@ export default function AskInterface() {
 
       recognition.start()
     } catch (e: any) {
-      console.error('Error starting speech recognition:', e)
-      setSpeechError(e.message || "Failed to start speech recognition. Please check browser microphone permissions.")
-      setIsListening(false)
+      console.error('Starting speech recognition error, fallback to audio recorder:', e)
+      setPreferAudioRecorder(true)
+      startAudioRecording(target)
     }
   }
 
@@ -880,7 +1019,7 @@ export default function AskInterface() {
 
       {showEmptyState ? (
         /* ── Centered Empty State ── */
-        <div className="w-full max-w-[640px] flex flex-col items-center text-center animate-fade-in-up">
+        <div className="w-full max-w-[760px] flex flex-col items-center text-center animate-fade-in-up">
           <div className="w-16 h-16 rounded-full bg-white border border-[#E5E9F2] shadow-[0_1px_3px_rgba(0,0,0,0.05)] flex items-center justify-center mb-6 shrink-0">
             {activeUploadedFile ? (
               <FileSpreadsheet size={30} className="text-[#F96167]" />
@@ -968,7 +1107,7 @@ export default function AskInterface() {
               <Textarea
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
-                placeholder={activeUploadedFile ? `Ask any question about ${activeUploadedFile.name}...` : (selectedLanguage === 'ar' ? 'اكتب أو تحدث بالعربية (سيتم عرض الترجمة بالإنجليزية تلقائياً لتعديلها)...' : currentLang.placeholder)}
+                placeholder={activeUploadedFile ? `Ask any question about ${activeUploadedFile.name}...` : (selectedLanguage === 'ar' ? 'اكتب أو تحدث بالعربية (سيتم عرض الترجمة بالإنجليزية تلقائياً لتعديلها)...' : (currentLang.placeholder || 'Ask anything about your data...'))}
                 rows={3}
                 dir={/[\u0600-\u06FF]/.test(question) ? 'rtl' : 'ltr'}
                 className="w-full text-base resize-none focus-visible:ring-[#F96167] bg-white shadow-sm pr-12 rounded-xl"
@@ -984,7 +1123,7 @@ export default function AskInterface() {
                 </button>
               )}
             </div>
-            <div className="mt-4 flex flex-wrap items-center justify-start gap-3">
+            <div className={`mt-4 flex flex-wrap items-center gap-3 ${isRtl || /[\u0600-\u06FF]/.test(question) ? 'justify-end flex-row-reverse' : 'justify-start'}`}>
               <Button 
                 onClick={handleSubmit} 
                 disabled={loading || !question.trim()}
@@ -1042,7 +1181,7 @@ export default function AskInterface() {
         </div>
       ) : (
         /* ── Standard Top-Aligned Query Layout ── */
-        <div className="w-full flex flex-col items-center">
+        <div className="w-full max-w-[760px] flex flex-col items-center mx-auto">
           
           {/* Header section (smaller when active) */}
           <div className="text-center mb-6">
@@ -1128,7 +1267,7 @@ export default function AskInterface() {
               <Textarea
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
-                placeholder={selectedLanguage === 'ar' ? 'اكتب أو تحدث بالعربية (سيتم عرض الترجمة بالإنجليزية تلقائياً لتعديلها)...' : currentLang.placeholder}
+                placeholder={selectedLanguage === 'ar' ? 'اكتب أو تحدث بالعربية (سيتم عرض الترجمة بالإنجليزية تلقائياً لتعديلها)...' : (currentLang.placeholder || 'Ask anything about your data...')}
                 rows={3}
                 dir={/[\u0600-\u06FF]/.test(question) ? 'rtl' : 'ltr'}
                 className="w-full text-base resize-none focus-visible:ring-[#F96167] pr-10"
@@ -1144,7 +1283,7 @@ export default function AskInterface() {
                 </button>
               )}
             </div>
-            <div className="mt-4 flex flex-wrap items-center justify-start gap-3">
+            <div className={`mt-4 flex flex-wrap items-center gap-3 ${isRtl || /[\u0600-\u06FF]/.test(question) ? 'justify-end flex-row-reverse' : 'justify-start'}`}>
               <Button 
                 onClick={handleSubmit} 
                 disabled={loading || !question.trim()}
