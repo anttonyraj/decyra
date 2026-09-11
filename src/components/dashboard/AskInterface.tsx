@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Loader2, Copy, Search, MessageSquare, Download, Check, Sparkles, CornerDownRight, RotateCcw, FileSpreadsheet, ArrowRight, UploadCloud, BarChart3, PieChart as PieIcon, Mic, Trash2, Edit3, X } from 'lucide-react'
+import { Loader2, Copy, Search, MessageSquare, Download, Check, Sparkles, CornerDownRight, RotateCcw, FileSpreadsheet, ArrowRight, UploadCloud, BarChart3, PieChart as PieIcon, Mic, Trash2, Edit3, X, Languages } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useDataSource } from './DashboardShell'
 import SonictraVoiceBar, { SUPPORTED_LANGUAGES, LanguageOption } from './SonictraVoiceBar'
@@ -56,6 +56,12 @@ export default function AskInterface() {
   const [isListening, setIsListening] = useState(false)
   const [speechSupported, setSpeechSupported] = useState(false)
   const recognitionRef = React.useRef<any>(null)
+
+  // Google Translation Engine State
+  const [translating, setTranslating] = useState(false)
+  const [translationNotice, setTranslationNotice] = useState<string | null>(null)
+  const [translatedNarration, setTranslatedNarration] = useState<string | null>(null)
+  const [translatingNarration, setTranslatingNarration] = useState(false)
 
   const currentLang = SUPPORTED_LANGUAGES.find(l => l.code === selectedLanguage) || SUPPORTED_LANGUAGES[0]
   const isRtl = currentLang.dir === 'rtl'
@@ -418,6 +424,67 @@ export default function AskInterface() {
     })
   }
 
+  const handleGoogleTranslate = async (targetField: 'main' | 'followUp' = 'main') => {
+    const textToTranslate = targetField === 'main' ? question : followUpQuestion
+    if (!textToTranslate.trim() || translating) return
+
+    setTranslating(true)
+    setTranslationNotice(null)
+
+    try {
+      const targetLang = selectedLanguage === 'ar' ? 'ar' : selectedLanguage !== 'auto' ? selectedLanguage : 'en'
+      const res = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: textToTranslate,
+          targetLang,
+        }),
+      })
+
+      const data = await res.json()
+      if (data.translatedText) {
+        if (targetField === 'main') {
+          setQuestion(data.translatedText)
+        } else {
+          setFollowUpQuestion(data.translatedText)
+        }
+        setTranslationNotice(
+          `Google Translated (${data.detectedSource?.toUpperCase() || 'AUTO'} → ${data.targetLang?.toUpperCase()})`
+        )
+        setTimeout(() => setTranslationNotice(null), 4000)
+      }
+    } catch (e) {
+      console.error('Failed to translate via Google Translate:', e)
+    } finally {
+      setTranslating(false)
+    }
+  }
+
+  const handleTranslateNarration = async () => {
+    if (!result?.narration || translatingNarration) return
+    setTranslatingNarration(true)
+    try {
+      const targetLang = selectedLanguage === 'ar' ? 'ar' : selectedLanguage !== 'auto' ? selectedLanguage : 'ar'
+      const res = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: result.narration,
+          targetLang,
+        }),
+      })
+      const data = await res.json()
+      if (data.translatedText) {
+        setTranslatedNarration(data.translatedText)
+      }
+    } catch (e) {
+      console.error('Failed to translate narration:', e)
+    } finally {
+      setTranslatingNarration(false)
+    }
+  }
+
   const handleCopy = () => {
     if (!result) return
     navigator.clipboard.writeText(result.sql)
@@ -770,8 +837,18 @@ export default function AskInterface() {
             isListening={isListening}
             onToggleListening={() => toggleListening('main')}
             speechSupported={speechSupported}
+            onGoogleTranslate={() => handleGoogleTranslate('main')}
+            isTranslating={translating}
+            hasTextToTranslate={question.trim().length > 0}
             className="w-full mb-3"
           />
+
+          {translationNotice && (
+            <div className="text-[11px] font-semibold text-[#4285F4] bg-[#EEF4FE] border border-[#C6DCFC] px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1.5 animate-fade-in-up">
+              <Languages size={12} />
+              <span>{translationNotice}</span>
+            </div>
+          )}
 
           {/* Form Input area */}
           <div className="w-full relative mb-8">
@@ -877,8 +954,18 @@ export default function AskInterface() {
             isListening={isListening}
             onToggleListening={() => toggleListening('main')}
             speechSupported={speechSupported}
+            onGoogleTranslate={() => handleGoogleTranslate('main')}
+            isTranslating={translating}
+            hasTextToTranslate={question.trim().length > 0}
             className="w-full mb-3"
           />
+
+          {translationNotice && (
+            <div className="text-[11px] font-semibold text-[#4285F4] bg-[#EEF4FE] border border-[#C6DCFC] px-3 py-1 rounded-full mb-3 inline-flex items-center gap-1.5 animate-fade-in-up">
+              <Languages size={12} />
+              <span>{translationNotice}</span>
+            </div>
+          )}
 
           {/* Textarea Input area */}
           <div className="w-full mb-8 relative">
@@ -1243,14 +1330,48 @@ export default function AskInterface() {
 
               {/* Explanation Section */}
               <section className="animate-fade-in-up" style={{ animationDelay: '300ms' }}>
-                <div className="text-[12px] font-bold text-[#1E2761] uppercase tracking-widest mb-3">
-                  {isRtl ? "التحليل والاستنتاج" : "EXPLANATION"}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-[12px] font-bold text-[#1E2761] uppercase tracking-widest">
+                    {isRtl ? "التحليل والاستنتاج" : "EXPLANATION"}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleTranslateNarration}
+                    disabled={translatingNarration}
+                    className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#4285F4] hover:text-[#1A73E8] bg-[#EEF4FE] hover:bg-[#D9E7FD] border border-[#C6DCFC] px-2.5 py-1 rounded-full transition-all cursor-pointer shadow-2xs"
+                    title="Translate business insight using Google Translate Neural Engine"
+                  >
+                    {translatingNarration ? (
+                      <>
+                        <Loader2 size={12} className="animate-spin text-[#4285F4]" />
+                        <span>Translating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Languages size={12} className="text-[#4285F4]" />
+                        <span>{isRtl ? "ترجمة بـ Google" : "Translate (Google)"}</span>
+                      </>
+                    )}
+                  </button>
                 </div>
                 <Card className="bg-[#FDE2E3] border-0 border-l-[3px] border-l-[#F96167] rounded-xl p-4 shadow-sm" dir={isRtl ? 'rtl' : 'ltr'}>
                   <p className="text-[#1E2761] text-[15px] leading-relaxed">
                     <span className="font-bold text-[#F96167]">{isRtl ? "الرؤية والتحليل: " : "Insight: "}</span>
-                    {result.narration}
+                    {translatedNarration || result.narration}
                   </p>
+                  {translatedNarration && (
+                    <div className="mt-2 text-[10px] text-[#5A6478] flex items-center gap-1.5 font-medium">
+                      <Sparkles size={11} className="text-[#4285F4]" />
+                      <span>Translated by Google Translate Engine</span>
+                      <button
+                        type="button"
+                        onClick={() => setTranslatedNarration(null)}
+                        className="text-xs text-[#4285F4] hover:underline ml-2"
+                      >
+                        (Show original)
+                      </button>
+                    </div>
+                  )}
                 </Card>
               </section>
 
@@ -1378,18 +1499,29 @@ export default function AskInterface() {
                       onChange={(e) => setFollowUpQuestion(e.target.value)}
                       placeholder={isRtl ? "مثلاً: صفِّ النتائج للشركات الكبرى فقط، أو قسمها شهرياً..." : "e.g. Now filter that to only enterprise accounts, or break that down month-by-month..."}
                       dir={isRtl ? 'rtl' : 'ltr'}
-                      className="w-full h-11 pl-4 pr-16 text-sm bg-[#FAFBFC] border border-[#CBD5E1] rounded-xl focus:outline-hidden focus:border-[#F96167] focus:bg-white focus:ring-2 focus:ring-[#F96167]/20 shadow-2xs text-[#1E2761] placeholder:text-[#94A3B8]"
+                      className="w-full h-11 pl-4 pr-24 text-sm bg-[#FAFBFC] border border-[#CBD5E1] rounded-xl focus:outline-hidden focus:border-[#F96167] focus:bg-white focus:ring-2 focus:ring-[#F96167]/20 shadow-2xs text-[#1E2761] placeholder:text-[#94A3B8]"
                     />
                     <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                       {followUpQuestion.trim().length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => setFollowUpQuestion('')}
-                          className="p-1 rounded-md text-[#94A3B8] hover:text-[#1E2761] hover:bg-black/5 transition-colors cursor-pointer"
-                          title={isRtl ? "مسح نص المتابعة" : "Clear follow-up input"}
-                        >
-                          <X size={15} />
-                        </button>
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleGoogleTranslate('followUp')}
+                            disabled={translating}
+                            className="p-1.5 rounded-md text-[#4285F4] hover:bg-[#EEF4FE] transition-colors cursor-pointer"
+                            title="Translate follow-up with Google Translate"
+                          >
+                            {translating ? <Loader2 size={14} className="animate-spin text-[#4285F4]" /> : <Languages size={14} />}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setFollowUpQuestion('')}
+                            className="p-1 rounded-md text-[#94A3B8] hover:text-[#1E2761] hover:bg-black/5 transition-colors cursor-pointer"
+                            title={isRtl ? "مسح نص المتابعة" : "Clear follow-up input"}
+                          >
+                            <X size={15} />
+                          </button>
+                        </>
                       )}
                       {speechSupported && (
                         <button

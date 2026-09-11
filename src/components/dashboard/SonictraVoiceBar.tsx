@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Mic, MicOff, Globe, Sparkles, Volume2 } from "lucide-react";
+import { Mic, Globe, Sparkles, ExternalLink, Languages, Loader2 } from "lucide-react";
 
 export interface LanguageOption {
   code: string;
@@ -30,6 +30,9 @@ interface SonictraVoiceBarProps {
   isListening: boolean;
   onToggleListening: () => void;
   speechSupported: boolean;
+  onGoogleTranslate?: () => void;
+  isTranslating?: boolean;
+  hasTextToTranslate?: boolean;
   className?: string;
 }
 
@@ -39,6 +42,9 @@ export default function SonictraVoiceBar({
   isListening,
   onToggleListening,
   speechSupported,
+  onGoogleTranslate,
+  isTranslating = false,
+  hasTextToTranslate = false,
   className = "",
 }: SonictraVoiceBarProps) {
   const currentLang =
@@ -59,7 +65,7 @@ export default function SonictraVoiceBar({
           <select
             value={selectedLanguage}
             onChange={(e) => onLanguageChange(e.target.value)}
-            className="bg-white border border-[#CBD5E1] text-[#1E2761] font-semibold rounded-lg px-2.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#F96167] cursor-pointer shadow-2xs hover:bg-[#F8FAFC] transition-colors"
+            className="bg-white border border-[#CBD5E1] text-[#1E2761] font-semibold rounded-lg px-2.5 py-1 text-xs focus:outline-hidden focus:ring-1 focus:ring-[#F96167] cursor-pointer shadow-2xs hover:bg-[#F8FAFC] transition-colors"
           >
             {SUPPORTED_LANGUAGES.map((lang) => (
               <option key={lang.code} value={lang.code}>
@@ -68,10 +74,33 @@ export default function SonictraVoiceBar({
             ))}
           </select>
         </div>
+
+        {/* Google Translate Action Button */}
+        {onGoogleTranslate && hasTextToTranslate && (
+          <button
+            type="button"
+            onClick={onGoogleTranslate}
+            disabled={isTranslating}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-white border border-[#CBD5E1] text-[#1E2761] hover:border-[#4285F4] hover:text-[#4285F4] transition-all cursor-pointer shadow-2xs disabled:opacity-50"
+            title="Translate question with Google Translate Neural Engine"
+          >
+            {isTranslating ? (
+              <>
+                <Loader2 className="w-3 h-3 animate-spin text-[#4285F4]" />
+                <span>Translating...</span>
+              </>
+            ) : (
+              <>
+                <Languages className="w-3 h-3 text-[#4285F4]" />
+                <span>Google Translate</span>
+              </>
+            )}
+          </button>
+        )}
       </div>
 
-      {/* Middle & Right: Voice Button (Speechnotes Style) & Sonictra Badge */}
-      <div className="flex items-center gap-3">
+      {/* Middle & Right: Voice Button & Embedded Sonictra AI Link */}
+      <div className="flex items-center gap-2 sm:gap-3">
         {/* Speechnotes Web Speech API Dictation Button */}
         {speechSupported ? (
           <button
@@ -106,11 +135,23 @@ export default function SonictraVoiceBar({
           </span>
         )}
 
-        {/* Powered by Sonictra AI Ecosystem Badge */}
-        <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#EBF3FE] border border-[#C7D7F7] text-[10px] font-bold text-[#1E2761] tracking-wide">
-          <Sparkles className="w-3 h-3 text-[#F96167]" />
-          <span>Voice &amp; Translation: <strong className="text-[#F96167]">Sonictra AI</strong></span>
-        </div>
+        {/* Embedded Link to Sonictra.com */}
+        <a
+          href="https://www.sonictra.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EBF3FE] hover:bg-[#dbe9fd] border border-[#C7D7F7] text-[10px] font-bold text-[#1E2761] tracking-wide transition-all duration-150 group cursor-pointer shadow-2xs"
+          title="Visit Sonictra AI - Voice & Translation Ecosystem (Opens in new tab)"
+        >
+          <Sparkles className="w-3 h-3 text-[#F96167] group-hover:rotate-12 transition-transform" />
+          <span>
+            Voice &amp; Translation:{" "}
+            <strong className="text-[#F96167] underline decoration-[#F96167]/30 group-hover:decoration-[#F96167]">
+              Sonictra AI
+            </strong>
+          </span>
+          <ExternalLink className="w-2.5 h-2.5 text-[#5A6478] group-hover:text-[#1E2761] transition-colors" />
+        </a>
       </div>
     </div>
   );
