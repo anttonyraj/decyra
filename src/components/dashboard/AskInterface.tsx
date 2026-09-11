@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Loader2, Copy, Search, MessageSquare, Download, Check, Sparkles, CornerDownRight, RotateCcw, FileSpreadsheet, ArrowRight, UploadCloud, BarChart3, PieChart as PieIcon, Mic } from 'lucide-react'
+import { Loader2, Copy, Search, MessageSquare, Download, Check, Sparkles, CornerDownRight, RotateCcw, FileSpreadsheet, ArrowRight, UploadCloud, BarChart3, PieChart as PieIcon, Mic, Trash2, Edit3, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useDataSource } from './DashboardShell'
 import SonictraVoiceBar, { SUPPORTED_LANGUAGES, LanguageOption } from './SonictraVoiceBar'
@@ -128,7 +128,10 @@ export default function AskInterface() {
     intent?: string
     narration: string
     rowCount: number
+    fullResult?: any
   }>>([])
+
+  const followUpInputRef = React.useRef<HTMLInputElement>(null)
 
   // Branded loader text transition state
   const [loadingText, setLoadingText] = useState("Analyzing your question...")
@@ -298,7 +301,8 @@ export default function AskInterface() {
             sql: json.sql,
             intent: json.intent,
             narration: json.narration,
-            rowCount: json.rowCount || 0
+            rowCount: json.rowCount || 0,
+            fullResult
           }
         ])
 
@@ -345,7 +349,8 @@ export default function AskInterface() {
               sql: json.sql,
               intent: json.intent,
               narration: json.narration,
-              rowCount: json.rowCount || 0
+              rowCount: json.rowCount || 0,
+              fullResult
             }
           ])
 
@@ -387,6 +392,30 @@ export default function AskInterface() {
     setResult(null)
     setError(null)
     setConversationThread([])
+  }
+
+  const handleEditQuestion = (q: string) => {
+    setFollowUpQuestion(q)
+    if (followUpInputRef.current) {
+      followUpInputRef.current.focus()
+      followUpInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
+
+  const handleDeleteQuestion = (indexToDelete: number) => {
+    setConversationThread(prev => {
+      const updated = prev.filter((_, idx) => idx !== indexToDelete)
+      if (updated.length === 0) {
+        handleClear()
+      } else {
+        const latest = updated[updated.length - 1]
+        if (latest.fullResult) {
+          setResult(latest.fullResult)
+          setQuestion(latest.question)
+        }
+      }
+      return updated
+    })
   }
 
   const handleCopy = () => {
@@ -746,15 +775,27 @@ export default function AskInterface() {
 
           {/* Form Input area */}
           <div className="w-full relative mb-8">
-            <Textarea
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder={activeUploadedFile ? `Ask any question about ${activeUploadedFile.name}...` : currentLang.placeholder}
-              rows={3}
-              dir={isRtl ? 'rtl' : 'ltr'}
-              className="w-full text-base resize-none focus-visible:ring-[#F96167] bg-white shadow-sm pr-12 rounded-xl"
-            />
-            <div className="mt-4 flex items-center justify-start gap-4">
+            <div className="relative">
+              <Textarea
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder={activeUploadedFile ? `Ask any question about ${activeUploadedFile.name}...` : currentLang.placeholder}
+                rows={3}
+                dir={isRtl ? 'rtl' : 'ltr'}
+                className="w-full text-base resize-none focus-visible:ring-[#F96167] bg-white shadow-sm pr-12 rounded-xl"
+              />
+              {question.trim().length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setQuestion('')}
+                  className="absolute top-3 right-3 p-1.5 rounded-lg text-[#94A3B8] hover:text-[#1E2761] hover:bg-[#F1F5F9] transition-colors cursor-pointer"
+                  title={isRtl ? "مسح السؤال" : "Clear question"}
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+            <div className="mt-4 flex items-center justify-start gap-3">
               <Button 
                 onClick={handleSubmit} 
                 disabled={loading || !question.trim()}
@@ -762,6 +803,15 @@ export default function AskInterface() {
               >
                 {isRtl ? "اسأل ديسيرا" : "Ask Decyra"}
               </Button>
+              {question.trim().length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setQuestion('')}
+                  className="px-4 h-10 text-sm font-semibold text-[#5A6478] hover:text-[#1E2761] hover:bg-black/5 rounded-[8px] transition-colors cursor-pointer"
+                >
+                  {isRtl ? "مسح" : "Clear"}
+                </button>
+              )}
             </div>
           </div>
 
@@ -832,14 +882,26 @@ export default function AskInterface() {
 
           {/* Textarea Input area */}
           <div className="w-full mb-8 relative">
-            <Textarea
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder={currentLang.placeholder}
-              rows={3}
-              dir={isRtl ? 'rtl' : 'ltr'}
-              className="w-full text-base resize-none focus-visible:ring-[#F96167]"
-            />
+            <div className="relative">
+              <Textarea
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder={currentLang.placeholder}
+                rows={3}
+                dir={isRtl ? 'rtl' : 'ltr'}
+                className="w-full text-base resize-none focus-visible:ring-[#F96167] pr-10"
+              />
+              {question.trim().length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setQuestion('')}
+                  className="absolute top-3 right-3 p-1.5 rounded-lg text-[#94A3B8] hover:text-[#1E2761] hover:bg-[#F1F5F9] transition-colors cursor-pointer"
+                  title={isRtl ? "مسح النص للتعديل" : "Clear input text to edit"}
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
             <div className="mt-4 flex items-center justify-start gap-4">
               <Button 
                 onClick={handleSubmit} 
@@ -855,8 +917,23 @@ export default function AskInterface() {
                   isRtl ? "اسأل ديسيرا" : "Ask Decyra"
                 )}
               </Button>
-              <button onClick={handleClear} className="text-[#5A6478] text-sm hover:text-[#1E2761] underline-offset-4 hover:underline">
-                {isRtl ? "مسح" : "Clear"}
+              {question.trim().length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setQuestion('')}
+                  className="text-[#5A6478] text-sm hover:text-[#1E2761] underline-offset-4 hover:underline cursor-pointer"
+                >
+                  {isRtl ? "مسح النص" : "Clear Text"}
+                </button>
+              )}
+              <button 
+                type="button"
+                onClick={handleClear} 
+                className="text-rose-600 text-sm hover:text-rose-700 underline-offset-4 hover:underline flex items-center gap-1 cursor-pointer ml-auto"
+                title={isRtl ? "مسح المحادثة والبدء من جديد" : "Clear chat & reset"}
+              >
+                <Trash2 size={13} />
+                <span>{isRtl ? "إعادة ضبط المحادثة" : "Reset Chat"}</span>
               </button>
             </div>
           </div>
@@ -1188,9 +1265,20 @@ export default function AskInterface() {
                       {isRtl ? "تحدث مع بياناتك (سؤال متابعة)" : "Chat with your Data (Ask a follow-up)"}
                     </h3>
                   </div>
-                  <span className="text-[11px] font-semibold text-[#5A6478] bg-[#F4F6FB] border border-[#E5E9F2] px-2.5 py-0.5 rounded-full">
-                    {isRtl ? "يحفظ سياق الاستعلام" : "Preserves SQL Context"}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleClear}
+                      className="flex items-center gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100/70 border border-rose-200 px-3 py-1 rounded-lg transition-colors cursor-pointer"
+                      title={isRtl ? "مسح محادثة الاستعلامات والبدء من جديد" : "Clear conversation and questions"}
+                    >
+                      <Trash2 size={13} />
+                      <span>{isRtl ? "مسح المحادثة" : "Clear Chat"}</span>
+                    </button>
+                    <span className="text-[11px] font-semibold text-[#5A6478] bg-[#F4F6FB] border border-[#E5E9F2] px-2.5 py-1 rounded-full">
+                      {isRtl ? "يحفظ سياق الاستعلام" : "Preserves SQL Context"}
+                    </span>
+                  </div>
                 </div>
                 <p className="text-xs text-[#5A6478] mb-4">
                   {isRtl
@@ -1216,31 +1304,108 @@ export default function AskInterface() {
                   ))}
                 </div>
 
+                {/* Question Thread List with Edit & Delete */}
+                {conversationThread.length > 0 && (
+                  <div className="mb-4 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-3.5 space-y-2">
+                    <div className="flex items-center justify-between text-xs font-semibold text-[#475569] mb-1">
+                      <span className="flex items-center gap-1.5">
+                        <MessageSquare size={13} className="text-[#F96167]" />
+                        <span>{isRtl ? "الأسئلة في هذه المحادثة:" : "Questions in this thread:"}</span>
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleClear}
+                        className="text-[11px] text-rose-600 hover:underline flex items-center gap-1 font-medium cursor-pointer"
+                      >
+                        <RotateCcw size={11} />
+                        <span>{isRtl ? "مسح الكل" : "Clear All"}</span>
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                      {conversationThread.map((item, idx) => (
+                        <div 
+                          key={idx}
+                          className="group flex items-center justify-between gap-3 text-xs bg-white border border-[#E5E9F2] px-3 py-2 rounded-lg hover:border-[#CBD5E1] transition-colors"
+                        >
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#F1F5F9] text-[#475569] shrink-0">
+                              Q{idx + 1}
+                            </span>
+                            <span className="font-medium text-[#1E2761] truncate" title={item.question}>
+                              {item.question}
+                            </span>
+                            {item.rowCount !== undefined && (
+                              <span className="text-[10px] text-[#94A3B8] shrink-0 font-mono">
+                                ({item.rowCount.toLocaleString()} rows)
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-1 shrink-0">
+                            {/* Edit Question */}
+                            <button
+                              type="button"
+                              onClick={() => handleEditQuestion(item.question)}
+                              className="p-1 text-[#64748B] hover:text-[#1E2761] hover:bg-[#F1F5F9] rounded-md transition-colors cursor-pointer"
+                              title={isRtl ? "تعديل السؤال في مربع الإدخال" : "Edit question in input"}
+                            >
+                              <Edit3 size={13} />
+                            </button>
+                            {/* Delete Question */}
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteQuestion(idx)}
+                              className="p-1 text-[#94A3B8] hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
+                              title={isRtl ? "حذف هذا السؤال" : "Delete this question"}
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Follow-up Question Form */}
                 <form onSubmit={handleFollowUpSubmit} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <div className="relative flex-1">
                     <input
+                      ref={followUpInputRef}
                       type="text"
                       value={followUpQuestion}
                       onChange={(e) => setFollowUpQuestion(e.target.value)}
                       placeholder={isRtl ? "مثلاً: صفِّ النتائج للشركات الكبرى فقط، أو قسمها شهرياً..." : "e.g. Now filter that to only enterprise accounts, or break that down month-by-month..."}
                       dir={isRtl ? 'rtl' : 'ltr'}
-                      className="w-full h-11 pl-4 pr-11 text-sm bg-[#FAFBFC] border border-[#CBD5E1] rounded-xl focus:outline-hidden focus:border-[#F96167] focus:bg-white focus:ring-2 focus:ring-[#F96167]/20 shadow-2xs text-[#1E2761] placeholder:text-[#94A3B8]"
+                      className="w-full h-11 pl-4 pr-16 text-sm bg-[#FAFBFC] border border-[#CBD5E1] rounded-xl focus:outline-hidden focus:border-[#F96167] focus:bg-white focus:ring-2 focus:ring-[#F96167]/20 shadow-2xs text-[#1E2761] placeholder:text-[#94A3B8]"
                     />
-                    {speechSupported && (
-                      <button
-                        type="button"
-                        onClick={() => toggleListening('followUp')}
-                        className={`absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition-colors cursor-pointer ${
-                          isListening
-                            ? "bg-rose-500 text-white animate-pulse"
-                            : "text-[#5A6478] hover:text-[#F96167] hover:bg-black/5"
-                        }`}
-                        title="Dictate with voice (Speechnotes)"
-                      >
-                        <Mic className="w-4 h-4" />
-                      </button>
-                    )}
+                    <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                      {followUpQuestion.trim().length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setFollowUpQuestion('')}
+                          className="p-1 rounded-md text-[#94A3B8] hover:text-[#1E2761] hover:bg-black/5 transition-colors cursor-pointer"
+                          title={isRtl ? "مسح نص المتابعة" : "Clear follow-up input"}
+                        >
+                          <X size={15} />
+                        </button>
+                      )}
+                      {speechSupported && (
+                        <button
+                          type="button"
+                          onClick={() => toggleListening('followUp')}
+                          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                            isListening
+                              ? "bg-rose-500 text-white animate-pulse"
+                              : "text-[#5A6478] hover:text-[#F96167] hover:bg-black/5"
+                          }`}
+                          title="Dictate with voice (Speechnotes)"
+                        >
+                          <Mic className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
@@ -1260,13 +1425,15 @@ export default function AskInterface() {
                         </>
                       )}
                     </Button>
-                    <button
-                      type="button"
-                      onClick={handleClear}
-                      className="h-11 px-3 text-xs font-semibold text-[#5A6478] hover:text-[#1E2761] transition-colors rounded-xl hover:bg-[#F4F6FB] cursor-pointer"
-                    >
-                      {isRtl ? "إعادة تعيين" : "Reset"}
-                    </button>
+                    {followUpQuestion.trim().length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setFollowUpQuestion('')}
+                        className="h-11 px-3 text-xs font-semibold text-[#5A6478] hover:text-[#1E2761] transition-colors rounded-xl hover:bg-[#F4F6FB] cursor-pointer"
+                      >
+                        {isRtl ? "مسح" : "Clear"}
+                      </button>
+                    )}
                   </div>
                 </form>
 
