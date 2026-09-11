@@ -51,6 +51,24 @@ const FAQ_DATA: FAQItem[] = [
     question: "Can I inspect and edit the generated SQL query?",
     answer: "Yes. Decyra is completely transparent. Every answer includes a 'View SQL' toggle showing the exact query executed, execution latency, and row counts. Power users and data analysts can modify the SQL manually and re-run it directly in the console."
   },
+  {
+    id: "gen-5",
+    category: "general",
+    question: "Do I need to know SQL to use Decyra?",
+    answer: "No, absolutely not. Decyra writes optimized, validated SQL automatically from your plain English questions. However, if you or your data team know SQL, you can inspect, audit, copy, or edit the generated query anytime."
+  },
+  {
+    id: "gen-6",
+    category: "general",
+    question: "How is Decyra different from ChatGPT or general AI tools?",
+    answer: "General chat tools like ChatGPT have no secure connection to your databases, hallucinate schema structures, cannot join disparate databases, and often violate enterprise security policies by training models on user data. Decyra connects to live read-only databases, grounds every query in verified schema ASTs, and guarantees zero data retention."
+  },
+  {
+    id: "gen-7",
+    category: "general",
+    question: "How accurate is the AI, and what if it gets a query wrong?",
+    answer: "Decyra maps questions directly to live database tables, foreign keys, and enum types rather than guessing. If a database returns an error, Decyra's self-healing compiler automatically catches the exception and adjusts the SQL logic. Because the SQL is fully visible before execution, you always stay in complete control."
+  },
 
   // Connectors & Databases
   {
@@ -148,6 +166,12 @@ const FAQ_DATA: FAQItem[] = [
     category: "pricing",
     question: "Do you offer on-premise or self-hosted VPC deployments?",
     answer: "Yes. For regulated financial institutions, healthcare organizations, and high-security enterprises, Decyra provides a private Docker / Kubernetes deployment package that runs entirely inside your own AWS, GCP, or Azure VPC."
+  },
+  {
+    id: "prc-4",
+    category: "pricing",
+    question: "Can I cancel my subscription anytime?",
+    answer: "Yes. All Decyra plans are flexible with no lock-in. You can upgrade, downgrade, or cancel your subscription at any time directly from your billing workspace."
   }
 ];
 
