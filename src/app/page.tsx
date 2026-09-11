@@ -459,7 +459,7 @@ export default function HomePage() {
                 Query in governed, auditable SQL.
               </h2>
               <p className="text-[18px] text-[#5A6478] leading-relaxed max-w-[720px] mx-auto">
-                Global revenue and operations teams don't all speak English. With integrated Sonictra AI voice &amp; translation, your team can speak or type business questions in Arabic, Spanish, French, Hindi, Chinese, and 40+ world languages.
+                Global revenue and operations teams don't all speak English. With integrated Sonictra AI voice &amp; translation, your team can speak or type business questions in Mandarin Chinese, Spanish, Arabic, French, German, and 40+ world languages.
               </p>
             </div>
 
@@ -475,7 +475,7 @@ export default function HomePage() {
                     40+ World Languages
                   </h3>
                   <p className="text-sm text-[#5A6478] leading-relaxed">
-                    Native support for Arabic (العربية), Spanish, French, Hindi, Mandarin, German, and 40+ languages. Zero translation friction.
+                    Native support for Mandarin (中文), Spanish (Español), Arabic (العربية), French (Français), German, and 40+ languages. Zero translation friction.
                   </p>
                 </div>
 
