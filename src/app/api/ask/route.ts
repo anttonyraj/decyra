@@ -212,6 +212,15 @@ No markdown fences. No commentary outside the JSON. Just the JSON object.`
     }
 
     // 7. Execute query
+    // If client requested schema-only generation (100% private in-browser execution), return SQL immediately
+    if (isUploadedFile && body?.schemaOnly) {
+      return NextResponse.json({
+        sql,
+        intent: parsed.intent,
+        schemaOnly: true,
+      })
+    }
+
     let rows: any[] = []
     let queryErrorMsg: string | null = null
 

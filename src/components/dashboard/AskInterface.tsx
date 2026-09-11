@@ -16,6 +16,7 @@ import { Loader2, Copy, Search, MessageSquare, Download, Check, Sparkles, Corner
 import { useRouter } from 'next/navigation'
 import { useDataSource } from './DashboardShell'
 import SonictraVoiceBar, { SUPPORTED_LANGUAGES, LanguageOption } from './SonictraVoiceBar'
+import { executeClientSql } from '@/lib/clientSqlEngine'
 import {
   ResponsiveContainer,
   BarChart,
@@ -481,7 +482,7 @@ export default function AskInterface() {
 
     try {
       if (activeUploadedFile) {
-        // Querying structured uploaded file (CSV, JSON, XML, Excel) via AlaSQL on server
+        // 100% Private In-Browser Execution: Only schema is sent to LLM; raw data never leaves user device
         const res = await fetch('/api/ask', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -489,9 +490,9 @@ export default function AskInterface() {
             question: qToRun,
             language: selectedLanguage,
             isUploadedFile: true,
+            schemaOnly: true,
             customSchema: activeUploadedFile.schemaText,
             tableName: activeUploadedFile.tableName,
-            fileRows: activeUploadedFile.rows,
             previousQuestion,
             previousSql,
             previousIntent,
@@ -504,8 +505,39 @@ export default function AskInterface() {
           throw new Error(json.error || 'Failed to generate query for file.')
         }
 
+        // Execute SQL locally in browser RAM against file records
+        const clientExec = await executeClientSql(
+          activeUploadedFile.tableName,
+          activeUploadedFile.rows,
+          json.sql
+        )
+
+        if (clientExec.error) {
+          throw new Error(clientExec.error)
+        }
+
+        const rowCount = clientExec.rowCount
+        let narration = ''
+        if (rowCount === 0) {
+          narration = 'No matching records were found for this query in your file.'
+        } else if (rowCount === 1 && Object.keys(clientExec.rows[0]).length === 1) {
+          const singleKey = Object.keys(clientExec.rows[0])[0]
+          const rawVal = clientExec.rows[0][singleKey]
+          const cleanKey = singleKey.replace(/_/g, ' ').replace(/[()*\"]/g, '').trim().toLowerCase()
+          const formattedVal = typeof rawVal === 'number' ? rawVal.toLocaleString() : String(rawVal)
+          narration = `The total ${cleanKey || 'result'} is ${formattedVal}.`
+        } else {
+          narration = `Found ${rowCount} ${rowCount === 1 ? 'record' : 'records'} in ${activeUploadedFile.tableName} (${clientExec.executionTimeMs}ms in-browser RAM execution).`
+        }
+
         const fullResult = {
           ...json,
+          rows: clientExec.rows,
+          rowCount: clientExec.rowCount,
+          columns: clientExec.columns,
+          narration,
+          executionTimeMs: clientExec.executionTimeMs,
+          isClientExecution: true,
           question: qToRun,
           isFollowUp,
           previousQuestion
@@ -523,13 +555,13 @@ export default function AskInterface() {
             question: qToRun,
             sql: json.sql,
             intent: json.intent,
-            narration: json.narration,
-            rowCount: json.rowCount || 0,
+            narration,
+            rowCount: clientExec.rowCount,
             fullResult
           }
         ])
 
-        saveQueryToHistory(qToRun, json.sql, json.intent, json.rowCount || 0, activeUploadedFile.name)
+        saveQueryToHistory(qToRun, json.sql, json.intent, clientExec.rowCount, activeUploadedFile.name)
 
       } else {
         // Querying Demo Database or Postgres/Snowflake Connection
@@ -1187,8 +1219,14 @@ export default function AskInterface() {
               {activeUploadedFile ? `Querying ${activeUploadedFile.name}` : 'Querying active source'}
             </h1>
             {activeUploadedFile && (
-              <p className="text-xs text-[#5A6478] mt-1 font-mono">
-                {activeUploadedFile.rowCount.toLocaleString()} rows • {activeUploadedFile.columns.length} columns • In-memory SQL
+              <p className="text-xs text-[#5A6478] mt-1 font-mono flex items-center justify-center gap-2">
+                <span>{activeUploadedFile.rowCount.toLocaleString()} rows</span>
+                <span>•</span>
+                <span>{activeUploadedFile.columns.length} columns</span>
+                <span>•</span>
+                <span className="text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 text-[10px]">
+                  100% In-Browser RAM • Zero Data Leakage
+                </span>
               </p>
             )}
           </div>
@@ -1374,7 +1412,15 @@ export default function AskInterface() {
 
               {/* SQL Section */}
               <section className="animate-fade-in-up" style={{ animationDelay: '0ms' }}>
-                <div className="text-[12px] font-bold text-[#1E2761] uppercase tracking-widest mb-3">GENERATED SQL</div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-[12px] font-bold text-[#1E2761] uppercase tracking-widest">GENERATED SQL</div>
+                  {result.isClientExecution && (
+                    <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span>100% In-Browser RAM • {result.executionTimeMs}ms • Zero Data Leakage</span>
+                    </div>
+                  )}
+                </div>
                 <div className="relative group bg-[#F4F6FB] border-l-[3px] border-l-[#F96167] p-4 rounded-lg">
                   <pre className="font-mono text-sm text-[#1E2761] whitespace-pre-wrap pr-12">{result.sql}</pre>
                   <button
