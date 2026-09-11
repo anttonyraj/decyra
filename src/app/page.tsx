@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Database, Code2, Users, Zap, CheckCircle, XCircle, ShieldCheck, Lock, Eye, ServerOff, Globe, Mic, Sparkles, ExternalLink } from "lucide-react";
+import { Database, Code2, Users, Zap, CheckCircle, XCircle, ShieldCheck, Lock, Eye, ServerOff, Globe, Mic, Sparkles, ExternalLink, Cloud } from "lucide-react";
 import NavBar from "@/components/landing/NavBar";
 import HeroDiagram from "@/components/landing/HeroDiagram";
 import SectionLabel from "@/components/landing/SectionLabel";
@@ -194,6 +194,11 @@ const securityPillars = [
     body: "When analyzing spreadsheets and files (CSV, Parquet, Excel), query execution happens entirely in your laptop's browser RAM. Your confidential data never leaves your computer or touches any server.",
   },
   {
+    icon: Cloud,
+    heading: "Zero-Copy Cloud Lakehouse Streaming.",
+    body: "When connecting to Amazon S3, Azure ADLS Gen2, or Google Cloud Storage, Decyra streams only query-specific columns (Apache Iceberg, Delta Lake, Parquet) via byte-range requests without duplicating or moving your data lake.",
+  },
+  {
     icon: ShieldCheck,
     heading: "No data storage. No PII retained.",
     body: "Your database records never leave your control. We do not store query results or train public AI models on your proprietary business data.",
@@ -286,9 +291,10 @@ export default function HomePage() {
             </div>
 
             {/* Live Connectors & In-Progress Notice */}
-            <p className="mt-10 text-[13px] text-[#5A6478] text-center max-w-[860px] mx-auto leading-relaxed">
-              <span className="font-semibold text-[#1E2761]">Live Now:</span> PostgreSQL, Snowflake, and In-Browser Datasets (CSV, Parquet, Excel, JSON).{" "}
-              <span className="font-semibold text-[#F96167]">Enterprise Connectors &amp; Federation:</span> SAP (ERP &amp; S/4HANA), Salesforce CRM, HubSpot, and Cross-Database Virtual Golden Layer.
+            <p className="mt-10 text-[13px] text-[#5A6478] text-center max-w-[960px] mx-auto leading-relaxed">
+              <span className="font-semibold text-[#1E2761]">Live Operational Data:</span> PostgreSQL, Snowflake, and In-Browser Private Datasets (CSV, Parquet, Excel).{" "}
+              <span className="font-semibold text-[#059669]">Cloud Data Lakes:</span> Amazon S3, Azure ADLS Gen2, and Google Cloud Storage (Apache Iceberg, Delta Lake, Parquet).{" "}
+              <span className="font-semibold text-[#F96167]">Enterprise Connectors:</span> SAP (ERP &amp; S/4HANA), Salesforce CRM, and Virtual Golden Layer.
             </p>
           </div>
         </section>

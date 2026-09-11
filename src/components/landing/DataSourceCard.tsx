@@ -6,6 +6,7 @@ import Link from "next/link";
 interface DataSourceCardProps {
   icon: LucideIcon;
   label: string;
+  subtext?: string;
   comingSoon?: boolean;
   inProgress?: boolean;
   italic?: boolean;
@@ -17,6 +18,7 @@ interface DataSourceCardProps {
 export default function DataSourceCard({
   icon: Icon,
   label,
+  subtext,
   comingSoon = false,
   inProgress = false,
   italic = false,
@@ -31,13 +33,20 @@ export default function DataSourceCard({
         className="text-[#5A6478] flex-shrink-0"
         aria-hidden="true"
       />
-      <span
-        className={`text-[13px] font-medium text-[#1A1F36] flex-1 leading-tight ${
-          italic ? "italic text-[#5A6478]" : ""
-        } ${href ? "hover:underline" : ""}`}
-      >
-        {label}
-      </span>
+      <div className="flex flex-col flex-1 min-w-0">
+        <span
+          className={`text-[13px] font-medium text-[#1A1F36] leading-tight ${
+            italic ? "italic text-[#5A6478]" : ""
+          } ${href ? "hover:underline" : ""}`}
+        >
+          {label}
+        </span>
+        {subtext && (
+          <span className="text-[10px] font-medium text-[#5A6478] leading-tight mt-0.5 truncate">
+            {subtext}
+          </span>
+        )}
+      </div>
       {comingSoon && (
         <span
           className="flex-shrink-0 rounded-[4px] font-semibold uppercase leading-none"

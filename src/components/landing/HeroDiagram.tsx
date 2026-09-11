@@ -22,11 +22,11 @@ import BrowserMockup from "./BrowserMockup";
 const sourceCards = [
   { icon: Database, label: "PostgreSQL", comingSoon: false, checkmark: true },
   { icon: Database, label: "Snowflake", comingSoon: false, checkmark: true },
-  { icon: FileSpreadsheet, label: "CSV, Parquet & Excel", comingSoon: false, checkmark: true },
+  { icon: Cloud, label: "AWS S3 & Cloud Lakes", subtext: "Iceberg • Delta • Parquet", comingSoon: false, checkmark: true },
+  { icon: FileSpreadsheet, label: "CSV, Parquet & Excel", subtext: "100% In-Browser RAM", comingSoon: false, checkmark: true },
   { icon: Briefcase, label: "SAP (ERP & S/4HANA)", comingSoon: true },
   { icon: Cloud, label: "Salesforce & SaaS", comingSoon: true },
   { icon: Layers, label: "Virtual Golden Layer", inProgress: true },
-  { icon: Plus, label: "BigQuery, MySQL & More", comingSoon: false, italic: true, href: "/#contact" },
 ];
 
 const outputCards = [
@@ -101,7 +101,9 @@ export default function HeroDiagram() {
                 key={card.label}
                 icon={card.icon}
                 label={card.label}
+                subtext={(card as any).subtext}
                 comingSoon={card.comingSoon}
+                inProgress={(card as any).inProgress}
                 checkmark={(card as { checkmark?: boolean }).checkmark}
                 italic={(card as { italic?: boolean }).italic}
                 href={(card as { href?: string }).href}
@@ -155,7 +157,9 @@ export default function HeroDiagram() {
                 key={card.label}
                 icon={card.icon}
                 label={card.label}
+                subtext={(card as any).subtext}
                 comingSoon={card.comingSoon}
+                inProgress={(card as any).inProgress}
                 checkmark={(card as { checkmark?: boolean }).checkmark}
                 italic={(card as { italic?: boolean }).italic}
                 href={(card as { href?: string }).href}

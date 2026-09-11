@@ -331,6 +331,69 @@ export function DashboardShell({
             </button>
           </div>
 
+          {/* AWS S3 & Cloud Lakes (Iceberg, Delta, Parquet) */}
+          <button
+            onClick={() => {
+              setComingSoonName('Amazon S3 (Apache Iceberg, Delta Lake & Parquet)')
+              setComingSoonIcon(() => Cloud)
+              setIsComingSoonOpen(true)
+            }}
+            className="w-full min-h-10 py-1.5 flex items-center justify-between rounded-lg pl-3 pr-3 hover:bg-[#F4F6FB] cursor-pointer text-[#1E2761]"
+          >
+            <div className="flex items-center gap-2.5">
+              <Cloud className="w-4 h-4 text-[#059669] shrink-0" />
+              <div className="flex flex-col text-left leading-tight">
+                <span className="text-sm font-medium">Amazon S3</span>
+                <span className="text-[9.5px] font-mono text-[#5A6478]">Iceberg • Delta • Parquet</span>
+              </div>
+            </div>
+            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider shrink-0">
+              LAKEHOUSE
+            </span>
+          </button>
+
+          {/* Azure ADLS Gen2 (Delta Lake & Fabric) */}
+          <button
+            onClick={() => {
+              setComingSoonName('Azure Data Lake Storage (ADLS Gen2 & Delta Lake)')
+              setComingSoonIcon(() => Cloud)
+              setIsComingSoonOpen(true)
+            }}
+            className="w-full min-h-10 py-1.5 flex items-center justify-between rounded-lg pl-3 pr-3 hover:bg-[#F4F6FB] cursor-pointer text-[#1E2761]"
+          >
+            <div className="flex items-center gap-2.5">
+              <Cloud className="w-4 h-4 text-[#2563EB] shrink-0" />
+              <div className="flex flex-col text-left leading-tight">
+                <span className="text-sm font-medium">Azure ADLS Gen2</span>
+                <span className="text-[9.5px] font-mono text-[#5A6478]">Delta Lake • Fabric</span>
+              </div>
+            </div>
+            <span className="bg-blue-50 text-blue-700 border border-blue-200 text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider shrink-0">
+              LAKEHOUSE
+            </span>
+          </button>
+
+          {/* Google Cloud Storage (BigLake & Parquet) */}
+          <button
+            onClick={() => {
+              setComingSoonName('Google Cloud Storage (GCS & BigLake)')
+              setComingSoonIcon(() => Cloud)
+              setIsComingSoonOpen(true)
+            }}
+            className="w-full min-h-10 py-1.5 flex items-center justify-between rounded-lg pl-3 pr-3 hover:bg-[#F4F6FB] cursor-pointer text-[#1E2761]"
+          >
+            <div className="flex items-center gap-2.5">
+              <Cloud className="w-4 h-4 text-[#EA580C] shrink-0" />
+              <div className="flex flex-col text-left leading-tight">
+                <span className="text-sm font-medium">Google Storage</span>
+                <span className="text-[9.5px] font-mono text-[#5A6478]">BigLake • Parquet</span>
+              </div>
+            </div>
+            <span className="bg-orange-50 text-orange-700 border border-orange-200 text-[9px] px-1.5 py-0.5 rounded font-bold tracking-wider shrink-0">
+              LAKEHOUSE
+            </span>
+          </button>
+
           {/* MySQL (Coming Soon) */}
           <button
             onClick={() => {
