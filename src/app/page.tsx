@@ -10,6 +10,7 @@ import ContactSection from "@/components/landing/ContactSection";
 import Footer from "@/components/landing/Footer";
 import { HowItWorksGraphic, WhyDecyraGraphic, BuiltForGraphic, PricingGraphic, SecurityGraphic, HeroBackgroundGraphic } from "@/components/landing/SectionGraphics";
 import VisitorTracker from "@/components/landing/VisitorTracker";
+import RotatingHeadline from "@/components/landing/RotatingHeadline";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -247,20 +248,12 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              {/* Headline */}
-              <h1
-                id="hero-headline"
-                className="text-[64px] max-[1024px]:text-[52px] max-[640px]:text-[40px] font-bold text-[#1E2761] leading-[1.08] mb-6"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                Ask your business data anything.
-                <br />
-                Get the answer in plain English.
-              </h1>
+              {/* Dynamic Rotating Headline */}
+              <RotatingHeadline />
 
               {/* Subhead */}
-              <p className="text-[18px] max-[640px]:text-[16px] text-[#5A6478] leading-relaxed max-w-[680px] mx-auto mb-10">
-                Decyra is the AI analyst for revenue and business operations teams. Connect your database, type a question, see the answer. No SQL, no data team, no waiting.
+              <p className="text-[18px] max-[640px]:text-[16px] text-[#5A6478] leading-relaxed max-w-[720px] mx-auto mb-10">
+                Decyra is the conversational data intelligence platform for global revenue and business operations. Connect your database, spreadsheets, or enterprise systems, ask in any language, and see governed answers in seconds.
               </p>
 
               {/* Buttons */}
