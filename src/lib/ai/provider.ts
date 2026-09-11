@@ -7,8 +7,13 @@ export interface AIProvider {
   generateText(opts: { systemPrompt?: string; userPrompt: string; maxTokens?: number }): Promise<string>
 }
 
-// Fallback model list: prioritize 2.0-flash & 1.5-flash (1500 RPD) before preview models
-const CANDIDATE_MODELS = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.5-flash']
+// Fallback model list: use active Gemini 3.x Flash workhorse models
+const CANDIDATE_MODELS = [
+  'gemini-3.6-flash',
+  'gemini-3.7-flash',
+  'gemini-3.8-flash',
+  'gemini-2.5-flash',
+]
 
 export const aiProvider: AIProvider = {
   async generateText({ systemPrompt, userPrompt, maxTokens = 1024 }) {
