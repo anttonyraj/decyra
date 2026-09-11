@@ -52,7 +52,7 @@ export default function AskInterface() {
   const [mounted, setMounted] = useState(false)
 
   // Multilingual & Sonictra Voice-to-Text State (Speechnotes Web Speech API)
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('auto')
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('en')
   const [isListening, setIsListening] = useState(false)
   const [speechSupported, setSpeechSupported] = useState(false)
   const recognitionRef = React.useRef<any>(null)
@@ -326,7 +326,7 @@ export default function AskInterface() {
               } else {
                 setFollowUpQuestion(data.translatedText)
               }
-              setTranslationNotice(`Google Translated from ${data.detectedSource?.toUpperCase() || 'ARABIC'} to English. You can edit the question below.`)
+              setTranslationNotice(`Translated to English (editable). Feel free to adjust your question below.`)
             }
           } catch (trErr) {
             console.error("Auto-translate speech error:", trErr)
@@ -641,7 +641,7 @@ export default function AskInterface() {
     })
   }
 
-  const handleGoogleTranslate = async (targetField: 'main' | 'followUp' = 'main') => {
+  const handleTranslate = async (targetField: 'main' | 'followUp' = 'main') => {
     const textToTranslate = targetField === 'main' ? question : followUpQuestion
     if (!textToTranslate.trim() || translating) return
 
@@ -670,12 +670,12 @@ export default function AskInterface() {
           setFollowUpQuestion(data.translatedText)
         }
         setTranslationNotice(
-          `Google Translated (${data.detectedSource?.toUpperCase() || 'DETECTED'} → ${data.targetLang?.toUpperCase()}). You can edit the question in English below.`
+          `Translated to English. You can edit the question below before querying.`
         )
         setTimeout(() => setTranslationNotice(null), 6000)
       }
     } catch (e) {
-      console.error('Failed to translate via Google Translate:', e)
+      console.error('Failed to translate:', e)
     } finally {
       setTranslating(false)
     }
@@ -1059,15 +1059,12 @@ export default function AskInterface() {
             speechSupported={speechSupported}
             speechError={speechError}
             onDismissError={() => setSpeechError(null)}
-            onGoogleTranslate={() => handleGoogleTranslate('main')}
-            isTranslating={translating}
-            hasTextToTranslate={question.trim().length > 0}
             className="w-full mb-3"
           />
 
           {translationNotice && (
-            <div className="text-[11px] font-semibold text-[#4285F4] bg-[#EEF4FE] border border-[#C6DCFC] px-3.5 py-1.5 rounded-full mb-3 inline-flex items-center gap-1.5 animate-fade-in-up">
-              <Languages size={13} />
+            <div className="text-[11px] font-semibold text-[#1E2761] bg-[#F1F5F9] border border-[#CBD5E1] px-3.5 py-1.5 rounded-full mb-3 inline-flex items-center gap-1.5 animate-fade-in-up">
+              <Languages size={13} className="text-[#F96167]" />
               <span>{translationNotice}</span>
             </div>
           )}
@@ -1078,7 +1075,7 @@ export default function AskInterface() {
               <div className="flex items-center justify-between gap-2 mb-1.5">
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-md bg-[#F1F5F9] text-[#1E2761] text-[10px] font-bold uppercase tracking-wider">
-                    {originalSpokenLang === 'ar' || /[\u0600-\u06FF]/.test(originalSpokenText) ? '🇸🇦 Spoken in Arabic' : '🌐 Original Speech'}
+                    {originalSpokenLang === 'ar' || /[\u0600-\u06FF]/.test(originalSpokenText) ? 'العربية' : 'Original Speech'}
                   </span>
                   <span className="text-[11px] text-[#5A6478] font-medium hidden sm:inline">
                     Auto-translated to English below (feel free to edit before running):
@@ -1117,30 +1114,30 @@ export default function AskInterface() {
                   type="button"
                   onClick={() => setQuestion('')}
                   className="absolute top-3 right-3 p-1.5 rounded-lg text-[#94A3B8] hover:text-[#1E2761] hover:bg-[#F1F5F9] transition-colors cursor-pointer"
-                  title={isRtl ? "مسح السؤال" : "Clear question"}
+                  title="Clear question"
                 >
                   <X size={16} />
                 </button>
               )}
             </div>
-            <div className={`mt-4 flex flex-wrap items-center gap-3 ${isRtl || /[\u0600-\u06FF]/.test(question) ? 'justify-end flex-row-reverse' : 'justify-start'}`}>
+            <div className="mt-4 flex flex-wrap items-center gap-3 justify-start">
               <Button 
                 onClick={handleSubmit} 
                 disabled={loading || !question.trim()}
                 className="bg-[#F96167] hover:bg-[#e0565b] text-white rounded-[8px] px-6 h-10 font-semibold cursor-pointer"
               >
-                {isRtl ? "اسأل ديسيرا" : "Ask Decyra"}
+                Ask Decyra
               </Button>
               {/[\u0600-\u06FF]/.test(question) && (
                 <Button
                   variant="outline"
                   type="button"
-                  onClick={() => handleGoogleTranslate('main')}
+                  onClick={() => handleTranslate('main')}
                   disabled={translating}
-                  className="h-10 px-4 text-xs font-semibold text-[#4285F4] border-[#4285F4]/30 hover:bg-[#EEF4FE] rounded-[8px] flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  className="h-10 px-4 text-xs font-semibold text-[#1E2761] border-[#CBD5E1] hover:bg-[#F4F6FB] rounded-[8px] flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
-                  {translating ? <Loader2 size={13} className="animate-spin text-[#4285F4]" /> : <Languages size={13} />}
-                  <span>Translate Arabic to English</span>
+                  {translating ? <Loader2 size={13} className="animate-spin text-[#F96167]" /> : <Languages size={13} />}
+                  <span>Translate to English</span>
                 </Button>
               )}
               {question.trim().length > 0 && (
@@ -1149,7 +1146,7 @@ export default function AskInterface() {
                   onClick={() => setQuestion('')}
                   className="px-4 h-10 text-sm font-semibold text-[#5A6478] hover:text-[#1E2761] hover:bg-black/5 rounded-[8px] transition-colors cursor-pointer"
                 >
-                  {isRtl ? "مسح" : "Clear"}
+                  Clear Text
                 </button>
               )}
             </div>
@@ -1219,15 +1216,12 @@ export default function AskInterface() {
             speechSupported={speechSupported}
             speechError={speechError}
             onDismissError={() => setSpeechError(null)}
-            onGoogleTranslate={() => handleGoogleTranslate('main')}
-            isTranslating={translating}
-            hasTextToTranslate={question.trim().length > 0}
             className="w-full mb-3"
           />
 
           {translationNotice && (
-            <div className="text-[11px] font-semibold text-[#4285F4] bg-[#EEF4FE] border border-[#C6DCFC] px-3.5 py-1.5 rounded-full mb-3 inline-flex items-center gap-1.5 animate-fade-in-up">
-              <Languages size={13} />
+            <div className="text-[11px] font-semibold text-[#1E2761] bg-[#F1F5F9] border border-[#CBD5E1] px-3.5 py-1.5 rounded-full mb-3 inline-flex items-center gap-1.5 animate-fade-in-up">
+              <Languages size={13} className="text-[#F96167]" />
               <span>{translationNotice}</span>
             </div>
           )}
@@ -1238,7 +1232,7 @@ export default function AskInterface() {
               <div className="flex items-center justify-between gap-2 mb-1.5">
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-md bg-[#F1F5F9] text-[#1E2761] text-[10px] font-bold uppercase tracking-wider">
-                    {originalSpokenLang === 'ar' || /[\u0600-\u06FF]/.test(originalSpokenText) ? '🇸🇦 Spoken in Arabic' : '🌐 Original Speech'}
+                    {originalSpokenLang === 'ar' || /[\u0600-\u06FF]/.test(originalSpokenText) ? 'العربية' : 'Original Speech'}
                   </span>
                   <span className="text-[11px] text-[#5A6478] font-medium hidden sm:inline">
                     Auto-translated to English below (feel free to edit before running):
@@ -1277,37 +1271,37 @@ export default function AskInterface() {
                   type="button"
                   onClick={() => setQuestion('')}
                   className="absolute top-3 right-3 p-1.5 rounded-lg text-[#94A3B8] hover:text-[#1E2761] hover:bg-[#F1F5F9] transition-colors cursor-pointer"
-                  title={isRtl ? "مسح النص للتعديل" : "Clear input text to edit"}
+                  title="Clear input text to edit"
                 >
                   <X size={16} />
                 </button>
               )}
             </div>
-            <div className={`mt-4 flex flex-wrap items-center gap-3 ${isRtl || /[\u0600-\u06FF]/.test(question) ? 'justify-end flex-row-reverse' : 'justify-start'}`}>
+            <div className="mt-4 flex flex-wrap items-center gap-3 justify-start">
               <Button 
                 onClick={handleSubmit} 
                 disabled={loading || !question.trim()}
-                className="bg-[#F96167] hover:bg-[#e0565b] text-white rounded-[6px] px-6"
+                className="bg-[#F96167] hover:bg-[#e0565b] text-white rounded-[6px] px-6 font-semibold"
               >
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {isRtl ? "جارٍ التحليل..." : "Asking..."}
+                    <span>Asking...</span>
                   </>
                 ) : (
-                  isRtl ? "اسأل ديسيرا" : "Ask Decyra"
+                  "Ask Decyra"
                 )}
               </Button>
               {/[\u0600-\u06FF]/.test(question) && (
                 <Button
                   variant="outline"
                   type="button"
-                  onClick={() => handleGoogleTranslate('main')}
+                  onClick={() => handleTranslate('main')}
                   disabled={translating}
-                  className="h-10 px-4 text-xs font-semibold text-[#4285F4] border-[#4285F4]/30 hover:bg-[#EEF4FE] rounded-[6px] flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  className="h-10 px-4 text-xs font-semibold text-[#1E2761] border-[#CBD5E1] hover:bg-[#F4F6FB] rounded-[6px] flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
-                  {translating ? <Loader2 size={13} className="animate-spin text-[#4285F4]" /> : <Languages size={13} />}
-                  <span>Translate Arabic to English</span>
+                  {translating ? <Loader2 size={13} className="animate-spin text-[#F96167]" /> : <Languages size={13} />}
+                  <span>Translate to English</span>
                 </Button>
               )}
               {question.trim().length > 0 && (
@@ -1316,17 +1310,17 @@ export default function AskInterface() {
                   onClick={() => setQuestion('')}
                   className="text-[#5A6478] text-sm hover:text-[#1E2761] underline-offset-4 hover:underline cursor-pointer"
                 >
-                  {isRtl ? "مسح النص" : "Clear Text"}
+                  Clear Text
                 </button>
               )}
               <button 
                 type="button"
                 onClick={handleClear} 
                 className="text-rose-600 text-sm hover:text-rose-700 underline-offset-4 hover:underline flex items-center gap-1 cursor-pointer ml-auto"
-                title={isRtl ? "مسح المحادثة والبدء من جديد" : "Clear chat & reset"}
+                title="Clear chat & reset"
               >
                 <Trash2 size={13} />
-                <span>{isRtl ? "إعادة ضبط المحادثة" : "Reset Chat"}</span>
+                <span>Reset Chat</span>
               </button>
             </div>
           </div>
@@ -1810,20 +1804,22 @@ export default function AskInterface() {
                     <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
                       {followUpQuestion.trim().length > 0 && (
                         <>
-                          <button
-                            type="button"
-                            onClick={() => handleGoogleTranslate('followUp')}
-                            disabled={translating}
-                            className="p-1.5 rounded-md text-[#4285F4] hover:bg-[#EEF4FE] transition-colors cursor-pointer"
-                            title="Translate follow-up with Google Translate"
-                          >
-                            {translating ? <Loader2 size={14} className="animate-spin text-[#4285F4]" /> : <Languages size={14} />}
-                          </button>
+                          {/[\u0600-\u06FF]/.test(followUpQuestion) && (
+                            <button
+                              type="button"
+                              onClick={() => handleTranslate('followUp')}
+                              disabled={translating}
+                              className="p-1.5 rounded-md text-[#1E2761] hover:bg-[#F1F5F9] transition-colors cursor-pointer"
+                              title="Translate to English"
+                            >
+                              {translating ? <Loader2 size={14} className="animate-spin text-[#F96167]" /> : <Languages size={14} />}
+                            </button>
+                          )}
                           <button
                             type="button"
                             onClick={() => setFollowUpQuestion('')}
                             className="p-1 rounded-md text-[#94A3B8] hover:text-[#1E2761] hover:bg-black/5 transition-colors cursor-pointer"
-                            title={isRtl ? "مسح نص المتابعة" : "Clear follow-up input"}
+                            title="Clear follow-up input"
                           >
                             <X size={15} />
                           </button>
@@ -1838,7 +1834,7 @@ export default function AskInterface() {
                               ? "bg-rose-500 text-white animate-pulse"
                               : "text-[#5A6478] hover:text-[#F96167] hover:bg-black/5"
                           }`}
-                          title="Dictate with voice (Speechnotes)"
+                          title="Speak question"
                         >
                           <Mic className="w-4 h-4" />
                         </button>
@@ -1854,12 +1850,12 @@ export default function AskInterface() {
                       {loading ? (
                         <>
                           <Loader2 size={16} className="animate-spin" />
-                          <span>{isRtl ? "جارٍ التحسين..." : "Refining..."}</span>
+                          <span>Refining...</span>
                         </>
                       ) : (
                         <>
-                          <span>{isRtl ? "إرسال المتابعة" : "Ask Follow-up"}</span>
-                          <ArrowRight size={15} className={isRtl ? "rotate-180" : ""} />
+                          <span>Ask Follow-up</span>
+                          <ArrowRight size={15} />
                         </>
                       )}
                     </Button>
@@ -1869,7 +1865,7 @@ export default function AskInterface() {
                         onClick={() => setFollowUpQuestion('')}
                         className="h-11 px-3 text-xs font-semibold text-[#5A6478] hover:text-[#1E2761] transition-colors rounded-xl hover:bg-[#F4F6FB] cursor-pointer"
                       >
-                        {isRtl ? "مسح" : "Clear"}
+                        Clear
                       </button>
                     )}
                   </div>
