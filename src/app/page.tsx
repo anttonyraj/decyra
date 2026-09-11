@@ -10,7 +10,6 @@ import PricingCard from "@/components/landing/PricingCard";
 import ContactSection from "@/components/landing/ContactSection";
 import Footer from "@/components/landing/Footer";
 import { HowItWorksGraphic, WhyDecyraGraphic, BuiltForGraphic, PricingGraphic, FaqGraphic, SecurityGraphic, HeroBackgroundGraphic } from "@/components/landing/SectionGraphics";
-import GoldenLayerGraphic from "@/components/landing/GoldenLayerGraphic";
 import VisitorTracker from "@/components/landing/VisitorTracker";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -738,182 +737,61 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── IN PROGRESS: VIRTUAL GOLDEN LAYER & DATA MARTS ── */}
-        <section id="golden-layer" className="bg-gradient-to-b from-white via-[#F4F8FE] to-white py-24 border-b border-[#E5E9F2] relative overflow-hidden">
-          <div className="absolute top-1/3 -left-40 w-96 h-96 rounded-full bg-[#1E2761]/6 blur-3xl pointer-events-none" />
-          <div className="absolute top-2/3 -right-40 w-96 h-96 rounded-full bg-[#F96167]/6 blur-3xl pointer-events-none" />
+        {/* ── ROADMAP TEASER: VIRTUAL GOLDEN LAYER ── */}
+        <section id="golden-layer" className="bg-[#1E2761] text-white py-16 border-b border-[#2B3577] relative overflow-hidden">
+          <div className="absolute top-1/2 -left-40 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none" />
+          <div className="absolute top-1/2 -right-40 w-96 h-96 rounded-full bg-[#F96167]/10 blur-3xl pointer-events-none" />
 
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4 relative z-10">
-            {/* Header */}
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#1E2761] text-white mb-3 shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-[#F96167] animate-pulse" />
-                In Active Engineering • Q4 Roadmap
-              </div>
-              <h2
-                className="text-[40px] max-[640px]:text-[30px] font-bold text-[#1E2761] leading-tight mb-4"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                Virtual Golden Layer & Cross-Database Federation
-              </h2>
-              <p className="text-[17px] text-[#5A6478] leading-relaxed max-w-[760px] mx-auto">
-                Break through corporate data silos. Ask questions that span PostgreSQL, Snowflake, BigQuery, and spreadsheets simultaneously. Decyra queries each engine concurrently and joins them in-memory.
-              </p>
-            </div>
-
-            {/* Market Gap & Cost Comparison Callout */}
-            <div className="bg-[#1E2761] text-white rounded-2xl p-8 max-[640px]:p-6 mb-12 shadow-xl border border-[#2B3577] grid grid-cols-12 max-[1024px]:grid-cols-1 gap-6 items-center">
-              <div className="col-span-7">
-                <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#F96167] mb-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#F96167]" />
-                  The Gap in the Market
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-8 bg-gradient-to-r from-white/[0.04] to-transparent p-8 sm:p-12 rounded-3xl border border-white/10">
+              <div className="max-w-[680px]">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/10 text-white mb-4 border border-white/15">
+                  <span className="w-2 h-2 rounded-full bg-[#F96167] animate-pulse" />
+                  In Active Engineering • Q4 Roadmap
                 </div>
-                <h3 className="text-xl font-bold mb-3" style={{ fontFamily: "Georgia, serif" }}>
-                  Almost every AI data tool assumes you have just one database.
-                </h3>
-                <p className="text-white/80 text-sm leading-relaxed">
-                  In reality, modern companies keep signups in <strong>PostgreSQL</strong>, billing in <strong>Snowflake</strong>, clickstreams in <strong>BigQuery</strong>, and operational targets in <strong>Excel</strong>. Nobody has built a conversational AI analyst that queries across heterogeneous multi-database architectures without code — until Decyra.
-                </p>
-              </div>
-
-              <div className="col-span-5 bg-white/10 rounded-xl p-5 border border-white/15 backdrop-blur-xs flex flex-col justify-center">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-[#F96167] mb-1">
-                  ETL Elimination
-                </div>
-                <div className="text-2xl font-bold text-white mb-2" style={{ fontFamily: "Georgia, serif" }}>
-                  $50K – $200K / year Saved
-                </div>
-                <p className="text-white/80 text-xs leading-relaxed">
-                  To answer cross-system questions today, companies spend six figures on ETL tools (Fivetran, dbt, Airflow) plus months of engineering time. By joining on the fly in-memory, Decyra solves a problem that normally requires <strong>2 full-time data engineers</strong>.
-                </p>
-              </div>
-            </div>
-
-            {/* Interactive Concept Animation Graphic */}
-            <div className="mb-14">
-              <GoldenLayerGraphic />
-            </div>
-
-            {/* 3 Core Architecture Pillars */}
-            <div className="grid grid-cols-3 max-[1024px]:grid-cols-1 gap-6 mb-20">
-              <div className="bg-white border border-[#E5E9F2] rounded-2xl p-7 shadow-[0_4px_20px_rgba(30,39,97,0.03)] hover:border-[#C7D7F7] transition-all">
-                <div className="w-10 h-10 rounded-xl bg-[#EBF3FE] flex items-center justify-center text-[#1E2761] font-bold mb-4">
-                  01
-                </div>
-                <h3 className="text-lg font-bold text-[#1E2761] mb-2" style={{ fontFamily: "Georgia, serif" }}>
-                  Pushdown In-Memory Execution
-                </h3>
-                <p className="text-[14px] text-[#5A6478] leading-relaxed">
-                  Decyra pushes filters and aggregations down to each native engine, then retrieves only matching summary records to join in-memory in milliseconds. Fast, scalable, and bandwidth-efficient.
-                </p>
-              </div>
-
-              <div className="bg-white border border-[#E5E9F2] rounded-2xl p-7 shadow-[0_4px_20px_rgba(30,39,97,0.03)] hover:border-[#C7D7F7] transition-all">
-                <div className="w-10 h-10 rounded-xl bg-[#FDE2E3] flex items-center justify-center text-[#F96167] font-bold mb-4">
-                  02
-                </div>
-                <h3 className="text-lg font-bold text-[#1E2761] mb-2" style={{ fontFamily: "Georgia, serif" }}>
-                  Virtual Data Marts (No ETL)
-                </h3>
-                <p className="text-[14px] text-[#5A6478] leading-relaxed">
-                  Eliminate months of data engineering and tools like Fivetran and dbt just to answer questions spanning CRM and billing. Ask natural-language questions across unified entities instantly.
-                </p>
-              </div>
-
-              <div className="bg-white border border-[#E5E9F2] rounded-2xl p-7 shadow-[0_4px_20px_rgba(30,39,97,0.03)] hover:border-[#C7D7F7] transition-all">
-                <div className="w-10 h-10 rounded-xl bg-[#EAF7EE] flex items-center justify-center text-emerald-700 font-bold mb-4">
-                  03
-                </div>
-                <h3 className="text-lg font-bold text-[#1E2761] mb-2" style={{ fontFamily: "Georgia, serif" }}>
-                  Zero-Storage Enterprise Privacy
-                </h3>
-                <p className="text-[14px] text-[#5A6478] leading-relaxed">
-                  Decyra never persists or stores your customer data. Cross-database queries are computed ephemerally in RAM and discarded immediately after response, ensuring seamless SOC2 and GDPR compliance.
-                </p>
-              </div>
-            </div>
-
-            {/* ── THE 2027 HORIZON: 3 NEXT-GEN LEAPS ── */}
-            <div className="border-t border-[#E5E9F2] pt-16">
-              <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#F96167] mb-2">
-                  Future Roadmap • Software from 2030
-                </div>
-                <h3
-                  className="text-[32px] max-[640px]:text-[26px] font-bold text-[#1E2761] leading-tight mb-3"
+                <h2
+                  className="text-[36px] max-[640px]:text-[28px] font-bold leading-tight mb-4"
                   style={{ fontFamily: "Georgia, serif" }}
                 >
-                  The Next Frontier: 3 Next-Gen Leaps
-                </h3>
-                <p className="text-[15px] text-[#5A6478] max-w-[620px] mx-auto">
-                  Where Decyra is heading next to redefine business intelligence from reactive questions to autonomous foresight.
+                  Virtual Golden Layer &amp; Cross-Database Federation
+                </h2>
+                <p className="text-[#BAC5DE] text-base leading-relaxed mb-6">
+                  Query across PostgreSQL, Snowflake, BigQuery, and spreadsheets in a single prompt. Decyra executes queries concurrently and joins them in-memory in milliseconds — eliminating $50k–$200k/year in brittle ETL pipelines.
                 </p>
+                <div className="flex flex-wrap items-center gap-4">
+                  <Link
+                    href="/golden-layer"
+                    className="bg-[#F96167] text-white font-semibold rounded-lg px-6 py-3 text-sm hover:bg-[#e8535a] transition-all shadow-sm flex items-center gap-2"
+                  >
+                    Explore Architecture &amp; Interactive Demo →
+                  </Link>
+                  <Link
+                    href="/golden-layer#next-gen-leaps"
+                    className="border border-white/30 text-white font-semibold rounded-lg px-6 py-3 text-sm hover:bg-white/10 transition-all"
+                  >
+                    View 3 Next-Gen Leaps
+                  </Link>
+                </div>
               </div>
 
-              <div className="grid grid-cols-3 max-[1024px]:grid-cols-1 gap-6">
-                {/* Leap 1 */}
-                <div className="bg-white border border-[#E5E9F2] rounded-2xl p-7 shadow-xs hover:border-[#1E2761] transition-all flex flex-col justify-between">
-                  <div>
-                    <div className="text-2xl mb-3">🚀</div>
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#F96167] mb-1">
-                      Leap 01 • Reactive to Proactive
-                    </div>
-                    <h4 className="text-base font-bold text-[#1E2761] mb-2" style={{ fontFamily: "Georgia, serif" }}>
-                      Autonomous Self-Driving Analyst
-                    </h4>
-                    <p className="text-[13px] text-[#5A6478] leading-relaxed mb-4">
-                      Instead of waiting for you to log in and think of a question, Decyra runs background semantic anomaly scans every 6 hours across your live databases.
-                    </p>
-                    <div className="bg-[#FAFBFC] border border-[#E5E9F2] rounded-xl p-3 text-[11px] text-[#1E2761] font-mono leading-normal">
-                      <span className="text-rose-600 font-bold">🚨 Slack Alert:</span> &quot;Churn in EMEA rose 18% today. Cross-analyzed Postgres signups with Snowflake billing: 34 enterprise renewals timed out in Germany.&quot;
-                    </div>
-                  </div>
-                  <div className="mt-4 pt-3 border-t border-[#E5E9F2] text-[11px] font-semibold text-[#1E2761]">
-                    The AI acts as an autonomous Chief of Staff.
-                  </div>
+              <div className="w-full lg:w-[420px] bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-xs flex flex-col justify-between">
+                <div className="text-xs font-bold uppercase tracking-wider text-[#F96167] mb-2">
+                  The Market Gap
                 </div>
-
-                {/* Leap 2 */}
-                <div className="bg-white border border-[#E5E9F2] rounded-2xl p-7 shadow-xs hover:border-[#1E2761] transition-all flex flex-col justify-between">
-                  <div>
-                    <div className="text-2xl mb-3">🧠</div>
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#F96167] mb-1">
-                      Leap 02 • Zero Configuration
-                    </div>
-                    <h4 className="text-base font-bold text-[#1E2761] mb-2" style={{ fontFamily: "Georgia, serif" }}>
-                      Zero-Setup Semantic Auto-Linking
-                    </h4>
-                    <p className="text-[13px] text-[#5A6478] leading-relaxed mb-4">
-                      In traditional tools, data engineers manually specify foreign keys. Decyra uses vector embeddings to auto-discover relationships across tables and files without human intervention.
-                    </p>
-                    <div className="bg-[#FAFBFC] border border-[#E5E9F2] rounded-xl p-3 text-[11px] text-[#1E2761] font-mono leading-normal">
-                      <span className="text-indigo-600 font-bold">⚡ Auto-Graph:</span> &quot;Discovered: emails in postgres.users map 100% to hashed accounts in snowflake.billing. Schema graph linked.&quot;
-                    </div>
-                  </div>
-                  <div className="mt-4 pt-3 border-t border-[#E5E9F2] text-[11px] font-semibold text-[#1E2761]">
-                    Connect your DBs — Decyra builds the graph automatically.
-                  </div>
+                <div className="text-xl font-bold text-white mb-2" style={{ fontFamily: "Georgia, serif" }}>
+                  Zero-ETL On-The-Fly Joins
                 </div>
-
-                {/* Leap 3 */}
-                <div className="bg-white border border-[#E5E9F2] rounded-2xl p-7 shadow-xs hover:border-[#1E2761] transition-all flex flex-col justify-between">
-                  <div>
-                    <div className="text-2xl mb-3">🔮</div>
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#F96167] mb-1">
-                      Leap 03 • Decision Intelligence
-                    </div>
-                    <h4 className="text-base font-bold text-[#1E2761] mb-2" style={{ fontFamily: "Georgia, serif" }}>
-                      Predictive &quot;What-If&quot; Simulations
-                    </h4>
-                    <p className="text-[13px] text-[#5A6478] leading-relaxed mb-4">
-                      Traditional BI only looks backward. Decyra enables forward-looking decision modeling using Monte Carlo simulation directly in the browser.
-                    </p>
-                    <div className="bg-[#FAFBFC] border border-[#E5E9F2] rounded-xl p-3 text-[11px] text-[#1E2761] font-mono leading-normal">
-                      <span className="text-emerald-700 font-bold">📈 Forward Model:</span> &quot;If we raise Pro Plan from $49 to $69, predicted Q4 revenue increases +22% with 4.1% estimated elasticity churn.&quot;
-                    </div>
+                <p className="text-[#BAC5DE] text-xs leading-relaxed mb-6">
+                  No replication pipelines. No Airflow DAGs. Pushdown execution extracts only filtered records, joining them via vectorized in-memory compute.
+                </p>
+                <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/10 text-center">
+                  <div className="bg-white/5 rounded-lg p-3">
+                    <div className="text-lg font-bold text-white font-mono">$120k+</div>
+                    <div className="text-[10px] text-[#BAC5DE] uppercase font-semibold">ETL Cost Saved</div>
                   </div>
-                  <div className="mt-4 pt-3 border-t border-[#E5E9F2] text-[11px] font-semibold text-[#1E2761]">
-                    From answering what happened to modeling what will happen.
+                  <div className="bg-white/5 rounded-lg p-3">
+                    <div className="text-lg font-bold text-white font-mono">&lt; 15ms</div>
+                    <div className="text-[10px] text-[#BAC5DE] uppercase font-semibold">In-Memory Join</div>
                   </div>
                 </div>
               </div>
@@ -943,6 +821,16 @@ export default function HomePage() {
             </div>
             
             <FaqAccordion items={faqItems} />
+
+            <div className="mt-10 text-center">
+              <Link
+                href="/faq"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white border border-[#D0D7E2] text-sm font-semibold text-[#1E2761] hover:text-[#F96167] hover:border-[#C7D7F7] shadow-xs transition-all"
+              >
+                <span>Browse all 20+ questions across Security, Connectors &amp; Federation</span>
+                <span>→</span>
+              </Link>
+            </div>
           </div>
         </section>
 

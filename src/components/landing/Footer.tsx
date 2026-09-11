@@ -18,6 +18,9 @@ export default function Footer() {
         <nav aria-label="Footer navigation">
           <div className="flex items-center gap-4">
             {[
+              { label: "Golden Layer", href: "/golden-layer" },
+              { label: "FAQ", href: "/faq" },
+              { label: "Investors", href: "/investors" },
               { label: "Privacy", href: "/privacy" },
               { label: "Terms", href: "/terms" },
               { label: "Contact", href: "/#contact" },

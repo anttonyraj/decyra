@@ -6,14 +6,14 @@ import Wordmark from "./Wordmark";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
-  { label: "Product", href: "#product" },
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Golden Layer", href: "#golden-layer", isNew: true },
-  { label: "Why Decyra", href: "#why-decyra" },
-  { label: "Built for", href: "#built-for" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "FAQ", href: "#faq" },
-  { label: "Contact", href: "#contact" },
+  { label: "Product", href: "/#product" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Golden Layer", href: "/golden-layer", isNew: true },
+  { label: "Why Decyra", href: "/#why-decyra" },
+  { label: "Built for", href: "/#built-for" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "FAQ", href: "/faq" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export default function NavBar() {
