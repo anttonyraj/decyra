@@ -297,8 +297,10 @@ No markdown fences. No commentary outside the JSON. Just the JSON object.`
     const rowCount = rows.length
     const previewRows = rows.slice(0, 5)
 
-    // 8. Narration call
-    const narrationPrompt = `A user asked: "${question}"
+    // 8. Narration call (safely wrapped so query results and charts always display)
+    let narration = `Found ${rowCount} ${rowCount === 1 ? 'record' : 'records'} matching your query.`
+    try {
+      const narrationPrompt = `A user asked: "${question}"
 
 The SQL that ran: ${sql}
 
@@ -307,10 +309,13 @@ ${JSON.stringify(previewRows)}
 
 Write a 2-sentence plain-English explanation for a non-technical business executive. State the headline finding clearly with the actual numbers from the data, then add one notable detail or pattern you see. Do not mention SQL. Do not say "the query returned" — write as if you're directly answering the user's question.`
 
-    const narration = await aiProvider.generateText({
-      userPrompt: narrationPrompt,
-      maxTokens: 512,
-    })
+      narration = await aiProvider.generateText({
+        userPrompt: narrationPrompt,
+        maxTokens: 512,
+      })
+    } catch (narrationErr) {
+      console.warn('Narration generation fallback:', narrationErr)
+    }
 
     // 9. Return everything
     return NextResponse.json({
@@ -323,12 +328,17 @@ Write a 2-sentence plain-English explanation for a non-technical business execut
 
   } catch (err: any) {
     console.error('Ask route error:', err)
+    const isRateLimit = err?.status === 429 || err?.message?.includes('429') || err?.message?.includes('quota')
+    const userMessage = isRateLimit
+      ? 'AI request rate limit reached. Please wait a few seconds and try again.'
+      : (err.message || 'Failed to process question.')
+
     return NextResponse.json(
       {
-        error: 'Internal server error',
-        message: process.env.NODE_ENV === 'development' ? err.message : undefined,
+        error: userMessage,
+        message: err.message,
       },
-      { status: 500 }
+      { status: isRateLimit ? 429 : 500 }
     )
   }
 }
