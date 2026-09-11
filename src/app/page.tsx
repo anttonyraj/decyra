@@ -228,18 +228,18 @@ export default function HomePage() {
                 <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-[#1E2761]">
                   AI DATA INTELLIGENCE
                 </p>
-                <a
-                  href="#golden-layer"
+                <Link
+                  href="/golden-layer"
                   className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EBF3FE] border border-[#C7D7F7] text-[#1E2761] text-xs font-semibold shadow-2xs hover:border-[#1E2761] transition-colors"
                 >
                   <span className="bg-[#1E2761] text-white text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
-                    IN PROGRESS
+                    VIRTUAL GOLDEN LAYER
                   </span>
                   <span className="text-[#1E2761]">
-                    Virtual Golden Layer: Cross-Database Federation for Postgres, Snowflake & BigQuery
+                    Cross-Database Federation for Postgres, Snowflake &amp; BigQuery
                   </span>
                   <span className="text-[#F96167] font-bold">→</span>
-                </a>
+                </Link>
               </div>
 
               {/* Headline */}
