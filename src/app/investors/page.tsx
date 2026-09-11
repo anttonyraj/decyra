@@ -21,12 +21,19 @@ import {
   Globe2,
   Languages,
   Server,
-  Zap
+  Zap,
+  Target,
+  Rocket,
+  Check,
+  X,
+  PieChart,
+  Scale,
+  Workflow
 } from "lucide-react";
 
 export const metadata = {
   title: "Investor Overview & Due Diligence Memo | Decyra",
-  description: "The 30-Second Pitch, $80B Market Opportunity, Venture Q&A Teardown, and Global & MENA Expansion perspectives behind Decyra.",
+  description: "The 30-Second Pitch, $80B Market Opportunity, Valuation Benchmarks, Venture Q&A Teardown, and Global & MENA Expansion perspectives behind Decyra.",
 };
 
 export default function InvestorsPage() {
@@ -54,11 +61,11 @@ export default function InvestorsPage() {
             </h1>
 
             {/* 30-Second Elevator Pitch Callout */}
-            <div className="max-w-[820px] mx-auto bg-white border-2 border-[#1E2761]/15 rounded-2xl p-5 mb-8 shadow-sm">
+            <div className="max-w-[840px] mx-auto bg-white border-2 border-[#1E2761]/15 rounded-2xl p-6 mb-8 shadow-sm">
               <div className="text-[11px] font-bold uppercase tracking-wider text-[#F96167] mb-1">
                 The 30-Second Elevator Pitch
               </div>
-              <p className="text-[19px] max-[640px]:text-[16px] text-[#1E2761] font-semibold leading-snug">
+              <p className="text-[20px] max-[640px]:text-[16px] text-[#1E2761] font-semibold leading-snug">
                 Decyra is the conversational AI layer that replaces $200,000/year ETL pipelines for business operators — joining PostgreSQL, Snowflake, BigQuery, and spreadsheets on the fly in-memory in milliseconds.
               </p>
             </div>
@@ -85,29 +92,85 @@ export default function InvestorsPage() {
           </div>
         </section>
 
-        {/* ── THE $80B MARKET OPPORTUNITY & KEY METRICS ── */}
-        <section className="py-16 bg-[#FAFBFC] border-b border-[#E5E9F2]">
+        {/* ── WHY INVEST NOW? (THE 3 MACRO INFLECTION POINTS) ── */}
+        <section className="py-16 bg-white border-b border-[#E5E9F2]">
           <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
             <div className="text-center mb-12">
-              <span className="text-xs font-bold text-[#F96167] tracking-wider uppercase">Market Dynamics</span>
+              <span className="text-xs font-bold text-[#F96167] tracking-wider uppercase">Strategic Inflection</span>
               <h2
                 className="text-[34px] max-[640px]:text-[28px] font-bold text-[#1E2761] mt-2 mb-3"
                 style={{ fontFamily: "Georgia, serif" }}
               >
-                The $80B Market Opportunity
+                Why Invest in Decyra Now?
               </h2>
               <p className="text-sm text-[#5A6478] max-w-[680px] mx-auto">
-                Driven by massive modern data stack fragmentation and the vast, underserved market of non-technical business operators.
+                Three massive technological and market shifts have collided to create an urgent window for a unified, conversational data layer.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="bg-[#FAFBFC] border border-[#E5E9F2] p-6 rounded-2xl">
+                <div className="w-10 h-10 rounded-xl bg-[#EBF3FE] flex items-center justify-center text-[#1E2761] mb-4">
+                  <Workflow className="w-5 h-5" />
+                </div>
+                <h3 className="text-base font-bold text-[#1E2761] mb-2 font-serif">
+                  1. &quot;Consolidation Fatigue&quot; in Data
+                </h3>
+                <p className="text-xs text-[#5A6478] leading-relaxed">
+                  Companies spent the last 5 years buying Fivetran, dbt, Snowflake, and Looker. Despite spending $250k+/year, business operators still submit tickets to data engineers to answer simple revenue questions. Centralizing everything into one warehouse has failed.
+                </p>
+              </div>
+
+              <div className="bg-[#FAFBFC] border border-[#E5E9F2] p-6 rounded-2xl">
+                <div className="w-10 h-10 rounded-xl bg-[#FDE2E3] flex items-center justify-center text-[#F96167] mb-4">
+                  <Cpu className="w-5 h-5" />
+                </div>
+                <h3 className="text-base font-bold text-[#1E2761] mb-2 font-serif">
+                  2. Vectorized In-Memory Breakthroughs
+                </h3>
+                <p className="text-xs text-[#5A6478] leading-relaxed">
+                  Technologies like DuckDB and Apache Arrow now allow in-memory columnar joins across millions of records in 15 milliseconds on a lightweight serverless CPU. We can join disparate databases without needing a massive physical data lake.
+                </p>
+              </div>
+
+              <div className="bg-[#FAFBFC] border border-[#E5E9F2] p-6 rounded-2xl">
+                <div className="w-10 h-10 rounded-xl bg-[#EBF3FE] flex items-center justify-center text-[#1E2761] mb-4">
+                  <ShieldCheck className="w-5 h-5 text-[#F96167]" />
+                </div>
+                <h3 className="text-base font-bold text-[#1E2761] mb-2 font-serif">
+                  3. Deterministic AI Reasoning
+                </h3>
+                <p className="text-xs text-[#5A6478] leading-relaxed">
+                  Raw generative chat hallucinates column names. By binding LLMs to deterministic Abstract Syntax Tree (AST) compilers and schema graphs, Decyra produces 100% auditable, read-only SQL queries with zero hallucination.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── THE $80B MARKET OPPORTUNITY & VALUATION BENCHMARKS ── */}
+        <section className="py-16 bg-[#FAFBFC] border-b border-[#E5E9F2]">
+          <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
+            <div className="text-center mb-12">
+              <span className="text-xs font-bold text-[#F96167] tracking-wider uppercase">Market Dynamics &amp; Valuation</span>
+              <h2
+                className="text-[34px] max-[640px]:text-[28px] font-bold text-[#1E2761] mt-2 mb-3"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                The $80B Market Opportunity &amp; Cap Potential
+              </h2>
+              <p className="text-sm text-[#5A6478] max-w-[680px] mx-auto">
+                Decyra captures market share across three massive converging software segments: Business Intelligence, Data Pipelines (ETL), and Enterprise AI.
               </p>
             </div>
 
             {/* 4 Metric Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
               {[
-                { label: "Total Addressable Market", value: "$80B+", sub: "BI ($33B), ETL ($19B) & AI ($28B)" },
+                { label: "Total Addressable Market (TAM)", value: "$80B+", sub: "BI ($33B), ETL ($19B) & AI ($28B)" },
+                { label: "Serviceable Market (SAM)", value: "$24B", sub: "Enterprises with 2+ database silos" },
+                { label: "Serviceable Obtainable (SOM)", value: "$1.2B", sub: "Initial 15,000 mid-market companies" },
                 { label: "Gross Margin Profile", value: "> 85%", sub: "Vectorized in-memory edge compute" },
-                { label: "Customer Cost Savings", value: "$120k+/yr", sub: "Eliminated Fivetran, dbt & sync fees" },
-                { label: "Time-to-Value", value: "< 2 Mins", sub: "Read-only URI self-serve connection" },
               ].map((metric) => (
                 <div key={metric.label} className="bg-white p-6 rounded-2xl border border-[#E5E9F2] shadow-xs">
                   <div className="text-2xl sm:text-3xl font-bold text-[#1E2761] mb-1 font-mono">{metric.value}</div>
@@ -117,37 +180,276 @@ export default function InvestorsPage() {
               ))}
             </div>
 
-            {/* Why The Timing Is Now: The 2 Compounding Forces */}
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-white p-8 rounded-2xl border border-[#E5E9F2] shadow-xs">
-                <div className="w-10 h-10 rounded-xl bg-[#EBF3FE] flex items-center justify-center text-[#1E2761] mb-4">
-                  <Layers className="w-5 h-5" />
+            {/* Precedent Valuation Benchmarks Table */}
+            <div className="bg-white rounded-2xl border border-[#E5E9F2] p-8 shadow-xs mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                  <h3 className="text-lg font-bold text-[#1E2761] font-serif">
+                    Precedent Public &amp; M&amp;A Valuation Benchmarks
+                  </h3>
+                  <p className="text-xs text-[#5A6478]">
+                    Data infrastructure businesses command top-tier SaaS multiples (15x - 35x ARR) due to mission-critical stickiness and zero churn.
+                  </p>
                 </div>
-                <h3 className="text-lg font-bold text-[#1E2761] mb-2 font-serif">
-                  1. Modern Data Stack Fragmentation
-                </h3>
-                <p className="text-sm text-[#5A6478] leading-relaxed">
-                  Companies don&apos;t keep all data in one place. Operational records live in PostgreSQL, analytical events in Snowflake, clickstreams in Google BigQuery, and operational models in Excel. Centralizing them requires expensive ETL pipelines (Fivetran, Airflow, dbt) that break constantly and cost six figures annually.
-                </p>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#EBF3FE] text-[#1E2761] self-start sm:self-auto">
+                  <Scale className="w-3.5 h-3.5 text-[#F96167]" />
+                  Decacorn Category Potential
+                </div>
               </div>
 
-              <div className="bg-white p-8 rounded-2xl border border-[#E5E9F2] shadow-xs">
-                <div className="w-10 h-10 rounded-xl bg-[#FDE2E3] flex items-center justify-center text-[#F96167] mb-4">
-                  <TrendingUp className="w-5 h-5" />
-                </div>
-                <h3 className="text-lg font-bold text-[#1E2761] mb-2 font-serif">
-                  2. The Underserved Business Operator Market
-                </h3>
-                <p className="text-sm text-[#5A6478] leading-relaxed">
-                  Over 90% of business operators (VPs, RevOps leaders, Product Managers, Founders) do not know SQL. They are forced to wait days or weeks for data analysts to answer ad-hoc questions. Decyra empowers them to converse directly with their data in plain English with instant auditable SQL.
-                </p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs text-[#5A6478]">
+                  <thead className="bg-[#FAFBFC] text-[#1E2761] font-bold uppercase tracking-wider border-b border-[#E5E9F2]">
+                    <tr>
+                      <th className="py-3 px-4">Company</th>
+                      <th className="py-3 px-4">Category</th>
+                      <th className="py-3 px-4">Valuation / Market Cap</th>
+                      <th className="py-3 px-4">Limitation Decyra Solves</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#E5E9F2]">
+                    <tr>
+                      <td className="py-3.5 px-4 font-bold text-[#1E2761]">Snowflake (NYSE: SNOW)</td>
+                      <td className="py-3.5 px-4">Cloud Data Warehouse</td>
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#1E2761]">$50B+ Market Cap</td>
+                      <td className="py-3.5 px-4">Only supports internal data; requires expensive ingestion fees.</td>
+                    </tr>
+                    <tr>
+                      <td className="py-3.5 px-4 font-bold text-[#1E2761]">Databricks</td>
+                      <td className="py-3.5 px-4">Data Lakehouse &amp; AI</td>
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#1E2761]">$43B Valuation</td>
+                      <td className="py-3.5 px-4">Complex, developer-first tooling; inaccessible to non-technical operators.</td>
+                    </tr>
+                    <tr>
+                      <td className="py-3.5 px-4 font-bold text-[#1E2761]">Tableau (Acquired by Salesforce)</td>
+                      <td className="py-3.5 px-4">Legacy BI &amp; Dashboards</td>
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#1E2761]">$15.7B Acquisition</td>
+                      <td className="py-3.5 px-4">Static reports, rigid schemas, requires dedicated BI teams.</td>
+                    </tr>
+                    <tr>
+                      <td className="py-3.5 px-4 font-bold text-[#1E2761]">Fivetran</td>
+                      <td className="py-3.5 px-4">Automated Data Pipelines</td>
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#1E2761]">$5.6B Valuation</td>
+                      <td className="py-3.5 px-4">Forces physical data replication; expensive row-based sync fees.</td>
+                    </tr>
+                    <tr>
+                      <td className="py-3.5 px-4 font-bold text-[#1E2761]">Looker (Acquired by Google)</td>
+                      <td className="py-3.5 px-4">Semantic BI Modeling</td>
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#1E2761]">$2.6B Acquisition</td>
+                      <td className="py-3.5 px-4">High code maintenance (LookML), slow to adapt to changing queries.</td>
+                    </tr>
+                    <tr className="bg-[#F4F8FE]/80 font-semibold text-[#1E2761]">
+                      <td className="py-3.5 px-4 flex items-center gap-1.5 font-bold text-[#1E2761]">
+                        <span className="w-2 h-2 rounded-full bg-[#F96167]" /> Decyra
+                      </td>
+                      <td className="py-3.5 px-4">Conversational Zero-ETL Fabric</td>
+                      <td className="py-3.5 px-4 font-mono font-bold text-[#F96167]">$15B+ Long-Term Target</td>
+                      <td className="py-3.5 px-4 font-normal text-[#1E2761]">
+                        Zero ETL pipelines, cross-database in-memory joins, conversational natural language for all business operators.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── INSTITUTIONAL VENTURE Q&A TEARDOWN ── */}
-        <section className="py-20">
+        {/* ── GROWTH FLYWHEEL & ROADMAP TO $100M ARR ── */}
+        <section className="py-20 bg-white border-b border-[#E5E9F2]">
+          <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
+            <div className="text-center mb-16">
+              <span className="text-xs font-bold text-[#F96167] tracking-wider uppercase">Scale &amp; Velocity</span>
+              <h2
+                className="text-[36px] max-[640px]:text-[28px] font-bold text-[#1E2761] mt-2 mb-4"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                Growth Flywheel &amp; Road to $100M ARR
+              </h2>
+              <p className="text-base text-[#5A6478] max-w-[700px] mx-auto">
+                How Decyra compounds revenue through a low-friction Product-Led Growth (PLG) wedge expanding into six-figure enterprise contracts.
+              </p>
+            </div>
+
+            {/* 3 Growth Milestones */}
+            <div className="grid md:grid-cols-3 gap-8 mb-14">
+              <div className="bg-[#FAFBFC] border-2 border-[#E5E9F2] p-8 rounded-2xl relative">
+                <div className="text-xs font-bold uppercase tracking-wider text-[#F96167] mb-2">Phase 1: Seed to Series A</div>
+                <div className="text-3xl font-bold text-[#1E2761] mb-2 font-mono">$0 → $2.5M ARR</div>
+                <div className="text-xs font-semibold text-[#1E2761] mb-4">PLG Self-Serve &amp; Operator Adoption</div>
+                <ul className="text-xs text-[#5A6478] space-y-2.5">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    Instant pre-loaded sandbox &amp; drag-and-drop CSV uploads.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    Self-serve Postgres connection tier ($49 - $199/mo).
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    Viral intra-company sharing of live chart snapshots &amp; dashboards.
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-[#EBF3FE]/50 border-2 border-[#1E2761] p-8 rounded-2xl relative shadow-sm">
+                <div className="absolute -top-3 right-6 bg-[#1E2761] text-white text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full">
+                  Current Execution Phase
+                </div>
+                <div className="text-xs font-bold uppercase tracking-wider text-[#1E2761] mb-2">Phase 2: Series A to Series B</div>
+                <div className="text-3xl font-bold text-[#1E2761] mb-2 font-mono">$2.5M → $15M ARR</div>
+                <div className="text-xs font-semibold text-[#1E2761] mb-4">Virtual Golden Layer Expansion</div>
+                <ul className="text-xs text-[#5A6478] space-y-2.5">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    Cross-database joins across Snowflake, Postgres &amp; BigQuery ($999/mo).
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    Expansion from business operators to centralized data leadership (CDO / VP of Data).
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    Net Revenue Retention (NRR) target &gt;130% via seat expansion and database add-ons.
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-[#FAFBFC] border-2 border-[#E5E9F2] p-8 rounded-2xl relative">
+                <div className="text-xs font-bold uppercase tracking-wider text-[#F96167] mb-2">Phase 3: Growth to IPO</div>
+                <div className="text-3xl font-bold text-[#1E2761] mb-2 font-mono">$15M → $100M+ ARR</div>
+                <div className="text-xs font-semibold text-[#1E2761] mb-4">Global Enterprise &amp; Sovereign Cloud</div>
+                <ul className="text-xs text-[#5A6478] space-y-2.5">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    In-region sovereign clouds: AWS UAE, Oracle Cloud Saudi Arabia, Azure EU.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    Air-gapped on-premise Kubernetes deployments for banking &amp; defense ($50k-$150k ACV).
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    Defensible cross-database knowledge graphs establishing sticky vendor lock-in.
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* SaaS Metrics Highlights */}
+            <div className="bg-[#1E2761] text-white rounded-2xl p-8 sm:p-10">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div>
+                  <div className="text-3xl font-bold font-mono text-[#F96167] mb-1">&gt; 130%</div>
+                  <div className="text-xs uppercase font-bold tracking-wider text-[#BAC5DE]">Target NRR</div>
+                  <div className="text-[11px] text-[#BAC5DE]/80 mt-1">Multi-DB connector expansions</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold font-mono text-white mb-1">&lt; 5 Mos</div>
+                  <div className="text-xs uppercase font-bold tracking-wider text-[#BAC5DE]">CAC Payback</div>
+                  <div className="text-[11px] text-[#BAC5DE]/80 mt-1">Driven by low-touch PLG signup</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold font-mono text-[#F96167] mb-1">&gt; 5.5x</div>
+                  <div className="text-xs uppercase font-bold tracking-wider text-[#BAC5DE]">LTV / CAC</div>
+                  <div className="text-[11px] text-[#BAC5DE]/80 mt-1">High retention &amp; low churn</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold font-mono text-white mb-1">&gt; 85%</div>
+                  <div className="text-xs uppercase font-bold tracking-wider text-[#BAC5DE]">Gross Margins</div>
+                  <div className="text-[11px] text-[#BAC5DE]/80 mt-1">Software-only edge compute</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── COMPETITIVE BATTLECARD MATRIX ── */}
+        <section className="py-20 bg-[#FAFBFC] border-b border-[#E5E9F2]">
+          <div className="max-w-[1280px] mx-auto px-8 max-[640px]:px-4">
+            <div className="text-center mb-16">
+              <span className="text-xs font-bold text-[#F96167] tracking-wider uppercase">Competitive Advantage</span>
+              <h2
+                className="text-[36px] max-[640px]:text-[28px] font-bold text-[#1E2761] mt-2 mb-4"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                Competitive Matrix: Why Decyra Wins
+              </h2>
+              <p className="text-base text-[#5A6478] max-w-[700px] mx-auto">
+                How Decyra displaces the friction of legacy BI, brittle ETL pipelines, and single-database AI wrappers.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-[#E5E9F2] shadow-xs overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-[#F4F8FE] text-[#1E2761] font-bold uppercase tracking-wider border-b border-[#E5E9F2]">
+                  <tr>
+                    <th className="py-4 px-6">Capability / Metric</th>
+                    <th className="py-4 px-6 bg-[#1E2761] text-white">Decyra (Zero-ETL AI)</th>
+                    <th className="py-4 px-6">Legacy BI (Tableau/PowerBI)</th>
+                    <th className="py-4 px-6">ETL Pipelines (Fivetran/dbt)</th>
+                    <th className="py-4 px-6">Generic AI (ChatGPT/Text2SQL)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#E5E9F2] text-[#5A6478]">
+                  <tr>
+                    <td className="py-4 px-6 font-bold text-[#1E2761]">Interface</td>
+                    <td className="py-4 px-6 font-semibold text-[#1E2761] bg-[#EBF3FE]/40">Natural Language Conversational</td>
+                    <td className="py-4 px-6">Complex Drag-and-Drop Builders</td>
+                    <td className="py-4 px-6">No UI (Code/YAML pipelines)</td>
+                    <td className="py-4 px-6">Unstructured chat text</td>
+                  </tr>
+                  <tr>
+                    <td className="py-4 px-6 font-bold text-[#1E2761]">Cross-Database Joins</td>
+                    <td className="py-4 px-6 font-semibold text-emerald-700 bg-[#EBF3FE]/40 flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-600" /> In-Memory Vectorized (0ms sync)
+                    </td>
+                    <td className="py-4 px-6 text-amber-700">Requires prior data consolidation</td>
+                    <td className="py-4 px-6 text-amber-700">Requires 30-60 min batch syncing</td>
+                    <td className="py-4 px-6 text-rose-600 flex items-center gap-1.5">
+                      <X className="w-4 h-4 text-rose-500" /> Single database only
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-4 px-6 font-bold text-[#1E2761]">Implementation Cost</td>
+                    <td className="py-4 px-6 font-semibold text-emerald-700 bg-[#EBF3FE]/40">
+                      $49 - $999/mo (Zero new hires)
+                    </td>
+                    <td className="py-4 px-6">$50k - $150k/yr + BI specialists</td>
+                    <td className="py-4 px-6">$100k - $250k/yr + 2 Data Engineers</td>
+                    <td className="py-4 px-6">$20/mo (High engineering build cost)</td>
+                  </tr>
+                  <tr>
+                    <td className="py-4 px-6 font-bold text-[#1E2761]">Security &amp; Data Residency</td>
+                    <td className="py-4 px-6 font-semibold text-emerald-700 bg-[#EBF3FE]/40 flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-600" /> Zero retention, VPC / Sovereign local
+                    </td>
+                    <td className="py-4 px-6">Enterprise cloud-dependent</td>
+                    <td className="py-4 px-6">Replicates raw rows to multiple clouds</td>
+                    <td className="py-4 px-6 text-rose-600 flex items-center gap-1.5">
+                      <X className="w-4 h-4 text-rose-500" /> Cannot access private VPC DBs
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-4 px-6 font-bold text-[#1E2761]">Auditability &amp; Accuracy</td>
+                    <td className="py-4 px-6 font-semibold text-emerald-700 bg-[#EBF3FE]/40 flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-600" /> 100% ANSI SQL with full lineage
+                    </td>
+                    <td className="py-4 px-6">High (rigid semantic models)</td>
+                    <td className="py-4 px-6">High (pipeline maintenance burden)</td>
+                    <td className="py-4 px-6 text-rose-600 flex items-center gap-1.5">
+                      <X className="w-4 h-4 text-rose-500" /> Frequent hallucinations
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        {/* ── DUE DILIGENCE TEARDOWN ── */}
+        <section className="py-20 bg-white">
           <div className="max-w-[1100px] mx-auto px-8 max-[640px]:px-4">
             <div className="text-center mb-16">
               <span className="text-xs font-bold text-[#F96167] tracking-wider uppercase">Due Diligence Teardown</span>
@@ -229,7 +531,7 @@ export default function InvestorsPage() {
                 </div>
                 <div className="space-y-4 text-sm text-[#5A6478] leading-relaxed">
                   <p>
-                    Our moat consists of a proprietary three-layer technical architecture:
+                    Our defensibility is built on three deeply coupled layers that cannot be replicated by simple API wrappers:
                   </p>
                   <div className="grid sm:grid-cols-3 gap-4 pt-1">
                     <div className="p-4 rounded-xl bg-[#FAFBFC] border border-[#E5E9F2]">
@@ -247,7 +549,7 @@ export default function InvestorsPage() {
                     <div className="p-4 rounded-xl bg-[#FAFBFC] border border-[#E5E9F2]">
                       <div className="font-bold text-[#1E2761] text-xs mb-1">3. Semantic Link Graphs</div>
                       <div className="text-xs text-[#5A6478]">
-                        Decyra auto-discovers relationships between tables across disparate databases using vector embeddings, creating an automated cross-database knowledge graph.
+                        Decyra auto-discovers relationships between tables across disparate databases using vector embeddings, creating an automated cross-database knowledge graph that strengthens with usage.
                       </div>
                     </div>
                   </div>
@@ -315,6 +617,32 @@ export default function InvestorsPage() {
                   <p>
                     <strong>Why COGS are so low:</strong> Decyra doesn&apos;t run heavy model fine-tuning or continuous GPUs. Query planning is executed in micro-tokens (&lt;500 tokens per prompt), and heavy data compute is pushed down to the customer&apos;s existing databases or executed in ephemeral serverless RAM.
                   </p>
+                </div>
+              </div>
+
+              {/* Question 6: What happens if the AI generates a wrong query? */}
+              <div className="bg-white rounded-2xl border border-[#E5E9F2] p-8 sm:p-10 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="w-8 h-8 rounded-lg bg-[#1E2761] text-white flex items-center justify-center text-xs font-bold font-mono">06</span>
+                  <h3 className="text-xl font-bold text-[#1E2761] font-serif">
+                    &quot;How do you guarantee accuracy and prevent AI hallucinations?&quot;
+                  </h3>
+                </div>
+                <div className="space-y-4 text-sm text-[#5A6478] leading-relaxed">
+                  <p>
+                    Unlike consumer LLMs that guess answers, Decyra treats the LLM purely as a semantic parser. The generated SQL is compiled and validated against the actual verified schema before execution:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-2 text-[#5A6478]">
+                    <li>
+                      <strong className="text-[#1E2761]">Deterministic AST Compilation:</strong> Every query is verified for column and table existence. If a table doesn&apos;t exist, it is rejected before touching the database.
+                    </li>
+                    <li>
+                      <strong className="text-[#1E2761]">Full SQL &amp; Lineage Transparency:</strong> Users can inspect the exact generated SQL query, execution plan, and join logic behind every number with a single click.
+                    </li>
+                    <li>
+                      <strong className="text-[#1E2761]">Schema Disambiguation Prompts:</strong> When an ambiguous business metric is requested (e.g. &quot;churn rate&quot;), Decyra prompts the user to select their company&apos;s definition or learns from the semantic glossary.
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
@@ -420,6 +748,50 @@ export default function InvestorsPage() {
           </div>
         </section>
 
+        {/* ── CAPITAL ALLOCATION & USE OF FUNDS ── */}
+        <section className="py-20 bg-white border-b border-[#E5E9F2]">
+          <div className="max-w-[1100px] mx-auto px-8 max-[640px]:px-4">
+            <div className="text-center mb-16">
+              <span className="text-xs font-bold text-[#F96167] tracking-wider uppercase">Execution &amp; Milestones</span>
+              <h2
+                className="text-[36px] max-[640px]:text-[28px] font-bold text-[#1E2761] mt-2 mb-4"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                Capital Allocation &amp; Use of Proceeds
+              </h2>
+              <p className="text-base text-[#5A6478] max-w-[680px] mx-auto">
+                How investment capital is deployed with maximum discipline to achieve the $2.5M ARR milestone within 18 months.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 mb-12">
+              <div className="bg-[#FAFBFC] border border-[#E5E9F2] p-6 rounded-2xl">
+                <div className="text-2xl font-bold font-mono text-[#1E2761] mb-1">60%</div>
+                <div className="text-xs font-bold uppercase tracking-wider text-[#F96167] mb-2">Core Engineering &amp; Distributed Systems</div>
+                <p className="text-xs text-[#5A6478] leading-relaxed">
+                  Expanding the vectorized in-memory query engine, adding native connectors for Oracle, SAP HANA, and Microsoft SQL Server, and hardening the cross-database AST compiler.
+                </p>
+              </div>
+
+              <div className="bg-[#FAFBFC] border border-[#E5E9F2] p-6 rounded-2xl">
+                <div className="text-2xl font-bold font-mono text-[#1E2761] mb-1">25%</div>
+                <div className="text-xs font-bold uppercase tracking-wider text-[#1E2761] mb-2">Go-to-Market &amp; Developer Relations</div>
+                <p className="text-xs text-[#5A6478] leading-relaxed">
+                  Scaling self-serve conversion funnels, developer advocacy, content marketing on data engineering cost reduction, and mid-market enterprise sales engineering.
+                </p>
+              </div>
+
+              <div className="bg-[#FAFBFC] border border-[#E5E9F2] p-6 rounded-2xl">
+                <div className="text-2xl font-bold font-mono text-[#1E2761] mb-1">15%</div>
+                <div className="text-xs font-bold uppercase tracking-wider text-emerald-600 mb-2">Security &amp; Sovereign Compliance</div>
+                <p className="text-xs text-[#5A6478] leading-relaxed">
+                  Completing SOC2 Type II, ISO 27001, and local in-region data sovereign certifications across Saudi Arabia (NCA/SAMA), UAE, and the European Union (GDPR).
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ── FOUNDER CONTACT & DATA ROOM CTA ── */}
         <section className="py-20 bg-[#1E2761] text-white">
           <div className="max-w-[1000px] mx-auto px-8 max-[640px]:px-4 text-center">
@@ -446,6 +818,10 @@ export default function InvestorsPage() {
                 <li className="flex items-center gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-[#F96167] flex-shrink-0" />
                   Detailed Unit Economics, Gross Margin &amp; Financial Projections
+                </li>
+                <li className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-[#F96167] flex-shrink-0" />
+                  Precedent Valuation Benchmark Model ($15B+ Decacorn Strategy)
                 </li>
                 <li className="flex items-center gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-[#F96167] flex-shrink-0" />
